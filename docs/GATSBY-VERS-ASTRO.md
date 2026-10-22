@@ -232,6 +232,8 @@ Autres signes :
 
 ### 3.4 Design et expérience
 
+Le bilan complet et à jour des changements de design est dans `docs/CHANGEMENTS-DESIGN.md` (le menu, notamment, a changé depuis).
+
 Travail fait le 21 octobre 2026 :
 
 - **Nouveau menu** : un rideau qui descend sous l'en-tête, au lieu du tiroir latéral de MUI ; **une seule `<nav>`** commandée par les boutons Menu des deux barres. Thème clair aux couleurs de la marque, au lieu des gris foncés codés en dur du menu source (`#222930`, `#2a3440`, `#c8cbcf`).
