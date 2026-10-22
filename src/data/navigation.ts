@@ -11,7 +11,6 @@ import { BooksIcon } from '@phosphor-icons/react/dist/ssr/Books'
 import { CalendarDotsIcon } from '@phosphor-icons/react/dist/ssr/CalendarDots'
 import { ClockCountdownIcon } from '@phosphor-icons/react/dist/ssr/ClockCountdown'
 import { DoorOpenIcon } from '@phosphor-icons/react/dist/ssr/DoorOpen'
-import { FolderOpenIcon } from '@phosphor-icons/react/dist/ssr/FolderOpen'
 import { InfoIcon } from '@phosphor-icons/react/dist/ssr/Info'
 import { CalendarBlankIcon } from '@phosphor-icons/react/dist/ssr/CalendarBlank'
 import { InstagramLogoIcon } from '@phosphor-icons/react/dist/ssr/InstagramLogo'
@@ -33,19 +32,29 @@ export const PAGES_PRINCIPALES = [
   { url: '/engagements/', libelle: 'Engagements' },
 ]
 
-/** Les adresses absolues s'ouvrent dans un nouvel onglet, comme dans la source */
-export const LIENS_MENU = [
+/**
+ * Liens du parcours Sofia, à côté de son champ de recherche dans le menu :
+ * gérer ses prêts, obtenir un document absent des collections.
+ */
+export const LIENS_SOFIA = [
+  { libelle: 'Mon dossier', href: 'https://umontreal.account.worldcat.org/account', Icone: UserIcon },
   { libelle: 'Obtenir un document', href: '/obtenir/', Icone: BooksIcon },
+]
+
+/**
+ * Accès rapide du menu. Les adresses absolues s'ouvrent dans un nouvel
+ * onglet, comme dans la source. À propos est dans « Explorer » et le pied de
+ * page.
+ */
+export const LIENS_MENU = [
   { libelle: 'Réserver une salle', href: 'https://calendrier.bib.umontreal.ca/r', Icone: DoorOpenIcon },
-  { libelle: 'Mon dossier', href: 'https://umontreal.account.worldcat.org/account', Icone: FolderOpenIcon },
   {
-    libelle: 'Calendrier des formations',
+    libelle: 'Formations',
     href: 'https://calendrier.bib.umontreal.ca/calendar?cid=7690&t=m&d=0000-00-00&cal=7690&inc=0',
     Icone: CalendarDotsIcon,
   },
   { libelle: 'Horaires', href: '/horaires/', Icone: ClockCountdownIcon },
   { libelle: 'Nous joindre', href: '/nous-joindre/', Icone: AddressBookIcon },
-  { libelle: 'À propos', href: '/a-propos/', Icone: InfoIcon },
 ]
 
 export type Carte = {
