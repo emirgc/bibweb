@@ -24,7 +24,9 @@ import { readdirSync, readFileSync, writeFileSync } from 'node:fs'
 import { join, relative } from 'node:path'
 import { fileURLToPath } from 'node:url'
 import slugify from '@sindresorhus/slugify'
-import { chromium } from '/private/tmp/claude-501/-Users-emir-Documents-git-coquille-web/300d837e-cc75-4e88-acfb-e6639ec9960f/scratchpad/pw/node_modules/playwright/index.mjs'
+// playwright-core (dépendance de développement) : pilote le Chrome installé,
+// sans télécharger de navigateur
+import { chromium } from 'playwright-core'
 
 const args = Object.fromEntries(process.argv.slice(2).map((a) => a.replace(/^--/, '').split('=')))
 const BASE = args.base ?? 'http://localhost:4321'

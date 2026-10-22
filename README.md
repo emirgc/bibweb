@@ -78,6 +78,7 @@ Ce document a deux parties :
 | L'« Accès rapide » du menu (Obtenir un document, Horaires…) | `src/data/navigation.ts`, `LIENS_MENU` | Libellé, adresse, icône. |
 | Les services du menu (Studio·bib, Boîte à outils, Ressources), leurs liens, leur description et où cherche leur champ de recherche | `src/data/navigation.ts`, `CARTES` ; photos dans `src/data/images/navigation/` | `description`, `liens`, `appel`, `portee` (`studio`, `outils` ou `site`). |
 | Les liens du pied de page | `src/data/navigation.ts` : `COLONNES_PIED`, `RESEAUX_PIED`, `URGENCE`, `LIENS_QUEUE_PIED` | Libellé et adresse. |
+| La bibliothèque proposée par défaut dans le bandeau « Horaires du jour » | `src/components/coquille/BandeauHoraires.astro`, `PAR_DEFAUT` (code de la bibliothèque, `ss` pour la BLSH) | La liste vient de `src/data/horaires/lieux.ts`. |
 | Les liens rapides (barre bleue à droite, ou en bas sur téléphone) | `src/data/navigation.ts`, `LIENS_RAPIDES` | Libellé, libellé court (`court`, affiché sous l'icône sur téléphone) et adresse. |
 | La fiche d'une bibliothèque (adresse, téléphone, courriel, services) | `src/data/horaires/lieux.ts` | Voir [Les bibliothèques](#les-bibliothèques-et-leurs-horaires). |
 | Les heures d'ouverture | **Pas dans ce dépôt** : elles viennent de l'API `https://api.bib.umontreal.ca/horaires` | Voir l'équipe responsable de l'API. |
@@ -439,7 +440,7 @@ Détail : `docs/CONVENTIONS.md`, « Accessibilité ».
 
 - Le serveur de dev (http://localhost:4321) est l'outil de vérification ; on lit ses pages (`curl`, ou un navigateur automatisé).
 - **`npm run verifier`** (`scripts/verifier-pages.mjs`) parcourt toutes les pages de `src/content/pages/` (hors `dev/`) et toutes les nouvelles sur le serveur de dev, et contrôle : statut 200, présence de `<footer` (son absence trahit un rendu MDX interrompu qui répond quand même 200), un seul `h1` sans niveau sauté, aucun « [object Object] », aucun débordement horizontal à 390 et 1440 px. Options : `--base=URL`, `--seulement=motif`, `--ids=fichier.json` (enregistre les ancres des titres, pour comparer deux exécutions et s'assurer qu'aucune ancre publique n'a changé).
-- Le script importe Playwright depuis un chemin absolu d'un dossier temporaire (en tête de `scripts/verifier-pages.mjs`) : sur un autre poste, il faut adapter cet import.
+- Le script utilise `playwright-core` (dépendance de développement), qui pilote le Google Chrome installé (`/Applications/Google Chrome.app`, chemin en tête de `scripts/verifier-pages.mjs`) : aucun navigateur à télécharger. Sur un autre système, adaptez ce chemin.
 - Pour comparer avec l'ancien site : `docs/CONVENTIONS.md` indique que le site Gatsby construit est servi sur http://localhost:9000.
 
 ## Le cache de contenu

@@ -15,6 +15,7 @@ import figtreeLatin from '@fontsource-variable/figtree/files/figtree-latin-wght-
 import loraLatin from '@fontsource-variable/lora/files/lora-latin-wght-normal.woff2?url'
 import '@/styles/animations.css'
 import Entete from '@/components/coquille/Entete.astro'
+import BandeauHoraires from '@/components/coquille/BandeauHoraires.astro'
 import PiedDePage from '@/components/coquille/PiedDePage.astro'
 import LiensRapides from '@/components/coquille/LiensRapides.astro'
 import ServicesInstitutionnels from '@/components/coquille/ServicesInstitutionnels.astro'
@@ -93,6 +94,7 @@ const attributsCoquille = langPage === LANGUE_SITE ? {} : { lang: LANGUE_SITE, s
           <Coquille {...attributsCoquille}>
             <ServicesInstitutionnels position="haut" niveau={niveau} />
             <Entete />
+            <BandeauHoraires />
           </Coquille>
           <slot name="avant-contenu" />
           {/* Avis des pages de niveau 2 et plus : après la bannière de
