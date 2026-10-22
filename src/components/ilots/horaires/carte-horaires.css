@@ -721,6 +721,9 @@
   align-items: center;
   gap: 0.5rem;
   margin: 0;
+  /* Même police à tous les niveaux : la fiche Prêt entre bibliothèques,
+     rangée un niveau plus bas, a des volets en h4, en Lora dans le thème */
+  font-family: var(--police-sans);
   font-size: 1rem;
   font-weight: var(--graisse-forte);
 }
