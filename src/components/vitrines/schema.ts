@@ -69,6 +69,11 @@ const banniere = z
     image: z.string().refine((nom) => BANNIERES.includes(nom), { message: `Bannière introuvable. Noms possibles : ${BANNIERES.join(', ')}` }),
     sousTitre: lignes.optional(),
     taille: z.enum(['normale', 'petite']).default('normale'),
+    /** Hauteur de la photo à garder au recadrage : 0 % le haut, 50 % le centre */
+    cadrage: z
+      .string()
+      .regex(/^(100|[1-9]?\d)%$/, { message: 'Le cadrage est un pourcentage de 0% à 100% (0% : le haut de la photo, 50% : le centre).' })
+      .optional(),
     rechercheSofia: z.boolean().optional(),
   })
   .strict()

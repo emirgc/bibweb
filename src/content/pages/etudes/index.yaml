@@ -4,6 +4,7 @@ title: Études
 banniere:
   titre: On inspire la réussite
   image: etudes
+  cadrage: 30%
 
 sections:
   - type: grille-elargissable

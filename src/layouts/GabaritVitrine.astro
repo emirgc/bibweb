@@ -77,7 +77,7 @@ function bande(bloc: Bloc) {
     banniere && (
       <Fragment>
         {banniere.rechercheSofia ? (
-          <SuperHero title={banniere.titre} imageName={banniere.image}>
+          <SuperHero title={banniere.titre} imageName={banniere.image} cadrage={banniere.cadrage}>
             {banniere.sousTitre && (
               <Fragment slot="subTitle">
                 {banniere.sousTitre.map((ligne) => (
@@ -90,7 +90,7 @@ function bande(bloc: Bloc) {
             <RechercheSofiaAccueil />
           </SuperHero>
         ) : banniere.sousTitre ? (
-          <SuperHero2 title={banniere.titre} imageName={banniere.image} size={taille}>
+          <SuperHero2 title={banniere.titre} imageName={banniere.image} cadrage={banniere.cadrage} size={taille}>
             <Fragment slot="subTitle">
               {banniere.sousTitre.map((ligne) => (
                 <Typography component="div" variant="subtitle1">
@@ -100,7 +100,7 @@ function bande(bloc: Bloc) {
             </Fragment>
           </SuperHero2>
         ) : (
-          <SuperHero2 title={banniere.titre} imageName={banniere.image} size={taille} />
+          <SuperHero2 title={banniere.titre} imageName={banniere.image} cadrage={banniere.cadrage} size={taille} />
         )}
       </Fragment>
     )

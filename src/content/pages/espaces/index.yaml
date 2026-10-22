@@ -4,6 +4,7 @@ title: Espaces
 banniere:
   titre: De l'espace pour réfléchir, découvrir et s'enrichir
   image: espaces
+  cadrage: 40%
 
 sections:
   - type: cartes-revelation

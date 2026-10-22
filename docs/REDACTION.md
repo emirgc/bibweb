@@ -59,6 +59,7 @@ superHero:
 | `secondaryNav.order` | Place dans ce menu : 1, 2, 3… | Non |
 | `secondaryNav.hidden` | `true` pour cacher la page de ce menu | Non |
 | `superHero.imageName` | Image de la bannière de section (voir 4.2) | Non |
+| `superHero.cadrage` | Partie de la photo à garder dans la bannière basse : `0%` le haut, `50%` le centre. Chaque photo a déjà un cadrage qui garde les visages (`src/lib/bannieres.ts`) ; ne l'ajoutez que pour le corriger sur une page. | Non |
 | `superHero.title` | Texte de la bannière (souvent le nom de la section) | Non |
 | `description` | Résumé pour les moteurs de recherche | Non |
 | `noindex` | `true` pour cacher la page des moteurs et de la recherche du site | Non |
@@ -539,6 +540,7 @@ Champs de la bannière :
 | `titre` | Grand titre sur la photo (titre principal de la page) | Oui |
 | `image` | Nom de l'image de bannière (voir 4.2) | Oui |
 | `taille` | `normale` ou `petite` (bannière moins haute, comme Nous soutenir) | Non (`normale`) |
+| `cadrage` | Partie de la photo à garder quand l'écran large la coupe en haut et en bas : `0%` le haut, `50%` le centre, `100%` le bas. Baissez-le (`20%`) si des têtes sont coupées. | Non (`50%`) |
 | `sousTitre` | Courtes lignes sous le titre (sur l'accueil : le nom et le titre de la personne en photo) | Non |
 | `rechercheSofia` | `true` : la grande bannière de l'accueil, avec la boîte de recherche Sofia. **Accueil seulement.** | Non |
 

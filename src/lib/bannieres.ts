@@ -20,6 +20,26 @@ export function imageBanniere(nom: string): ImageMetadata {
   return image
 }
 
+/**
+ * Cadrage des photos dans la bannière basse des sous-pages (BanniereSection,
+ * environ 230 px) : la hauteur gardée au recadrage, pour que les visages
+ * restent sous l'en-tête (0 % : le haut de la photo, 50 % : le centre). Une
+ * page peut le remplacer (`superHero.cadrage`). Photos sans personne : le
+ * centre, par défaut.
+ */
+const CADRAGE_SECTION: Record<string, string> = {
+  engagements: '25%',
+  enseignement: '15%',
+  espaces: '40%',
+  'nous-joindre': '20%',
+  obtenir: '25%',
+  recherche: '5%',
+}
+
+export function cadrageSection(nom: string) {
+  return CADRAGE_SECTION[nom]
+}
+
 // Les bannières couvrent toute la largeur de la fenêtre. On ne demande pas de
 // variante plus large que l'original : Astro l'agrandirait pour rien.
 const LARGEURS = [640, 960, 1280, 1600, 1920, 2400]

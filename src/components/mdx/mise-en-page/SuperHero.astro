@@ -24,6 +24,8 @@ interface Props {
   subTitle?: unknown
   imageName: string
   alt?: string
+  /** Hauteur de la photo à garder au recadrage (« 20% ») ; le centre par défaut */
+  cadrage?: string
   /** Inutilisé, comme dans la source */
   lvl?: number
   class?: string
@@ -32,13 +34,13 @@ interface Props {
   [attribut: string]: unknown
 }
 
-const { title, subTitle, imageName, alt = '', lvl: _lvl, class: classe, className, style, ...reste } = Astro.props
+const { title, subTitle, imageName, alt = '', cadrage, lvl: _lvl, class: classe, className, style, ...reste } = Astro.props
 const image = imageBanniere(imageName)
 const aSousTitre = subTitle !== undefined || Astro.slots.has('subTitle')
 const aEnfants = Astro.slots.has('default')
 ---
 
-<div class:list={['super-hero', { 'avec-enfants': aEnfants }, classes(classe, className)]} style={fusionnerStyles(style)} {...reste}>
+<div class:list={['super-hero', { 'avec-enfants': aEnfants }, classes(classe, className)]} style={fusionnerStyles(cadrage && { '--cadrage': cadrage }, style)} {...reste}>
   <Picture
     src={image}
     formats={['avif', 'webp']} fallbackFormat="webp"
@@ -127,6 +129,9 @@ const aEnfants = Astro.slots.has('default')
     width: 100%;
     height: 100%;
     object-fit: cover;
+    /* Recadrage : sur un écran large, la photo est coupée en haut et en bas ;
+       `cadrage` choisit la hauteur gardée (visages sous l'en-tête) */
+    object-position: 50% var(--cadrage, 50%);
   }
 
   .texte {

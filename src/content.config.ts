@@ -70,6 +70,8 @@ const superHero = z
     title: z.string().optional(),
     // Format de la bannière d'une page de niveau 1 en .md (SuperHero2)
     size: z.enum(['default', 'small']).optional(),
+    // Hauteur de la photo gardée au recadrage (« 20% ») ; voir lib/bannieres.ts
+    cadrage: z.string().regex(/^(100|[1-9]?\d)%$/).optional(),
   })
   .optional()
 

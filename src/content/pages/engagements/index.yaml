@@ -5,6 +5,7 @@ crumbLabel: Engagements
 banniere:
   titre: Pour un monde équitable et durable
   image: engagements
+  cadrage: 25%
 
 sections:
   - type: cartes-revelation

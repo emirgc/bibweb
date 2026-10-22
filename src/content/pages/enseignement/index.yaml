@@ -5,6 +5,7 @@ crumbLabel: Enseignement
 banniere:
   titre: Épauler l'enseignement, c'est notre rayon
   image: enseignement
+  cadrage: 10%
 
 sections:
   - type: texte-icones

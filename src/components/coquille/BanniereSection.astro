@@ -20,21 +20,23 @@
  * au <h1> du contenu (le fil d'Ariane nomme déjà la section).
  */
 import { Picture } from 'astro:assets'
-import { imageBanniere, largeursPour } from '@/lib/bannieres'
+import { cadrageSection, imageBanniere, largeursPour } from '@/lib/bannieres'
 
 interface Props {
   imageName: string
   titre?: string
   alt?: string
+  /** Hauteur de la photo à garder au recadrage (« 20% ») ; sinon celle de la photo (lib/bannieres.ts) */
+  cadrage?: string
   class?: string
   style?: string
 }
 
-const { imageName, titre, alt = '', class: classe, style } = Astro.props
+const { imageName, titre, alt = '', cadrage = cadrageSection(imageName), class: classe, style } = Astro.props
 const image = imageBanniere(imageName)
 ---
 
-<div class:list={['banniere', classe]} style={style}>
+<div class:list={['banniere', classe]} style={[cadrage && `--cadrage: ${cadrage}`, style].filter(Boolean).join('; ') || undefined}>
   <Picture
     src={image}
     formats={['avif', 'webp']} fallbackFormat="webp"
@@ -91,6 +93,8 @@ const image = imageBanniere(imageName)
     width: 100%;
     height: 100%;
     object-fit: cover;
+    /* La bannière est basse : sans cadrage, on ne verrait que le cou */
+    object-position: 50% var(--cadrage, 50%);
   }
 
   /* 1rem au-dessus et au-dessous : avec 0,5rem, les jambages (« Engagements »)

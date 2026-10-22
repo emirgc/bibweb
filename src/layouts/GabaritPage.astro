@@ -35,7 +35,7 @@ interface Props {
   noindex?: boolean
   niveau?: number
   /** `size` n'est lu qu'au niveau 1 ; petit format par défaut */
-  superHero?: { imageName: string; title?: string; size?: 'default' | 'small' }
+  superHero?: { imageName: string; title?: string; size?: 'default' | 'small'; cadrage?: string }
   /** Langue du contenu ; à défaut, celle du frontmatter de la page */
   lang?: string
 }
@@ -59,7 +59,7 @@ const banniereNiveau1 = niveau === 1 && superHero
 ---
 
 <Base titre={titre} description={description} noindex={noindex} niveau={niveau} lang={lang}>
-  {niveau > 1 && superHero && <BanniereSection slot="avant-contenu" imageName={superHero.imageName} titre={superHero.title} />}
+  {niveau > 1 && superHero && <BanniereSection slot="avant-contenu" imageName={superHero.imageName} titre={superHero.title} cadrage={superHero.cadrage} />}
   {
     niveau > 1 ? (
       <div class="conteneur page-niveau-n">
@@ -80,7 +80,7 @@ const banniereNiveau1 = niveau === 1 && superHero
         <main id="contenu-principal" tabindex="-1">
           {banniereNiveau1 ? (
             <>
-              <SuperHero2 title={superHero!.title ?? titre ?? ''} imageName={superHero!.imageName} size={superHero!.size ?? 'small'} />
+              <SuperHero2 title={superHero!.title ?? titre ?? ''} imageName={superHero!.imageName} cadrage={superHero!.cadrage} size={superHero!.size ?? 'small'} />
               <Section>
                 <slot />
               </Section>

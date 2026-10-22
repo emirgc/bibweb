@@ -5,6 +5,7 @@ crumbLabel: Obtenir
 banniere:
   titre: Obtenir un document
   image: obtenir
+  cadrage: 20%
 
 sections:
   - type: liste-liens
