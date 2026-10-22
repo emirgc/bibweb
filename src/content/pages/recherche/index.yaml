@@ -4,7 +4,7 @@ crumbLabel: Recherche
 
 banniere:
   titre: Amplifier l’impact de vos recherches
-  image: recherche
+  image: default
 
 sections:
   - type: image-texte
