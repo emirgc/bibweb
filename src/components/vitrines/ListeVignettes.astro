@@ -1,0 +1,130 @@
+---
+/*
+ * Liste compacte de liens à vignette photo, au gabarit des éléments du Quoi
+ * de neuf (Element.astro) : vignette carrée, titre, pastille fléchée, filet
+ * dessous. Sert au bloc « onglets » en disposition `colonnes` (Espaces :
+ * équipements des deux ateliers).
+ *
+ * - Un seul lien par élément, sur le titre (h3 par défaut) : son ::after
+ *   couvre la rangée. La vignette est décorative (alt vide) : le titre nomme
+ *   le lien.
+ * - Photos optimisées au build (astro:assets), 88 px affichés, 2× compris.
+ * - La pastille distingue un lien du site (→) d'un autre site (↗), comme
+ *   les cartes ; aucun lien n'ouvre de nouvel onglet.
+ */
+import { Picture } from 'astro:assets'
+import Pastille from '@/components/mdx/dynamiques/Pastille.astro'
+import { analyserLien } from '@/lib/liens'
+
+interface Props {
+  elements: { titre: string; image: ImageMetadata; lien: string }[]
+  niveauTitre?: 2 | 3 | 4
+}
+
+const { elements, niveauTitre = 3 } = Astro.props
+const Titre = `h${niveauTitre}`
+---
+
+<ul class="liste" data-revelation="groupe">
+  {
+    elements.map(({ titre, image, lien }) => (
+      <li class="element">
+        <Picture src={image} alt="" widths={[88, 176]} sizes="88px" formats={['avif', 'webp']} fallbackFormat="webp" class="vignette" loading="lazy" decoding="async" />
+        <Titre class="titre">
+          <a href={lien}>{titre}</a>
+        </Titre>
+        <span class="coin">
+          <Pastille externe={!analyserLien(lien).interne} />
+        </span>
+      </li>
+    ))
+  }
+</ul>
+
+<style>
+  .liste {
+    display: flex;
+    flex-direction: column;
+    margin: var(--espace-bloc) 0 0;
+    padding: 0;
+    list-style: none;
+  }
+
+  .element {
+    position: relative;
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    padding-block: 1rem;
+    border-bottom: 1px solid currentColor;
+  }
+
+  .element:first-child {
+    border-top: 1px solid currentColor;
+  }
+
+  .liste :global(.vignette) {
+    flex-shrink: 0;
+    width: 5.5rem;
+    height: 5.5rem;
+    border-radius: var(--rayon-moyen);
+    object-fit: cover;
+  }
+
+  .titre {
+    flex-grow: 1;
+    min-width: 0;
+    margin: 0;
+    font-size: 1.1875rem;
+    font-weight: var(--graisse-moyenne);
+    line-height: 1.3;
+    overflow-wrap: break-word;
+  }
+
+  .titre a {
+    color: inherit;
+    text-decoration: none;
+  }
+
+  .titre a::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+  }
+
+  .titre a:focus-visible {
+    outline: none;
+  }
+
+  .titre a:focus-visible::after {
+    outline: 3px solid var(--couleur-focus);
+    outline-offset: 2px;
+    border-radius: var(--rayon-minuscule);
+  }
+
+  .coin {
+    display: flex;
+    flex-shrink: 0;
+    pointer-events: none;
+  }
+
+  /* Survol : soulignement du titre, la flèche avance d'un cran */
+  .coin :global(.pastille) {
+    transition: translate var(--duree-courte-4) var(--courbe-standard-deceleree);
+  }
+
+  .element:has(a:focus-visible) .coin :global(.pastille) {
+    translate: 3px 0;
+  }
+
+  @media (hover: hover) and (pointer: fine) {
+    .element:hover .titre a {
+      text-decoration: underline;
+      text-decoration-thickness: from-font;
+    }
+
+    .element:hover .coin :global(.pastille) {
+      translate: 3px 0;
+    }
+  }
+</style>

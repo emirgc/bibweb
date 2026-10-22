@@ -1,0 +1,93 @@
+# Page vitrine /etudes/ : voir docs/REDACTION.md, section « Vitrines »
+title: Études
+
+banniere:
+  titre: On inspire la réussite
+  image: etudes
+
+sections:
+  - type: grille-elargissable
+    titre: Des outils essentiels pour vos travaux
+    texte: Dans le torrent d’information disponible en ligne et sur nos rayons, par où commencer l’exploration? Nos spécialistes ont conçu des guides et sélectionné les ressources les plus pratiques pour vous. Profitez-en!
+    bouton:
+      texte: Voir la boîte à outils
+      lien: https://boite-outils.bib.umontreal.ca
+    cartes:
+      - titre: Citer ses sources
+        icone: text-outdent
+        appel: Explorer la citation
+        lien: https://boite-outils.bib.umontreal.ca/citer
+      - titre: Ressources par discipline
+        icone: compass
+        appel: Explorer les disciplines
+        lien: https://boite-outils.bib.umontreal.ca/disciplines
+      - titre: Trouver et évaluer la fiabilité des sources
+        icone: magnifying-glass
+        appel: En savoir plus sur la recherche de sources
+        lien: https://boite-outils.bib.umontreal.ca/trouver-evaluer
+      - titre: Intelligence artificielle générative
+        icone: head-circuit
+        appel: En savoir plus sur l'IAg
+        lien: https://boite-outils.bib.umontreal.ca/trouver-evaluer/iag
+
+  - type: formations
+    fond: bleu100
+    titre: Profiter de nos formations gratuites, c'est payant
+    texte: Consultez notre calendrier de formations - il y en a pour tous les goûts, tous les niveaux!
+    lienTout:
+      texte: Toutes nos formations
+      lien: https://calendrier.bib.umontreal.ca/calendar?cid=7690&t=m&d=0000-00-00&cal=7690&inc=0
+
+  - type: liste-liens
+    fond: vertFonce
+    titre: Des services personnalisés
+    liens:
+      - titre: Accueil en bibliothèque
+        description: Notre équipe est présente en bibliothèques pour répondre à vos questions sur place - passez nous voir au comptoir!
+        lien: /nous-joindre/#bibliotheques-et-points-de-service
+      - titre: Clavardage
+        description: Même à distance, notre équipe n'est qu'à un clic! Nous sommes là pour répondre à vos questions, vous aider à repérer un document, ou vous guider dans l’utilisation de nos ressources, de nos logiciels. Besoin de soutien informatique à distance? C’est aussi par ici!
+        lien: /nous-joindre/clavarder/
+      - titre: Rendez-vous avec nos spécialistes
+        description: Nous proposons du soutien individuel pour trouver et utiliser de l’information et en informatique. Découvrez ou approfondissez les notions à votre rythme avec un membre de notre équipe.
+        lien: /nous-joindre/notre-equipe/
+      - titre: Services pour les cycles supérieurs
+        description: Jumelage avec un ou une bibliothécaire, dépôt dans Papyrus, mise en page de votre thèse ou mémoire, matinées de rédaction… nous sommes là pour vous accompagner tout au long de votre parcours aux cycles supérieurs, de la recherche à la publication.
+        lien: /recherche/
+      - titre: Service Accessibilité
+        description: L’accès à la documentation dont vous avez besoin est notre priorité. Tout au long de votre parcours universitaire, nous chercherons ou produirons pour vous des formats accessibles, en plus de vous offrir des équipements et des logiciels adaptés.
+        lien: /service-accessibilite/
+
+  - type: grille-elargissable
+    titre: Problème informatique? Pas de panique!
+    texte: Nos comptoirs, nos services et nos spécialistes vous sont accessibles à l’année! De la connexion hors campus à l’impression, en passant par le prêt d’ordinateurs ou de tablettes, notre équipe est là pour vous soutenir.
+    couleurCartes: jaune
+    bouton:
+      texte: Voir les ressources informatiques
+      lien: https://studio.bib.umontreal.ca/informatique/
+    cartes:
+      - titre: Accès à distance aux logiciels
+        icone: plugs
+        appel: En savoir plus
+        lien: https://studio.bib.umontreal.ca/informatique/connexion-distance/
+      - titre: Accès hors campus
+        icone: network
+        appel: Configuration Proxy et VPN
+        lien: https://studio.bib.umontreal.ca/informatique/proxy/
+      - titre: Installation et configuration de logiciels
+        icone: download-simple
+        appel: Consulter la documentation
+        lien: https://studio.bib.umontreal.ca/informatique/logiciels/
+      - titre: Accès au réseau sans fil
+        icone: wifi-high
+        appel: En savoir plus
+        lien: https://studio.bib.umontreal.ca/informatique/reseau/
+
+  - type: image-texte
+    titre: Bienvenue chez vous!
+    texte: Offrir des lieux communs qui répondent à des besoins individuels, c’était l’idée à la base de la conception de nos espaces multifonctionnels! Salons de détente, cabines individuelles insonorisées, salles de réunion, découvrez les espaces qui vous sont offerts sur les campus!
+    image: ./images/espaces-montage.webp
+    positionImage: droite
+    bouton:
+      texte: Découvrir les espaces
+      lien: /espaces/

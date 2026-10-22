@@ -1,0 +1,335 @@
+---
+/*
+ * Carrousel de cartes (Carousel1 de coquille-web), sans embla.
+ *
+ * - Défilement natif horizontal avec scroll-snap : souris, trackpad,
+ *   toucher et clavier (Tab amène chaque carte à l'écran) fonctionnent sans
+ *   JS. Un petit script ajoute les boutons Précédent et Suivant, désactivés
+ *   (aria-disabled) aux extrémités, et masqués quand tout tient dans la
+ *   largeur, comme dans la source. Tant qu'il reste des cartes à droite,
+ *   le bord droit de la piste s'efface en fondu (data-suite).
+ * - Motif Carrousel de l'APG : région nommée par le titre,
+ *   aria-roledescription « carrousel » ; chaque diapositive est un groupe
+ *   « n sur N ». Pas de défilement automatique.
+ * - Abandonnés : la capture de la molette verticale (elle empêchait de
+ *   faire défiler la page au-dessus du carrousel) et les pastilles de
+ *   pagination (5 px de haut, sans état annoncé).
+ *
+ * Chaque enfant de premier niveau du MDX est une diapositive, comme
+ * Children.toArray dans la source.
+ */
+import RenduJsx from '@/components/partage/RenduJsx.astro'
+import Typography from '@/components/mdx/primitives/Typography.astro'
+import Button from '@/components/mdx/primitives/Button.astro'
+import { panneauxDuSlot } from '@/lib/decoupage'
+import { idUnique } from '@/lib/ids'
+import { classes, fusionnerStyles, type Style } from '@/lib/styles'
+
+interface Props {
+  /** Chaîne (rendue en h2) ou élément ; aussi possible en slot « title » */
+  title?: unknown
+  /** Chaîne ou élément ; aussi possible en slot « description » */
+  description?: unknown
+  moreText?: string
+  moreLink?: string
+  /** `_blank` pour ouvrir moreLink dans un nouvel onglet (annoncé par Button) */
+  moreTarget?: string
+  /** Nom accessible quand le titre n'est pas du texte */
+  ariaLabel?: string
+  /** Passé dans le contenu (engagements) ; sans effet, comme dans la source */
+  bg?: string
+  class?: string
+  className?: string
+  style?: Style
+  [attribut: string]: unknown
+}
+
+const { title, description, moreText, moreLink, moreTarget, ariaLabel, bg: _bg, class: classe, className, style, sx: _sx, ...reste } = Astro.props
+const id = idUnique('carrousel')
+const { panneaux, annexes } = panneauxDuSlot(Astro.slots.has('default') ? await Astro.slots.render('default') : '')
+const total = panneaux.length
+const aTitre = title !== undefined || Astro.slots.has('title')
+const aDescription = description !== undefined || Astro.slots.has('description')
+// Cercle et flèche des icônes arrow-*-circle.svg de la source
+const FLECHE = 'm16.492 24.587 7.031-7.031a.586.586 0 0 1 .828.828l-6.03 6.031h15.772a.586.586 0 1 1 0 1.172H18.321l6.03 6.031a.586.586 0 0 1-.828.828l-7.031-7.03a.586.586 0 0 1 0-.829z'
+---
+
+<div
+  class:list={['carrousel', classes(classe, className)]}
+  style={fusionnerStyles(style)}
+  role="region"
+  aria-roledescription="carrousel"
+  aria-labelledby={aTitre && !ariaLabel ? `${id}-titre` : undefined}
+  aria-label={ariaLabel}
+  data-carrousel
+  {...reste}
+>
+  <div class="entete">
+    {
+      aTitre && (
+        <div class="titre" id={`${id}-titre`}>
+          <slot name="title">
+            {typeof title === 'string' ? (
+              <Typography component="h2" variant="h2">
+                {title}
+              </Typography>
+            ) : (
+              <RenduJsx valeur={title} />
+            )}
+          </slot>
+        </div>
+      )
+    }
+    <div class="rangee">
+      <div class="description">
+        {
+          aDescription && (
+            <slot name="description">
+              {typeof description === 'string' ? (
+                <Typography variant="body1" component="div">
+                  {description}
+                </Typography>
+              ) : (
+                <RenduJsx valeur={description} />
+              )}
+            </slot>
+          )
+        }
+      </div>
+      <div class="commandes" hidden data-commandes>
+        <button type="button" class="commande" aria-controls={`${id}-piste`} aria-disabled="true" data-precedent>
+          <svg viewBox="0 0 50 50" width="50" height="50" aria-hidden="true" focusable="false"><circle cx="25" cy="25" r="25" opacity=".1"></circle><path d={FLECHE}></path></svg>
+          <span class="visuellement-masque">Diapositives précédentes</span>
+        </button>
+        <button type="button" class="commande" aria-controls={`${id}-piste`} data-suivant>
+          <svg viewBox="0 0 50 50" width="50" height="50" aria-hidden="true" focusable="false" class="vers-droite"><circle cx="25" cy="25" r="25" opacity=".1"></circle><path d={FLECHE}></path></svg>
+          <span class="visuellement-masque">Diapositives suivantes</span>
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <div class="piste" id={`${id}-piste`} data-piste data-revelation="groupe" data-revelation-mouvement="echelle">
+    {
+      panneaux.map((html, i) => (
+        <div class="diapositive" role="group" aria-roledescription="diapositive" aria-label={`${i + 1} sur ${total}`} data-diapositive>
+          <Fragment set:html={html} />
+        </div>
+      ))
+    }
+  </div>
+  <Fragment set:html={annexes} />
+
+  {
+    moreLink && moreText && (
+      <div class="plus">
+        <Button primary href={moreLink} target={moreTarget}>
+          {moreText}
+        </Button>
+      </div>
+    )
+  }
+</div>
+
+<script>
+  const reduit = window.matchMedia('(prefers-reduced-motion: reduce)')
+
+  for (const racine of document.querySelectorAll<HTMLElement>('[data-carrousel]')) {
+    const piste = racine.querySelector<HTMLElement>('[data-piste]')!
+    const commandes = racine.querySelector<HTMLElement>('[data-commandes]')!
+    const precedent = racine.querySelector<HTMLButtonElement>('[data-precedent]')!
+    const suivant = racine.querySelector<HTMLButtonElement>('[data-suivant]')!
+    const diapositives = [...piste.querySelectorAll<HTMLElement>(':scope > [data-diapositive]')]
+
+    // Tolérance d'un pixel : les largeurs fractionnaires laissent un reste
+    const maj = () => {
+      const max = piste.scrollWidth - piste.clientWidth
+      commandes.hidden = max <= 1
+      precedent.setAttribute('aria-disabled', String(piste.scrollLeft <= 1))
+      suivant.setAttribute('aria-disabled', String(piste.scrollLeft >= max - 1))
+      // Fondu du bord droit tant qu'il reste des cartes à découvrir
+      piste.toggleAttribute('data-suite', piste.scrollLeft < max - 1)
+    }
+
+    // Une « page » à la fois, comme slidesToScroll de la source : la première
+    // diapositive coupée à droite vient au début, ou l'inverse en reculant.
+    const aller = (sens: 1 | -1) => {
+      const debut = piste.getBoundingClientRect().left
+      const positions = diapositives.map((d) => d.getBoundingClientRect().left - debut + piste.scrollLeft)
+      const gauche = piste.scrollLeft
+      let cible: number
+      if (sens === 1) {
+        const bord = gauche + piste.clientWidth
+        const i = diapositives.findIndex((d, n) => positions[n] + d.offsetWidth > bord + 1)
+        // Une diapositive plus large que la piste, déjà au début : la suivante
+        const j = i !== -1 && positions[i] <= gauche + 1 ? i + 1 : i
+        cible = j === -1 || j >= positions.length ? piste.scrollWidth : positions[j]
+      } else {
+        cible = positions.find((p) => p >= gauche - piste.clientWidth - 1) ?? 0
+        if (cible >= gauche - 1) cible = [...positions].reverse().find((p) => p < gauche - 1) ?? 0
+      }
+      piste.scrollTo({ left: cible, behavior: reduit.matches ? 'auto' : 'smooth' })
+    }
+
+    precedent.addEventListener('click', () => precedent.getAttribute('aria-disabled') !== 'true' && aller(-1))
+    suivant.addEventListener('click', () => suivant.getAttribute('aria-disabled') !== 'true' && aller(1))
+    piste.addEventListener('scroll', maj, { passive: true })
+    new ResizeObserver(maj).observe(piste)
+    racine.toggleAttribute('data-pret', true)
+    maj()
+  }
+</script>
+
+<style>
+  /* Titre, description, cartes et bouton « voir tout » : --espace-bloc
+     entre les groupes (45 px dans la source), --espace-grille entre les
+     cartes (25 px, puis 40 px dès 600 px dans la source, par l'addition de
+     trois marges) */
+  .carrousel {
+    display: flex;
+    flex-direction: column;
+    gap: var(--espace-bloc);
+    min-width: 0;
+  }
+
+  .titre :global(:is(h2, h3)) {
+    margin-top: 0;
+  }
+
+  .description > :global(:last-child) {
+    margin-bottom: 0;
+  }
+
+  /* Le gap du carrousel fait l'écart ; sans la marge haute de Button */
+  .plus > :global(.bouton) {
+    margin-top: 0;
+  }
+
+  .rangee {
+    display: flex;
+    flex-direction: column;
+  }
+
+  .description {
+    flex: 1 1 0;
+    min-width: 0;
+  }
+
+  .commandes {
+    display: flex;
+    justify-content: flex-end;
+    gap: var(--espace-1);
+    margin-top: var(--espace-1);
+  }
+
+  .commandes[hidden] {
+    display: none;
+  }
+
+  .commande {
+    display: inline-flex;
+    padding: 8px;
+    border: 0;
+    border-radius: 50%;
+    background: transparent;
+    color: var(--couleur-lien);
+    cursor: pointer;
+    transition: background-color var(--duree-courte-3) var(--courbe-standard);
+  }
+
+  .commande:hover {
+    background-color: color-mix(in srgb, currentColor 8%, transparent);
+  }
+
+  .commande svg {
+    display: block;
+    width: 50px;
+    height: 50px;
+    fill: currentColor;
+  }
+
+  .vers-droite {
+    transform: scaleX(-1);
+  }
+
+  .commande[aria-disabled='true'] {
+    opacity: 0.38;
+    cursor: default;
+  }
+
+  .commande[aria-disabled='true']:hover {
+    background-color: transparent;
+  }
+
+  .piste {
+    display: flex;
+    gap: var(--espace-grille);
+    overflow-x: auto;
+    overscroll-behavior-x: contain;
+    scroll-snap-type: x mandatory;
+    /* Les cartes à révélation se règlent sur sa largeur (100cqi) */
+    container-type: inline-size;
+    /* Le contour de focus d'une carte ne doit pas être rogné */
+    padding-block: 4px;
+    margin-block: -4px;
+  }
+
+  /* Avec les boutons, la barre de défilement fait doublon (la source n'en
+     avait pas) ; sans JS, elle reste la seule commande visible */
+  [data-pret] .piste {
+    scrollbar-width: none;
+  }
+
+  [data-pret] .piste::-webkit-scrollbar {
+    display: none;
+  }
+
+  /* Il reste des cartes à droite : le bord droit de la piste s'efface en
+     fondu, pour signaler la suite. Le masque ne joue que sur l'opacité (le
+     noir n'y est pas une couleur affichée). Au bout de la piste, plus de
+     fondu. Sans JS, pas d'attribut : la barre de défilement suffit. */
+  .piste[data-suite] {
+    --fondu: clamp(1.5rem, 5vw, 3rem);
+
+    /* Discret : la dernière bande ne descend qu'à 40 % d'opacité */
+    mask-image: linear-gradient(to right, black calc(100% - var(--fondu)), rgb(0 0 0 / 40%));
+  }
+
+  .diapositive {
+    display: flex;
+    flex-shrink: 0;
+    scroll-snap-align: start;
+  }
+
+  @media (min-width: 600px) {
+    .rangee {
+      flex-direction: row;
+    }
+
+    .commandes {
+      align-items: flex-end;
+      margin-top: 0;
+      padding-left: var(--espace-4);
+      /* Pas de marge négative comme le edge="end" de MUI : hors d'une
+         Section (sans gouttière), elle faisait déborder la page de 12 px. */
+    }
+  }
+
+  /* Couleurs forcées : un contour de bouton (la pastille à 10 % ne se voit
+     pas) ; désactivée, la commande garde un contour en pointillé et passe en
+     GrayText sans l'opacité de 0,38, qui la rendait presque invisible sur
+     fond noir. La marge interne compense le contour : même taille. */
+  @media (forced-colors: active) {
+    .commande {
+      padding: 6px;
+      border: 2px solid ButtonText;
+    }
+
+    .commande[aria-disabled='true'] {
+      border-style: dashed;
+      border-color: GrayText;
+      color: GrayText;
+      opacity: 1;
+    }
+  }
+</style>

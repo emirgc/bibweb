@@ -1,0 +1,27 @@
+---
+/*
+ * Titre d’un encadré (MUI AlertTitle). Pas un titre de section : un
+ * paragraphe, pour ne pas entrer dans la hiérarchie des titres.
+ */
+import { classes, fusionnerStyles } from '@/lib/styles'
+
+interface Props {
+  class?: string
+  className?: string
+  style?: string | Record<string, string | number>
+  [attribut: string]: unknown
+}
+
+const { class: classe, className, style, ...reste } = Astro.props
+---
+
+<p class:list={['titre-alerte', classes(classe, className)]} style={fusionnerStyles(style)} {...reste}><slot /></p>
+
+<style>
+  .titre-alerte {
+    margin: -2px 0 0.35em;
+    font-size: 1rem;
+    font-weight: var(--graisse-moyenne);
+    line-height: 1.5;
+  }
+</style>

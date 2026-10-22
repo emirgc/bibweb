@@ -1,0 +1,259 @@
+---
+/*
+ * Un élément des listes Quoi de neuf (Événements, Nouvelles, Formations) et
+ * de la page Nouvelles : vignette facultative, ligne orange (date, source),
+ * titre en lien, pastille fléchée.
+ *
+ * - Le lien est sur le titre, et son ::after couvre tout l'élément : un seul
+ *   arrêt de tabulation, nommé par le titre (la source enveloppait tout
+ *   l'élément d'un lien pour les événements, date comprise).
+ * - `compact` (accueil) : dès 900 px, hauteur minimale et titre coupé à trois
+ *   lignes, pour que les rangées tombent au même niveau d'une colonne à
+ *   l'autre ; en dessous, hauteur naturelle et titre entier. La coupe et la
+ *   hauteur minimale ne valent que si la colonne (conteneur « quoi-de-neuf » de
+ *   ColonneQuoiDeNeuf) fait au moins 17em : avec le texte agrandi (200 %), la
+ *   colonne est trop étroite pour trois lignes, et le titre n'est jamais
+ *   coupé (WCAG 1.4.4). Au texte par défaut, la plus étroite fait 18,2em.
+ * - `squelette` : même gabarit, des barres à la place des textes, pour que
+ *   la liste chargée dans le navigateur ne fasse pas sauter la page.
+ * - Rendu aussi dans un <template> que le script des listes clone : les
+ *   attributs de portée d'Astro y sont, les styles s'appliquent donc aux
+ *   éléments créés dans le navigateur. Les champs à remplir portent
+ *   data-champ.
+ */
+import { CalendarBlankIcon } from '@phosphor-icons/react/dist/ssr/CalendarBlank'
+import Pastille from './Pastille.astro'
+import { classes, fusionnerStyles, type Style } from '@/lib/styles'
+
+interface Props {
+  href?: string
+  externe?: boolean
+  /** Réserve la vignette carrée (événements, formations) */
+  vignette?: boolean
+  /** Adresse de l'image de la vignette ; sans elle, un carré vide (comme la source pour les formations) */
+  image?: string
+  calendrier?: boolean
+  compact?: boolean
+  squelette?: boolean
+  lang?: string
+  class?: string
+  style?: Style
+  [attribut: string]: unknown
+}
+
+const { href, externe = false, vignette = false, image, calendrier = false, compact = false, squelette = false, lang, class: classe, style, ...reste } = Astro.props
+const Titre = href !== undefined && !squelette ? 'a' : 'span'
+const attributsLien = Titre === 'a' ? { href, ...(externe && { target: '_blank', rel: 'noopener noreferrer' }) } : {}
+---
+
+<li class:list={['element', { compact, squelette }, classes(classe)]} style={fusionnerStyles(style)} aria-hidden={squelette ? "true" : undefined} {...reste}>
+  {
+    vignette && (
+      <span class="vignette" data-champ="vignette">
+        {image && <img src={image} alt="" width="300" height="300" loading="lazy" decoding="async" />}
+      </span>
+    )
+  }
+  <div class="texte">
+    <p class="ligne">
+      {calendrier && !squelette && <CalendarBlankIcon size="1.25rem" aria-hidden="true" focusable="false" className="icone-ligne" />}
+      {squelette ? <span class="barre barre-courte" /> : <slot name="ligne" />}
+    </p>
+    <Titre class="titre" {...attributsLien} data-champ="lien">
+      {
+        squelette ? (
+          <span class="barre" />
+        ) : (
+          <>
+            <span lang={lang} data-champ="titre">
+              <slot />
+            </span>
+            {externe && <span class="visuellement-masque"> (nouvel onglet)</span>}
+          </>
+        )
+      }
+    </Titre>
+  </div>
+  {
+    !squelette && (
+      <span class="coin">
+        <Pastille externe={externe} />
+      </span>
+    )
+  }
+</li>
+
+<style>
+  .element {
+    position: relative;
+    display: flex;
+    gap: 1rem;
+    padding-block: 1.25rem;
+    list-style: none;
+    border-bottom: 1px solid var(--bleu-200);
+  }
+
+  .compact {
+    flex-shrink: 0;
+  }
+
+  @media (min-width: 900px) {
+    @container quoi-de-neuf (min-width: 17em) {
+      /* Hauteur minimale, pas fixe : avec l'espacement du texte agrandi
+         (WCAG 1.4.12), trois lignes de titre dépassaient la boîte et la
+         dernière était rognée au milieu */
+      .compact {
+        min-height: 8.75rem;
+        padding-bottom: 0;
+      }
+    }
+  }
+
+  /* Colonne étroite en em (texte agrandi) : la vignette passe au-dessus du
+     texte, qui garde toute la largeur au lieu d'une lettre par ligne */
+  @container quoi-de-neuf (max-width: 17em) {
+    .compact {
+      flex-wrap: wrap;
+    }
+
+    .compact .texte {
+      flex-basis: 100%;
+    }
+  }
+
+  .vignette {
+    flex-shrink: 0;
+    width: 5.5rem;
+    height: 5.5rem;
+    overflow: hidden;
+    border-radius: var(--rayon-moyen);
+  }
+
+  /* L'image est ajoutée par le script des listes chargées dans le navigateur */
+  .vignette > :global(img) {
+    display: block;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+  }
+
+  .texte {
+    display: flex;
+    flex-direction: column;
+    flex-grow: 1;
+    gap: 0.5rem;
+    min-width: 0;
+  }
+
+  .ligne {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 0 0.5em;
+    min-height: 1.25rem;
+    margin: 0;
+    color: var(--rouge-orange-texte);
+    font-size: 0.875rem;
+    font-weight: var(--graisse-normale);
+    letter-spacing: 0.00875rem;
+    line-height: 1.2;
+  }
+
+  /* Le SVG vient de React : il ne porte pas l'attribut de portée d'Astro */
+  .ligne > :global(.icone-ligne) {
+    flex-shrink: 0;
+    color: var(--rouge-orange);
+    fill: currentColor;
+  }
+
+  .ligne :global(strong) {
+    font-weight: var(--graisse-forte);
+  }
+
+  .titre {
+    /* Laisse la place à la pastille, ancrée en bas à droite */
+    padding-right: 2.75rem;
+    color: var(--bleu-fonce);
+    font-size: 1rem;
+    font-weight: var(--graisse-moyenne);
+    line-height: 1.5;
+    text-decoration: none;
+    overflow-wrap: break-word;
+    transition: color var(--duree-courte-4) var(--courbe-emphase);
+  }
+
+  @media (min-width: 900px) {
+    @container quoi-de-neuf (min-width: 17em) {
+      .compact .titre {
+        display: -webkit-box;
+        overflow: hidden;
+        -webkit-box-orient: vertical;
+        -webkit-line-clamp: 3;
+        line-clamp: 3;
+      }
+    }
+  }
+
+  a.titre::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+  }
+
+  .element:hover a.titre,
+  a.titre:focus-visible {
+    color: var(--bleu-principal);
+  }
+
+  /* Le contour de focus suit l'élément entier, que le lien couvre */
+  a.titre:focus-visible {
+    outline: none;
+  }
+
+  a.titre:focus-visible::after {
+    outline: 3px solid var(--couleur-focus);
+    outline-offset: 2px;
+    border-radius: var(--rayon-minuscule);
+  }
+
+  .coin {
+    position: absolute;
+    right: 0;
+    bottom: 1rem;
+    display: flex;
+    color: var(--bleu-principal);
+    pointer-events: none;
+  }
+
+  /* ---- Squelette ---- */
+  .squelette .vignette,
+  .barre {
+    background-color: color-mix(in srgb, var(--bleu-fonce) 11%, transparent);
+    animation: pulsation 1.5s ease-in-out 0.5s infinite;
+  }
+
+  .barre {
+    display: block;
+    width: 100%;
+    height: 1.25rem;
+    border-radius: var(--rayon-minuscule);
+  }
+
+  .barre-courte {
+    width: 7rem;
+    height: 0.875rem;
+  }
+
+  @keyframes pulsation {
+    50% {
+      opacity: 0.4;
+    }
+  }
+
+  @media (forced-colors: active) {
+    .barre,
+    .squelette .vignette {
+      border: 1px solid CanvasText;
+    }
+  }
+</style>

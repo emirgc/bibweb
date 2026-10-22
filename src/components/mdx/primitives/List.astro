@@ -1,0 +1,37 @@
+---
+/*
+ * Liste MUI : <ul> sans puces, avec role="list" pour que Safari garde la
+ * sémantique de liste. `component` permet un <ol> ou un <div> si les enfants
+ * ne sont pas des <li>.
+ */
+import { classes, fusionnerStyles } from '@/lib/styles'
+
+interface Props {
+  component?: string
+  dense?: boolean
+  disablePadding?: boolean
+  class?: string
+  className?: string
+  style?: string | Record<string, string | number>
+  [attribut: string]: unknown
+}
+
+const { component = 'ul', dense = false, disablePadding = false, class: classe, className, style, ...reste } = Astro.props
+const Balise = component
+const role = component === 'ul' || component === 'ol' ? 'list' : undefined
+---
+
+<Balise role={role} class:list={['liste-mui', { dense, 'sans-marges': disablePadding }, classes(classe, className)]} style={fusionnerStyles(style)} {...reste}><slot /></Balise>
+
+<style>
+  .liste-mui {
+    position: relative;
+    margin: 0;
+    padding: 8px 0;
+    list-style: none;
+  }
+
+  .sans-marges {
+    padding-block: 0;
+  }
+</style>

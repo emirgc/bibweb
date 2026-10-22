@@ -1,0 +1,91 @@
+---
+/*
+ * Rétroaction de l'usager (RetroactionUsager.jsx) : le web component
+ * <bib-retroaction-usager> (« Cette page vous a été utile? ») dans le cadre
+ * d'une alerte d'information, comme l'Alert MUI « outlined » du thème.
+ *
+ * La source posait role="alert" sur ce cadre statique : les lecteurs d'écran
+ * l'annonçaient au chargement de chaque page. Ici, un simple repère
+ * complémentaire nommé ; le web component gère lui-même ses annonces
+ * (formulaire aria-live).
+ */
+interface Props {
+  class?: string
+  style?: string
+  lang?: string
+}
+
+const { class: classe, style, lang } = Astro.props
+---
+
+<script is:inline type="module" src="https://cdn.jsdelivr.net/gh/bibudem/ui@1/dist/bib-retroaction-usager.js"></script>
+<aside class:list={['retroaction', classe]} style={style} lang={lang} aria-label="Rétroaction sur la page">
+  <div class="icone">
+    <!-- Icône InfoOutlined de MUI, reprise telle quelle pour garder le rendu -->
+    <svg viewBox="0 0 24 24" width="22" height="22" aria-hidden="true" focusable="false">
+      <path
+        fill="currentColor"
+        d="M11 9h2V7h-2m1 13c-4.41 0-8-3.59-8-8s3.59-8 8-8 8 3.59 8 8-3.59 8-8 8m0-18a10 10 0 0 0-10 10 10 10 0 0 0 10 10 10 10 0 0 0 10-10A10 10 0 0 0 12 2m-1 15h2v-6h-2z"
+      ></path>
+    </svg>
+  </div>
+  <div class="message">
+    <bib-retroaction-usager></bib-retroaction-usager>
+  </div>
+</aside>
+
+<style>
+  .retroaction {
+    display: flex;
+    width: 100%;
+    margin-block: var(--espace-4);
+    border: 1px solid var(--couleur-bordure);
+    border-radius: 0 0 var(--rayon-petit) var(--rayon-petit);
+    background-color: var(--alerte-fond);
+    font-size: 0.875rem;
+    line-height: 1.43;
+    /* Variables lues par le web component (graisse du titre, taille des
+       libellés), comme dans la source */
+    --bib-comp-retroaction-usager-title-weight: 600;
+    --md-sys-typescale-label-large-size: 0.875em;
+  }
+
+  /* 40 % de la colonne dès 600 px, comme la source, mais jamais moins de
+     20rem : à 600-900 px, 40 % écrasait les boutons du web component. */
+  @media (min-width: 600px) {
+    .retroaction {
+      width: max(40%, 20rem);
+      max-width: 100%;
+    }
+  }
+
+  .icone {
+    display: flex;
+    flex-shrink: 0;
+    justify-content: center;
+    width: 35px;
+    padding: 16px 4px;
+    border-radius: 0 0 0 var(--rayon-petit);
+    background-color: var(--alerte-info-fond);
+    color: var(--alerte-info-icone);
+  }
+
+  .icone svg {
+    flex-shrink: 0;
+    width: 22px;
+    height: 22px;
+    opacity: 0.9;
+  }
+
+  .message {
+    flex-grow: 1;
+    min-width: 0;
+    padding: 16px;
+    border-radius: 0 0 var(--rayon-petit) 0;
+    color: var(--couleur-neutre-700);
+  }
+
+  bib-retroaction-usager {
+    display: block;
+  }
+</style>

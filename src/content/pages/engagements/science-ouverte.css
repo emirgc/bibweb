@@ -1,0 +1,552 @@
+/*
+ * Mise en page propre à la page science ouverte (engagements), tirée des sx
+ * de la source. La feuille n'est chargée que par cette page ; les classes
+ * portent le préfixe « so- » pour ne rien heurter dans la coquille.
+ *
+ * Grilles : la source posait ses grilles à toutes les largeurs (60 % / 40 %,
+ * 2fr / 1fr…), ce qui débordait à 390 px. On empile sous 600 px et on garde
+ * les proportions de la source au-delà ; minmax(0, …) laisse les colonnes
+ * rétrécir sous la largeur de leur contenu.
+ */
+
+:root {
+  /* Couleurs de la page sans jeton dans le thème, reprises de la source.
+     Le texte posé dessus est le bleu foncé du thème (--couleur-texte) :
+     - lilas des cartes (#c1c1fd) : 10,7:1 ; le lien bleu principal n'y fait
+       que 4,16:1, d'où les boutons en bleu foncé sur ces cartes ;
+     - violet du cadre (#766ec8) : aucun texte n'y est posé ;
+     - vert très pâle des volets (rgb(213 250 231)) : 16,2:1 (bleu
+       principal 6,3:1) ;
+     - jaune (#fbe870) : 14,6:1 ; orangé (#ff8833) : 7,6:1 ; jaune vif
+       (#ffdb00) : 13,3:1 ; pêche (#ffcba4) : 12,4:1. */
+  --so-lilas: #c1c1fd;
+  --so-violet: #766ec8;
+  --so-vert-tres-pale: rgb(213 250 231);
+  --so-jaune: #fbe870;
+  --so-orange: #ff8833;
+  --so-jaune-vif: #ffdb00;
+  --so-peche: #ffcba4;
+}
+
+/* ---- Bandes : 16 px en haut et en bas, 64 px en haut dès 900 px, coins
+   arrondis (sx de chaque Section). Le sélecteur renforcé l'emporte sur les
+   styles scopés de Section (classe + attribut). ---- */
+section.so-section.so-section {
+  padding-block: 16px;
+  border-radius: var(--rayon-tres-petit);
+}
+
+section.so-section-espacee.so-section-espacee {
+  margin-top: 1rem;
+}
+
+@media (min-width: 900px) {
+  section.so-section.so-section {
+    padding-top: 64px;
+  }
+}
+
+/* ---- Introduction : texte et schéma ---- */
+.so-intro {
+  display: grid;
+  gap: 5px;
+  padding-block: 16px;
+}
+
+.so-intro-texte {
+  display: flex;
+  align-items: center;
+  min-width: 0;
+}
+
+/* Élément flexible : sans min-width: 0, sa largeur minimale est celle du
+   plus long mot du h1 (« bibliothèques ») ; à 200 % sur un téléphone, ce mot
+   dépassait l'écran au lieu d'être coupé par overflow-wrap. */
+.so-intro-texte > * {
+  min-width: 0;
+}
+
+.so-intro-image {
+  min-width: 0;
+}
+
+.so-image-fluide {
+  display: block;
+  width: 100%;
+  height: auto;
+}
+
+@media (min-width: 600px) {
+  .so-intro {
+    grid-template-columns: minmax(0, 3fr) minmax(0, 2fr);
+  }
+
+  .so-intro-image {
+    padding-left: 20px;
+  }
+}
+
+@media (min-width: 900px) {
+  .so-intro {
+    padding-block: 64px;
+  }
+}
+
+/* ---- Accordéon des connaissances ouvertes ---- */
+.so-volet {
+  padding: 0 1rem;
+}
+
+div.so-details.so-details {
+  padding: 1rem;
+  background-color: var(--so-vert-tres-pale);
+}
+
+@media (min-width: 900px) {
+  .so-volet {
+    padding: 0 2rem;
+  }
+}
+
+/* Tableau action / chiffre de chaque volet */
+.so-tableau {
+  display: grid;
+  gap: 1rem;
+}
+
+.so-tableau > * {
+  min-width: 0;
+}
+
+.so-tableau p {
+  margin: 0;
+}
+
+@media (min-width: 600px) {
+  .so-tableau {
+    grid-template-columns: minmax(0, 2fr) minmax(0, 1fr);
+  }
+
+  .so-tableau-large {
+    grid-template-columns: minmax(0, 2fr) minmax(0, 3fr);
+  }
+
+  .so-retrait {
+    padding-left: 1rem;
+  }
+}
+
+.so-centre {
+  text-align: center;
+}
+
+/* Deux chiffres côte à côte */
+.so-chiffres {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+@media (min-width: 900px) {
+  .so-chiffres {
+    flex-direction: row;
+    justify-content: center;
+  }
+}
+
+.so-boutons {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+}
+
+/* Logos de revues : deux par rangée */
+.so-logos {
+  display: flex;
+  gap: 1rem;
+  padding: 1rem 0;
+}
+
+.so-logos > a {
+  flex: 1 1 50%;
+  min-width: 0;
+}
+
+/* Logiciels libres : textes à gauche, mosaïque de logos à droite */
+.so-logiciels {
+  display: grid;
+  gap: 1rem;
+}
+
+.so-logiciels-logos {
+  display: grid;
+  gap: 1rem;
+}
+
+.so-deux-colonnes {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+  gap: 1rem;
+}
+
+.so-logo-reduit {
+  display: block;
+  width: 75%;
+  margin-inline: auto;
+}
+
+@media (min-width: 900px) {
+  .so-logiciels {
+    grid-template-columns: minmax(0, 2fr) minmax(0, 1fr);
+  }
+}
+
+/* ---- Infrastructures : cadres violets et cartes lilas ---- */
+.so-infrastructures {
+  /* Le bleu principal et le gris secondaire des onglets n'atteignent pas
+     4,5:1 sur le violet foncé (2,3:1 pour le gris) ; le bleu foncé, 5,25:1.
+     L'onglet actif garde sa graisse et son filet. */
+  --onglets-texte: var(--couleur-texte);
+  --onglets-accent: var(--couleur-texte);
+}
+
+.so-cadre {
+  padding: 0.4rem;
+  border-radius: var(--rayon-tres-petit);
+  background-color: var(--so-violet);
+}
+
+.so-cadre-espace {
+  margin-bottom: 4rem;
+}
+
+.so-cadre-espace-petit {
+  margin-bottom: 2rem;
+}
+
+.so-cartes {
+  display: grid;
+  gap: 0.4rem;
+}
+
+@media (min-width: 900px) {
+  .so-cartes {
+    grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+  }
+
+  .so-cartes > .so-pleine-largeur {
+    grid-column: 1 / -1;
+  }
+}
+
+.so-carte {
+  min-width: 0;
+  padding: 0 1rem;
+  border: 1px solid var(--so-lilas);
+  border-radius: var(--rayon-tres-petit);
+  background-color: var(--so-lilas);
+}
+
+.so-carte-serree {
+  padding: 0.5rem;
+}
+
+.so-carte p {
+  overflow-wrap: break-word;
+}
+
+.so-logo-centre {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  padding-bottom: 1rem;
+}
+
+.so-logo-fixe {
+  display: block;
+  width: 120px;
+  height: auto;
+}
+
+/* Équipements : bandeau, trois chiffres, bouton */
+.so-equipements {
+  display: grid;
+  gap: 2px;
+  padding: 4px;
+}
+
+.so-equipements > * {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 0;
+  padding: 6px;
+  border-radius: var(--rayon-tres-petit);
+  background-color: var(--so-lilas);
+}
+
+.so-equipements > .so-equipements-droite {
+  display: grid;
+  justify-content: stretch;
+  gap: 2px;
+  padding: 0;
+  background: none;
+}
+
+.so-equipements-droite > * {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 6px;
+  border-radius: var(--rayon-tres-petit);
+  background-color: var(--so-lilas);
+}
+
+.so-equipements p {
+  margin: 0;
+  text-align: center;
+}
+
+.so-equipements > .so-equipements-bas {
+  justify-content: flex-end;
+}
+
+@media (min-width: 600px) {
+  .so-equipements {
+    grid-template-areas:
+      'haut haut haut'
+      'gauche centre droite'
+      'bas bas bas';
+    grid-template-columns: minmax(0, 1fr) minmax(0, 2fr) minmax(0, 0.9fr);
+  }
+
+  .so-equipements-haut {
+    grid-area: haut;
+  }
+
+  .so-equipements-gauche {
+    grid-area: gauche;
+  }
+
+  .so-equipements-centre {
+    grid-area: centre;
+  }
+
+  .so-equipements > .so-equipements-droite {
+    grid-area: droite;
+    grid-template-rows: 1fr 1fr;
+  }
+
+  .so-equipements-bas {
+    grid-area: bas;
+  }
+}
+
+/* Rangées texte / chiffre dans un cadre */
+.so-rangee {
+  display: grid;
+  gap: 1rem;
+  padding: 0.5rem;
+}
+
+.so-rangee p {
+  margin: 0;
+}
+
+.so-rangee .so-carte {
+  padding: 0.5rem;
+}
+
+.so-paire-chiffres {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 1rem;
+}
+
+@media (min-width: 600px) {
+  .so-rangee {
+    grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+  }
+
+  .so-rangee-seule {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  .so-rangee-large {
+    grid-template-columns: minmax(0, 2fr) minmax(0, 1fr);
+  }
+}
+
+.so-logo-calypso {
+  display: block;
+  width: 60%;
+  height: auto;
+  margin-inline: auto;
+}
+
+/* ---- Participation ouverte des acteurs de la société ---- */
+.so-participation {
+  display: grid;
+  gap: 5px;
+}
+
+.so-participation-image {
+  min-width: 0;
+  padding: 10px;
+  border: 2px solid var(--so-jaune);
+  border-radius: var(--rayon-tres-petit);
+  background-color: var(--so-jaune);
+  overflow-wrap: break-word;
+}
+
+.so-participation-blocs {
+  display: grid;
+  gap: 12px;
+  min-width: 0;
+}
+
+.so-participation-blocs > * {
+  min-width: 0;
+  padding: 10px;
+  border-radius: var(--rayon-tres-petit);
+}
+
+.so-participation-blocs p {
+  margin: 0;
+}
+
+.so-bloc-orange {
+  background-color: var(--so-orange);
+}
+
+.so-bloc-jaune {
+  background-color: var(--so-jaune-vif);
+}
+
+.so-bloc-peche {
+  background-color: var(--so-peche);
+}
+
+.so-bloc-chiffre {
+  padding: 10px;
+}
+
+.so-bloc-logo {
+  margin-top: 1rem;
+}
+
+@media (min-width: 600px) {
+  .so-participation-blocs {
+    grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+  }
+
+  .so-bloc-orange,
+  .so-bloc-jaune {
+    grid-column: 1 / -1;
+  }
+}
+
+@media (min-width: 900px) {
+  .so-participation {
+    grid-template-columns: minmax(0, 35fr) minmax(0, 65fr);
+    padding: 10px;
+  }
+}
+
+/* ---- Dialogue ouvert avec les autres systèmes de connaissances ---- */
+.so-dialogue-intro {
+  display: grid;
+  gap: 2px;
+  padding: 5px;
+}
+
+.so-dialogue-intro > * {
+  min-width: 0;
+}
+
+.so-dialogue-image {
+  max-width: 20rem;
+  padding: 20px;
+}
+
+.so-dialogue-image img {
+  border-radius: var(--rayon-tres-petit);
+}
+
+@media (min-width: 600px) {
+  .so-dialogue-intro {
+    grid-template-columns: minmax(0, 7fr) minmax(0, 3fr);
+  }
+
+  .so-dialogue-image {
+    max-width: none;
+  }
+}
+
+/* Contenu des onglets : pavés bleu pâle */
+.so-pave {
+  padding: 10px;
+  background-color: var(--bleu-100);
+}
+
+.so-pave p {
+  margin: 0;
+  text-align: center;
+}
+
+.so-pave-centre {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.so-pave-interieur {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 16px;
+}
+
+/* Même raison que .so-intro-texte : dans les deux colonnes étroites des
+   onglets de dialogue, le paragraphe gardait la largeur de son plus long mot
+   et chevauchait la colonne voisine avec le texte agrandi. */
+.so-pave-interieur > * {
+  min-width: 0;
+}
+
+.so-pave-mince {
+  padding: 0;
+}
+
+.so-logo-mitig {
+  display: inline-block;
+  width: 130px;
+  height: auto;
+}
+
+.so-accessibilite {
+  display: grid;
+  gap: 5px;
+  padding: 0.5px;
+}
+
+.so-accessibilite .so-pave {
+  padding: 5px;
+  border: 1px solid var(--bleu-100);
+}
+
+@media (min-width: 600px) {
+  .so-accessibilite {
+    grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+  }
+}
+
+.so-communautes {
+  padding: 16px;
+  border: 2px solid var(--couleur-texte);
+  background-color: var(--bleu-100);
+  font-weight: var(--graisse-forte);
+}

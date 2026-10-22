@@ -1,0 +1,22 @@
+---
+/* Rangée de tableau (MUI TableRow) ; `hover` surligne la rangée au survol */
+import { classes, fusionnerStyles } from '@/lib/styles'
+
+interface Props {
+  hover?: boolean
+  class?: string
+  className?: string
+  style?: string | Record<string, string | number>
+  [attribut: string]: unknown
+}
+
+const { hover = false, class: classe, className, style, selected: _selection, ...reste } = Astro.props
+---
+
+<tr class:list={['rangee', { survol: hover }, classes(classe, className)]} style={fusionnerStyles(style)} {...reste}><slot /></tr>
+
+<style>
+  .survol:hover {
+    background-color: color-mix(in srgb, var(--bleu-fonce) 4%, transparent);
+  }
+</style>

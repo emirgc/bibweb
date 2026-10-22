@@ -1,0 +1,250 @@
+# Page vitrine /espaces/ : voir docs/REDACTION.md, section « Vitrines »
+title: Espaces
+
+banniere:
+  titre: De l'espace pour réfléchir, découvrir et s'enrichir
+  image: espaces
+
+sections:
+  - type: cartes-revelation
+    titre: Des lieux qui s'adaptent à vos besoins
+    texte: Besoin de concentration pour étudier? Un travail à faire en équipe? Nos bibliothèques sont aménagées pour faire cohabiter travail de groupe et étude en silence, avec ou sans réservation. Explorez nos espaces ou demandez conseil pour trouver le coin qui vous convient! Certaines bibliothèques offrent aussi des salles spécifiquement réservées aux étudiants et étudiantes des cycles supérieurs.
+    lienTout:
+      texte: Réserver une salle
+      lien: https://calendrier.bib.umontreal.ca/r
+      nouvelOnglet: true
+    cartes:
+      - titre: Salles de travail individuel
+        image: ../images/salle-individuelle.webp
+        bouton:
+          texte: Réservez votre salle
+          lien: https://calendrier.bib.umontreal.ca/r
+      - titre: Cabines insonorisées
+        image: ../images/cabine.webp
+        bouton:
+          texte: Réservez votre cabine
+          lien: https://calendrier.bib.umontreal.ca/r
+      - titre: Salles silencieuses
+        image: ../images/salle-silencieuse.webp
+        texte: |
+          - Bibliothèque du campus de Laval
+          - Bibliothèque de droit
+          - Bibliothèque Marguerite-d'Youville
+          - Bibliothèque de médecine vétérinaire
+          - Bibliothèque Thérèse-Gouin-Décarie
+          - Bibliothèque de la santé
+      - titre: Salles de travail pour 3 à 4 personnes
+        image: images/salle-equipe.webp
+        bouton:
+          texte: Réservez votre salle
+          lien: https://calendrier.bib.umontreal.ca/r
+      - titre: Salles de travail pour 4 à 8 personnes
+        image: images/grande-salle-equipe.webp
+        bouton:
+          texte: Réservez votre salle
+          lien: https://calendrier.bib.umontreal.ca/r
+      - titre: Espaces d'innovation et de créativité
+        image: images/realite-virtuelle.webp
+        texte: |
+          - Bibliothèque de Mathématiques et informatique
+          - Bibliothèque Marguerite-d'Youville
+        bouton:
+          texte: Réservez votre salle
+          lien: https://calendrier.bib.umontreal.ca/r
+      - titre: Salles de travail individuel - cycles supérieurs
+        image: images/cycle-sup.webp
+        texte: Sous réservation, à la Bibliothèques des lettres et sciences humaines pour toutes les personnes des cycles supérieurs
+        bouton:
+          texte: Réservez votre salle
+          lien: https://calendrier.bib.umontreal.ca/r
+      - titre: Salle de travail - maîtrise en droit
+        image: images/cycle-sup-droit-maitrise.webp
+        texte: Salle située à la Bibliothèque de droit. Informez-vous au comptoir de la bibliothèque pour y accéder.
+      - titre: Salle de travail - doctorat en droit
+        image: images/cycle-sup-droit-doctorat.webp
+        texte: Salle située à la Bibliothèque de droit. Informez-vous au comptoir de la bibliothèque pour y accéder.
+
+  - type: cartes-revelation
+    fond: bleu100
+    id: bien-etre
+    titre: On a votre bien-être à cœur
+    texte: Une session universitaire, ça passe vite! On a parfois besoin d’une pause, de lire une BD pour le plaisir, de colorier un mandala entre deux séances d’étude. Vous trouverez en bibliothèque des collections axées sur le bien-être et la détente, des jeux, et même un cocon de micro-sieste!
+    cartes:
+      - titre: Cocon de micro-sieste
+        image: images/cocon.webp
+        texte: |
+          - Bibliothèque de droit
+          - Bibliothèque Thérèse-Gouin-Décarie
+      - titre: Espaces de relaxation
+        image: images/relaxation.webp
+        texte: Disponibles dans presque toutes les bibliothèques
+      - titre: Trousse pour petits visiteurs
+        image: images/trousse-petits.webp
+        texte: Disponible à la Bibliothèque de droit
+      - titre: Collection bien-être
+        sousTitre: Voir l'ensemble des titres de la collection
+        image: images/collection-bien-etre.webp
+        texte: |
+          - Bibliothèque du Campus de Laval
+          - Bibliothèque de la santé
+          - Bibliothèque de lettres et sciences humaines
+          - Bibliothèque de médecine vétérinaire
+          - Bibliothèque de musique
+          - Bibliothèque Thérèse-Gouin-Décarie
+      - titre: Collection détente
+        sousTitre: Bandes dessinées et romans graphiques disponibles dans la plupart de nos bibliothèques
+        image: images/collection-detente.webp
+        texte: |
+          - Bibliothèque d’aménagement
+          - Bibliothèque de droit
+          - Bibliothèque Hubert-Reeves
+          - Bibliothèque de la santé
+          - Local des étudiants de la Faculté de médecine
+          - Bibliothèque de kinésiologie
+          - Bibliothèque de mathématiques et informatique
+          - Bibliothèque de musique
+          - Bibliothèque Marguerite-d'Youville
+      - titre: Jeux de société et coloriages
+        sousTitre: Jeux de société, casse-tête et coloriages disponibles dans la plupart des bibliothèques
+        image: images/jeux-societe.webp
+        texte: |
+          - Bibliothèque d’aménagement
+          - Bibliothèque de droit
+          - Bibliothèque de la santé
+          - Bibliothèque de mathématiques et informatique
+          - Bibliothèque de médecine vétérinaire
+          - Bibliothèque de musique
+          - Bibliothèque Thérèse-Gouin-Décarie
+      - titre: Luminothérapie
+        sousTitre: Lampes de luminothérapie disponibles dans la plupart de nos bibliothèques.
+        image: images/luminotherapie.webp
+        texte: |
+          - Bibliothèque d'aménagement
+          - Bibliothèque de droit
+          - Bibliothèque de la santé
+          - Bibliothèque de kinésiologie
+          - Bibliothèque des lettres et sciences humaines
+          - Bibliothèque de mathématiques et informatique
+          - Bibliothèque de médecine vétérinaire
+          - Bibliothèque de musique
+          - Bibliothèque du Campus de Laval
+
+  - type: cartes-revelation
+    fond: bleu100
+    id: travail-actif
+    titre: Un esprit sain dans un corps sain
+    texte: Étudier sans y laisser la forme, c’est tout un défi! Pour vous aider, nous vous proposons une panoplie de vélos-pupitres, chaise-ballons, planches d’équilibre, tables à hauteur ajustable. Faites de l’exercice tout en musclant votre cerveau!
+    cartes:
+      - titre: Vélos-pupitres
+        sousTitre: "Disponibles :"
+        image: ../images/velo-pupitre.webp
+        texte: |
+          - Bibliothèque du campus Laval
+          - Bibliothèque de droit
+          - Bibliothèque Marguerite-d'Youville
+          - Bibliothèque de médecine vétérinaire
+          - Bibliothèque Thérèse-Gouin-Décarie
+          - Bibliothèque de la santé
+      - titre: Pédaliers
+        image: images/pedalier.webp
+        texte: Disponibles dans presque toutes les bibliothèques
+      - titre: Station ergonomique
+        image: images/station-ergo.webp
+        texte: Disponible à la Bibliothèque de droit
+      - titre: Disques d'équilibre
+        sousTitre: "Disponibles :"
+        image: images/disque-equilibre.webp
+        texte: |
+          - Bibliothèque d'aménagement
+          - Bibliothèque du campus Laval
+          - Bibliothèque de droit
+          - Bibliothèque Thérèse-Gouin-Décarie
+      - titre: Planches d'équilibre
+        sousTitre: "Disponibles :"
+        image: images/planche-equilibre.webp
+        texte: |
+          - Bibliothèque d'aménagement
+          - Bibliothèque du campus Laval
+          - Bibliothèque de droit
+          - Bibliothèque de kinésiologie
+          - Bibliothèque de la santé
+      - titre: Tables à hauteur ajustable
+        image: images/table-ajustable.webp
+        texte: Disponibles dans presque toutes les bibliothèques
+      - titre: Tapis antifatigue pour le travail debout
+        image: images/tapis-anti-fatique.webp
+        texte: Disponibles dans presque toutes les bibliothèques
+      - titre: Chaises ballon avec dossier
+        sousTitre: "Disponibles :"
+        image: images/chaise-ballon.webp
+        texte: |
+          - Bibliothèque de kinésiologie
+          - Bibliothèque de médecine vétérinaire
+      - titre: Tables haute
+        image: images/table-haute.webp
+        texte: Disponibles à la Bibliothèque de kinésiologie
+
+  - type: onglets
+    fond: jaune
+    disposition: onglets
+    onglets:
+      - etiquette: Technologies créatives
+        titre: L’art d’être à l’avant-garde
+        id: lart-detre-a-lavant-garde
+        texte: La création vous passionne? Bienvenue aux avant-gardistes! Impression 3D, réalité virtuelle, programmation informatique, broderie numérique, voilà tout l’éventail de nouvelles technologies que nous mettons au service de votre inventivité. Profitez-en!
+        cartes:
+          - titre: Impression 3D
+            image: images/impression-3d.webp
+            lien: https://studio.bib.umontreal.ca/creatives/impression3d/
+            appel: En savoir plus
+          - titre: Découpeuse vinyle
+            image: images/decoupeuse-vinyle.webp
+            lien: https://studio.bib.umontreal.ca/creatives/decoupeuse/
+            appel: En savoir plus
+          - titre: Électronique
+            image: images/systemes-embarques.webp
+            lien: https://studio.bib.umontreal.ca/creatives/electronique/
+            appel: En savoir plus
+          - titre: Art textile
+            image: images/art-textile.webp
+            lien: https://studio.bib.umontreal.ca/creatives/art-textile/
+            appel: En savoir plus
+          - titre: Réalité virtuelle
+            image: images/realite-virtuelle.webp
+            lien: https://studio.bib.umontreal.ca/creatives/vr/
+            appel: En savoir plus
+      - etiquette: Production multimédia
+        titre: Entrez dans le monde du multimédia
+        id: entrez-dans-le-monde-du-multimedia
+        texte: Qu’il s’agisse d’enregistrement audio, d’édition numérique, de montage vidéo ou de visualisation de données, nos studios vous ouvrent les portes d’un univers numérique en pleine expansion!
+        cartes:
+          - titre: Studios vidéo
+            image: images/studio-video.webp
+            lien: https://studio.bib.umontreal.ca/espaces/studiovideo/
+            appel: En savoir plus
+          - titre: Studios balado
+            image: images/studio-audio.webp
+            lien: https://studio.bib.umontreal.ca/espaces/studiosbalado
+            appel: En savoir plus
+          - titre: Postes d'édition
+            image: images/postes-edition.webp
+            lien: https://studio.bib.umontreal.ca/medias/postes-edition/
+            appel: En savoir plus
+          - titre: Laboratoire de visualisation
+            image: images/mur-visualisation.webp
+            lien: https://studio.bib.umontreal.ca/espaces/visualisation/
+            appel: En savoir plus
+
+  - type: image-texte
+    fond: vertFonce
+    titre: Des lieux accessibles
+    texte: La Bibliothèque des lettres et sciences humaines et la Bibliothèque Hubert-Reeves offrent chacune une salle mettant à votre disposition des équipements et des logiciels spécialisés afin d’adapter l’expérience en bibliothèque à vos besoins et de vous accompagner dans votre réussite.
+    image: images/marguerite-youville-espace.webp
+    bouton:
+      texte: En savoir plus sur le Service Accessibilité
+      lien: /service-accessibilite/
+
+  - type: fiches-bibliotheques
+    id: on-aime-la-visite
+    titre: On aime la visite!
+    texte: Découvrez ici les différents points de service du réseau des bibliothèques de l’UdeM. De la Montagne à Laval, en passant par la Rive-Sud et le MIL, il y a du choix!

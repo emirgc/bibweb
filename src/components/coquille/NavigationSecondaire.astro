@@ -1,0 +1,166 @@
+---
+/*
+ * Navigation de la section courante. Liste imbriquée de liens ; la page
+ * courante porte aria-current="page" et la branche qui la contient est
+ * ouverte.
+ *
+ * Deux variantes, rendues toutes les deux en HTML et basculées en CSS :
+ * - « colonne » : colonne de gauche à partir de 1200 px (GabaritPage) ;
+ * - « repliable » : sous 1200 px, un <details> « Dans cette section » placé
+ *   sous le fil d'Ariane, fermé par défaut. Sans lui, la colonne disparaissait
+ *   et les pages sœurs n'étaient plus accessibles que par le menu principal.
+ * Une seule des deux est affichée à une largeur donnée : il n'y a donc jamais
+ * deux repères <nav> du même nom dans l'arbre d'accessibilité.
+ *
+ * Le titre d'une page dans une autre langue porte son lang ; `lang` sur la
+ * racine remet la navigation en français sur une telle page.
+ */
+import { navigationDeSection, type NoeudNavigation } from '@/lib/contenu'
+
+interface Props {
+  section?: string
+  courante: string
+  variante?: 'colonne' | 'repliable'
+  lang?: string
+}
+
+const { section, courante, variante = 'colonne', lang } = Astro.props
+const racine = section ? await navigationDeSection(section) : null
+const contient = (n: NoeudNavigation): boolean => n.url === courante || n.enfants.some(contient)
+const repliable = variante === 'repliable'
+const idTitre = repliable ? 'titre-navigation-section' : 'titre-navigation-secondaire'
+const Enveloppe = repliable ? 'details' : Fragment
+const attributsEnveloppe = repliable ? { class: 'section-repliable', lang } : {}
+---
+
+{
+  racine && (
+    <Enveloppe {...attributsEnveloppe}>
+      {repliable && (
+        <summary>
+          <span>Dans cette section</span>
+          <span class="chevron" aria-hidden="true" />
+        </summary>
+      )}
+      <nav class:list={['navigation-secondaire', { 'dans-repliable': repliable }]} aria-labelledby={idTitre} lang={repliable ? undefined : lang}>
+        <a id={idTitre} class="titre" href={racine.url} lang={racine.lang} aria-current={racine.url === courante ? 'page' : undefined}>
+          {racine.titre}
+        </a>
+        <ul>
+          {racine.enfants.map(function rendre(n: NoeudNavigation) {
+            return (
+              <li>
+                <a href={n.url} lang={n.lang} aria-current={n.url === courante ? 'page' : undefined}>
+                  {n.titre}
+                </a>
+                {n.enfants.length > 0 && contient(n) && <ul>{n.enfants.map(rendre)}</ul>}
+              </li>
+            )
+          })}
+        </ul>
+      </nav>
+    </Enveloppe>
+  )
+}
+
+<style>
+  .navigation-secondaire {
+    font-size: 0.9375rem;
+  }
+
+  .titre {
+    display: block;
+    margin-block-end: var(--espace-element);
+    color: var(--couleur-texte);
+    font-size: 1.25rem;
+    font-weight: var(--graisse-forte);
+    text-decoration: none;
+  }
+
+  ul {
+    margin: 0;
+    padding: 0;
+    list-style: none;
+  }
+
+  ul ul {
+    padding-inline-start: 1rem;
+  }
+
+  li a {
+    display: block;
+    padding: 0.5rem 0.75rem;
+    border-inline-start: 2px solid var(--couleur-bordure);
+    color: var(--couleur-texte);
+    text-decoration: none;
+    overflow-wrap: anywhere;
+  }
+
+  li a:hover {
+    color: var(--couleur-lien);
+    border-inline-start-color: var(--couleur-lien);
+  }
+
+  [aria-current='page'] {
+    font-weight: var(--graisse-forte);
+  }
+
+  li [aria-current='page'] {
+    color: var(--couleur-lien);
+    border-inline-start: 4px solid var(--couleur-lien);
+  }
+
+  /* ---- Variante repliable (< 1200 px) ---- */
+  .section-repliable {
+    margin-block-end: var(--espace-4);
+    border: 1px solid var(--couleur-bordure);
+    border-radius: var(--rayon-petit);
+  }
+
+  summary {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 1rem;
+    min-height: 48px;
+    padding: 0.5rem 1rem;
+    font-weight: var(--graisse-forte);
+    cursor: pointer;
+    list-style: none;
+  }
+
+  summary::-webkit-details-marker {
+    display: none;
+  }
+
+  .chevron {
+    flex-shrink: 0;
+    width: 0.5em;
+    height: 0.5em;
+    margin-block-start: -0.25em;
+    border-block-end: 2px solid currentColor;
+    border-inline-end: 2px solid currentColor;
+    transform: rotate(45deg);
+    transition: transform var(--duree-courte-4) var(--courbe-standard);
+  }
+
+  [open] > summary .chevron {
+    margin-block-start: 0.25em;
+    transform: rotate(-135deg);
+  }
+
+  .dans-repliable {
+    padding: 0.5rem 1rem 1rem;
+  }
+
+  .dans-repliable .titre {
+    font-size: 1.0625rem;
+    overflow-wrap: anywhere;
+  }
+
+  @media (min-width: 1200px) {
+    .section-repliable {
+      display: none;
+    }
+  }
+</style>

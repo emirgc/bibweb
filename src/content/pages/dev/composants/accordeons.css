@@ -1,0 +1,7 @@
+/*
+ * Page de démonstration des accordéons : longs mots du code et des titres,
+ * marges des volets de science ouverte.
+ */
+main code, main h2 { overflow-wrap: anywhere; }
+.volet-so { padding: 0 1rem; }
+@media (min-width: 900px) { .volet-so { padding: 0 2rem; } }

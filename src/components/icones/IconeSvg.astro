@@ -1,0 +1,71 @@
+---
+/*
+ * Socle commun des icônes maison (CustomIcons.jsx et IconeUdeM.jsx de
+ * coquille-web). La source déclarait SofiaIcon et les flèches avec des
+ * paramètres positionnels (color, sx, ...props) : aucune prop n'était
+ * appliquée et le viewBox 24 × 24 de SvgIcon s'imposait par défaut. Ici,
+ * size, color, class et style sont réellement transmis, et chaque icône
+ * fournit son propre viewBox.
+ *
+ * Décorative par défaut (aria-hidden) ; avec aria-label, l'icône porte un
+ * sens et devient role="img".
+ */
+interface Props {
+  viewBox: string
+  /** Nombre (px) ou longueur CSS */
+  size?: number | string
+  /** Couleur CSS (de préférence un jeton : var(--bleu-principal)) ; currentColor par défaut */
+  color?: string
+  'aria-label'?: string
+  class?: string
+  className?: string
+  style?: string | Record<string, string | number>
+  [attribut: string]: unknown
+}
+
+const {
+  viewBox,
+  size = '1.5rem',
+  color,
+  'aria-label': libelle,
+  class: classe,
+  className,
+  style,
+  // Props de la source sans équivalent ici (sx, weight des icônes Phosphor)
+  sx: _sx,
+  weight: _weight,
+  fontSize,
+  // Déjà posés ci-dessous : les reprendre du parent les doublerait dans le HTML
+  'aria-hidden': _cache,
+  focusable: _focusable,
+  ...reste
+} = Astro.props
+
+const taille = typeof (fontSize ?? size) === 'number' ? `${fontSize ?? size}px` : String(fontSize ?? size)
+const styles = [color ? `color:${color}` : '', typeof style === 'string' ? style : style ? Object.entries(style).map(([k, v]) => `${k.replace(/[A-Z]/g, (m) => `-${m.toLowerCase()}`)}:${v}`).join(';') : '']
+  .filter(Boolean)
+  .join(';')
+---
+
+<svg
+  xmlns="http://www.w3.org/2000/svg"
+  viewBox={viewBox}
+  width={taille}
+  height={taille}
+  fill="currentColor"
+  class:list={['icone-maison', classe, className]}
+  style={styles || undefined}
+  focusable="false"
+  {...(libelle ? { role: 'img', 'aria-label': libelle } : { 'aria-hidden': 'true' })}
+  {...reste}
+>
+  <slot />
+</svg>
+
+<style>
+  .icone-maison {
+    display: inline-block;
+    flex: none;
+    vertical-align: middle;
+  }
+</style>

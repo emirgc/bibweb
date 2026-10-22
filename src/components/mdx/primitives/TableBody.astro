@@ -1,0 +1,15 @@
+---
+/* Corps de tableau (MUI TableBody) */
+import { classes, fusionnerStyles } from '@/lib/styles'
+
+interface Props {
+  class?: string
+  className?: string
+  style?: string | Record<string, string | number>
+  [attribut: string]: unknown
+}
+
+const { class: classe, className, style, ...reste } = Astro.props
+---
+
+<tbody class={classes(classe, className)} style={fusionnerStyles(style)} {...reste}><slot /></tbody>

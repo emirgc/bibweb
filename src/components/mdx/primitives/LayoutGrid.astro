@@ -1,0 +1,26 @@
+---
+/*
+ * Grille de mise en page (LayoutGrid de coquille-web) : conteneur Grid à
+ * espacement de 64 px ; `outter` ajoute les gouttières du site.
+ */
+import Grid from './Grid.astro'
+import { classes, fusionnerStyles } from '@/lib/styles'
+
+interface Props {
+  outter?: boolean
+  class?: string
+  className?: string
+  style?: string | Record<string, string | number>
+  [attribut: string]: unknown
+}
+
+const { outter = false, class: classe, className, style, ...reste } = Astro.props
+---
+
+<Grid container spacing="64px" class={classes('grille-mise-en-page', outter && 'gouttieres', classe, className)} style={fusionnerStyles(style)} {...reste}><slot /></Grid>
+
+<style>
+  :global(.grille-mise-en-page.gouttieres) {
+    padding-inline: var(--gouttiere);
+  }
+</style>

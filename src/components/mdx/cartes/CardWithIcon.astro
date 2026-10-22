@@ -1,0 +1,370 @@
+---
+/*
+ * Carte-lien pleine couleur avec icône (CardWithIcon de coquille-web).
+ *
+ * - 353 × 400 px au moins (small : 290 × 332) ; s'élargit de 10 % au survol, comme la
+ *   source. Les textes gardent leur largeur de repos (la source la figeait en
+ *   JS au montage) : ici, une max-width calculée en CSS, sans saut.
+ * - fullWidth : carte compacte en rangée (icône, titre et appel, pastille)
+ *   qui suit sa cellule (GrilleElargissable, rangées de deux dès 600 px),
+ *   au lieu des cartes de 400 px de haut de la source.
+ * - Mobile (< 600 px), en carrousel : carte plus petite (78vw, 17rem de
+ *   haut) qui laisse voir la suivante ; dès 600 px, mesures de la source.
+ * - Un seul lien, sur le titre : son ::after couvre la carte, son nom
+ *   accessible est le titre. Le texte d'appel (moreText) devient sa
+ *   description (aria-describedby) et est masqué du parcours des lecteurs
+ *   d'écran, pour ne pas être lu deux fois.
+ * - Couleur posée au build (la source l'appliquait dans un useEffect : carte
+ *   bleue au premier affichage). Contrastes calculés (WCAG 2.x) :
+ *   texte blanc 7,10:1 sur bleu principal, 11,26:1 sur vert foncé, plus au
+ *   survol ; bleu foncé ≥ 11:1 sur rose 300/500 et sur jaune. La flèche (elle
+ *   distingue lien interne et externe) passe de rouge orangé, 2,2:1 sur la
+ *   pastille rose 500, au rouge orangé foncé (3,74:1).
+ */
+import { ArrowRightIcon } from '@phosphor-icons/react/dist/ssr/ArrowRight'
+import { ArrowUpRightIcon } from '@phosphor-icons/react/dist/ssr/ArrowUpRight'
+import RenduJsx from '@/components/partage/RenduJsx.astro'
+import { classes, fusionnerStyles, type Style } from '@/lib/styles'
+import { lienCarte } from '@/lib/liens'
+import { idUnique } from '@/lib/ids'
+
+type Couleur = 'primary' | 'bleuPrincipal' | 'vertFonce' | 'rose300' | 'jaune'
+
+interface Props {
+  title: unknown
+  Icon?: any
+  color?: Couleur
+  moreText?: unknown
+  href: string
+  target?: string
+  rel?: string
+  small?: boolean
+  fullWidth?: boolean
+  id?: string
+  class?: string
+  className?: string
+  style?: Style
+  [attribut: string]: unknown
+}
+
+const COULEURS: Couleur[] = ['primary', 'bleuPrincipal', 'vertFonce', 'rose300', 'jaune']
+const CLAIRES: Couleur[] = ['rose300', 'jaune']
+
+const { title, Icon, color = 'bleuPrincipal', moreText, href, target, rel, small = false, fullWidth = false, class: classe, className, style, sx: _sx, ...reste } = Astro.props
+
+if (title === undefined) throw new Error('CardWithIcon : la propriété `title` est obligatoire.')
+if (typeof href !== 'string') throw new Error('CardWithIcon : la propriété `href` doit être une chaîne.')
+
+// Comme la source, une couleur inconnue retombe sur le bleu principal
+const couleur = COULEURS.includes(color) ? color : 'bleuPrincipal'
+const { interne, rel: relFinal, annonce } = lienCarte(href, target, rel)
+const idPlus = moreText ? idUnique('carte-plus') : undefined
+const Fleche = interne ? ArrowRightIcon : ArrowUpRightIcon
+---
+
+<div
+  class:list={['carte', `couleur-${couleur}`, { petite: small, 'pleine-largeur': fullWidth, 'surface-claire': CLAIRES.includes(couleur) }, classes(classe, className)]}
+  style={fusionnerStyles(style)}
+  {...reste}
+>
+  <div class="icone">{Icon && <Icon size={55} aria-hidden="true" focusable="false" />}</div>
+  <div class="titre">
+    <a class="lien-carte" href={href} target={target} rel={relFinal} aria-describedby={idPlus}
+      >{typeof title === 'string' ? title : <RenduJsx valeur={title} />}{annonce && <span class="visuellement-masque">{annonce}</span>}</a
+    >
+  </div>
+  <div class="pied">
+    {
+      moreText && (
+        <div class="plus" id={idPlus} aria-hidden="true">
+          {typeof moreText === 'string' ? moreText : <RenduJsx valeur={moreText} />}
+        </div>
+      )
+    }
+    <span class:list={['pastille', { externe: !interne }]}><Fleche size="1.5rem" weight="light" aria-hidden="true" focusable="false" /></span>
+  </div>
+</div>
+
+<style>
+  .carte {
+    --_largeur: min(78vw, 353px);
+    --_hauteur: 17rem;
+    --_marge: 1.25rem;
+    /* Largeur de repos des textes, hors marges (et hors pastille pour moreText) */
+    --_texte: calc(var(--_largeur) - 2 * var(--_marge));
+    position: relative;
+    isolation: isolate;
+    display: flex;
+    flex-direction: column;
+    flex-shrink: 0;
+    box-sizing: border-box;
+    width: var(--_largeur);
+    /* Hauteur minimale : avec le texte agrandi à 200 % (WCAG 1.4.4), le titre
+       et l'appel sortaient de la carte et chevauchaient le bloc suivant */
+    min-height: var(--_hauteur);
+    padding: var(--_marge);
+    border-radius: var(--rayon-carte);
+    background-color: var(--_fond);
+    color: var(--_encre);
+    /* Exception voulue à « transform et opacity seulement » : l'élargissement
+       de la source déplace les cartes voisines, ce que transform ne fait pas.
+       La règle globale de mouvement réduit coupe cette transition. */
+    transition: width var(--duree-moyenne-1) var(--courbe-emphase);
+  }
+
+  .carte.petite {
+    --_largeur: min(78vw, 290px);
+    --_hauteur: 16rem;
+  }
+
+  @media (min-width: 600px) {
+    .carte {
+      --_largeur: 353px;
+      --_hauteur: 400px;
+      --_marge: var(--espace-carte);
+    }
+
+    .carte.petite {
+      --_largeur: 290px;
+      --_hauteur: 332px;
+    }
+  }
+
+  .carte:not(.pleine-largeur):hover,
+  .carte:not(.pleine-largeur):focus-within {
+    width: calc(var(--_largeur) * 1.1);
+  }
+
+  .carte.pleine-largeur {
+    width: 100%;
+  }
+
+  /* Fond de survol en calque : on anime son opacité plutôt que la couleur */
+  .carte::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    z-index: -1;
+    border-radius: inherit;
+    background-color: var(--_survol);
+    opacity: 0;
+    transition: opacity var(--duree-moyenne-2) var(--courbe-standard);
+  }
+
+  .carte:hover::before {
+    opacity: 1;
+  }
+
+  /* Le focus du lien s'affiche sur toute la carte. Anneau double : liseré
+     blanc puis contour de focus, lisible sur tout fond de section. */
+  .carte:has(.lien-carte:focus-visible) {
+    outline: 3px solid var(--couleur-focus);
+    outline-offset: 2px;
+    box-shadow: 0 0 0 2px var(--couleur-surface);
+  }
+
+  .lien-carte:focus-visible {
+    outline: none;
+  }
+
+  .couleur-bleuPrincipal,
+  .couleur-primary {
+    --_fond: var(--bleu-principal);
+    --_survol: var(--bleu-principal-fonce);
+    --_encre: var(--couleur-surface);
+    --_icone: color-mix(in srgb, var(--couleur-surface) 53%, transparent);
+    --_fleche: var(--couleur-surface);
+  }
+
+  .couleur-vertFonce {
+    --_fond: var(--vert-fonce);
+    --_survol: color-mix(in srgb, var(--vert-fonce) 70%, var(--couleur-voile));
+    --_encre: var(--couleur-surface);
+    --_icone: color-mix(in srgb, var(--couleur-surface) 53%, transparent);
+    --_fleche: var(--couleur-surface);
+  }
+
+  .couleur-rose300 {
+    --_fond: var(--rose-300);
+    --_survol: var(--rose-500);
+    --_encre: var(--couleur-texte);
+    --_icone: color-mix(in srgb, var(--rouge-orange) 53%, transparent);
+    --_fleche: var(--rouge-orange-texte-sur-clair);
+  }
+
+  /* Le #ffdb81 et le #bc8800 que la source écrivait en dur, dérivés du jaune */
+  .couleur-jaune {
+    --_fond: var(--jaune);
+    --_survol: color-mix(in srgb, var(--jaune) 68%, var(--couleur-surface));
+    --_encre: var(--couleur-texte);
+    --_icone: color-mix(in srgb, var(--jaune) 74%, var(--couleur-voile));
+    --_fleche: var(--couleur-texte);
+  }
+
+  .icone {
+    display: flex;
+    height: 2.5rem;
+    color: var(--_icone);
+  }
+
+  .icone > :global(svg) {
+    width: 2.5rem;
+    height: 2.5rem;
+  }
+
+  .titre {
+    flex-grow: 1;
+    max-width: var(--_texte);
+    padding-block-start: 1rem;
+    font-size: 1.375rem;
+    font-weight: var(--graisse-moyenne);
+    line-height: 1.2;
+  }
+
+  @media (min-width: 600px) {
+    .icone {
+      height: 55px;
+    }
+
+    .icone > :global(svg) {
+      width: 55px;
+      height: 55px;
+    }
+
+    .titre {
+      padding-block-start: 1.6667rem;
+      font-size: 1.7778rem;
+    }
+  }
+
+  /* Carte compacte (fullWidth) : la pastille, à droite, garde sa place ; le
+     titre et l'appel s'empilent au milieu, centrés quand la carte voisine
+     de la rangée est plus haute. */
+  .carte.pleine-largeur {
+    display: grid;
+    grid-template-columns: auto minmax(0, 1fr) auto;
+    grid-template-rows: auto auto;
+    align-content: center;
+    align-items: center;
+    gap: 0.25rem 1rem;
+    min-height: 0;
+  }
+
+  .pleine-largeur .icone {
+    grid-row: 1 / span 2;
+    align-self: start;
+    height: 2rem;
+  }
+
+  .pleine-largeur .icone > :global(svg) {
+    width: 2rem;
+    height: 2rem;
+  }
+
+  /* Sans texte d'appel, le titre occupe les deux rangées : centré face à
+     la pastille */
+  .pleine-largeur:not(:has(.plus)) .titre {
+    grid-row: 1 / span 2;
+  }
+
+  .pleine-largeur .titre {
+    grid-column: 2;
+    max-width: none;
+    padding-block-start: 0;
+    font-size: 1.1875rem;
+  }
+
+  /* Le pied ne fait que ranger ses enfants dans la grille de la carte */
+  .pleine-largeur .pied {
+    display: contents;
+  }
+
+  .pleine-largeur .plus {
+    grid-column: 2;
+    max-width: none;
+    line-height: 1.4;
+  }
+
+  .pleine-largeur .pastille {
+    grid-column: 3;
+    grid-row: 1 / span 2;
+    width: var(--taille-pastille-petite);
+    height: var(--taille-pastille-petite);
+  }
+
+  .lien-carte {
+    color: inherit;
+    text-decoration: none;
+  }
+
+  .lien-carte::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    border-radius: var(--rayon-carte);
+  }
+
+  .pied {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    min-height: 55px;
+  }
+
+  .plus {
+    flex-grow: 1;
+    min-width: 0;
+    max-width: calc(var(--_texte) - var(--taille-pastille) - 1rem);
+    font-size: 1rem;
+    font-weight: var(--graisse-normale);
+    line-height: 1.6;
+  }
+
+  .pleine-largeur .plus {
+    font-size: 0.9375rem;
+  }
+
+  .pastille {
+    display: flex;
+    flex-shrink: 0;
+    align-items: center;
+    justify-content: center;
+    width: var(--taille-pastille);
+    height: var(--taille-pastille);
+    margin-inline-start: auto;
+    border-radius: var(--rayon-plein);
+    background-color: var(--_survol);
+    color: var(--_fleche);
+  }
+
+  /* Survol et focus : la flèche avance d'un cran vers sa destination
+     (rétroaction, transform seulement). Survol réservé aux pointeurs fins :
+     au toucher, un survol fantôme resterait après le tapotement. */
+  .pastille > :global(svg) {
+    transition: transform var(--duree-courte-4) var(--courbe-standard-deceleree);
+  }
+
+  @media (hover: hover) and (pointer: fine) {
+    .carte:hover .pastille > :global(svg) {
+      transform: translateX(3px);
+    }
+
+    .carte:hover .externe > :global(svg) {
+      transform: translate(2px, -2px);
+    }
+  }
+
+  .carte:has(.lien-carte:focus-visible) .pastille > :global(svg) {
+    transform: translateX(3px);
+  }
+
+  .carte:has(.lien-carte:focus-visible) .externe > :global(svg) {
+    transform: translate(2px, -2px);
+  }
+
+  @media (forced-colors: active) {
+    .carte {
+      border: 1px solid CanvasText;
+    }
+  }
+</style>

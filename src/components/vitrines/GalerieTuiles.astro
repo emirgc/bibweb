@@ -1,0 +1,153 @@
+---
+/*
+ * Galerie de tuiles photo : photo 4:3 arrondie, nom et flèche dessous. Sert
+ * au bloc « onglets » d'Espaces (équipements de chaque atelier).
+ *
+ * - Un seul lien par tuile, sur le titre (h3 par défaut) : son ::after couvre
+ *   la tuile. La photo est décorative (alt vide) : le titre nomme le lien.
+ * - Colonnes : 2 sur mobile (1 avec le texte agrandi), autant que la place
+ *   le permet dès 600 px, puis toutes les tuiles sur une rangée dès 1200 px.
+ * - Survol (pointeur fin) : la photo grossit légèrement dans son cadre et la
+ *   flèche avance ; au focus, anneau sur toute la tuile.
+ */
+import { Picture } from 'astro:assets'
+import { ArrowRightIcon } from '@phosphor-icons/react/dist/ssr/ArrowRight'
+import { ArrowUpRightIcon } from '@phosphor-icons/react/dist/ssr/ArrowUpRight'
+import { analyserLien } from '@/lib/liens'
+
+interface Props {
+  elements: { titre: string; image: ImageMetadata; lien: string }[]
+  niveauTitre?: 2 | 3 | 4
+}
+
+const { elements, niveauTitre = 3 } = Astro.props
+const Titre = `h${niveauTitre}`
+---
+
+<ul class="galerie" style={`--n: ${elements.length}`} data-revelation="groupe">
+  {
+    elements.map(({ titre, image, lien }) => {
+      const Fleche = analyserLien(lien).interne ? ArrowRightIcon : ArrowUpRightIcon
+      return (
+        <li class="tuile">
+          <div class="cadre">
+            <Picture src={image} alt="" widths={[320, 480, 640]} sizes="(min-width: 1200px) 260px, (min-width: 600px) 33vw, 50vw" formats={['avif', 'webp']} fallbackFormat="webp" class="photo" loading="lazy" decoding="async" />
+          </div>
+          <div class="legende">
+            <Titre class="titre">
+              <a href={lien}>{titre}</a>
+            </Titre>
+            <Fleche size={20} aria-hidden="true" className="fleche" />
+          </div>
+        </li>
+      )
+    })
+  }
+</ul>
+
+<style>
+  /* Mobile : 2 colonnes au texte par défaut ; une seule avec le texte
+     agrandi, pour qu'un long mot (« Découpeuse ») tienne dans sa tuile */
+  .galerie {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(min(100%, 8rem), 1fr));
+    gap: var(--espace-3) var(--espace-2);
+    margin: 0;
+    padding: 0;
+    list-style: none;
+  }
+
+  @media (min-width: 600px) {
+    .galerie {
+      grid-template-columns: repeat(auto-fit, minmax(12rem, 1fr));
+      gap: var(--espace-4) var(--espace-3);
+    }
+  }
+
+  @media (min-width: 1200px) {
+    .galerie {
+      grid-template-columns: repeat(var(--n), minmax(0, 1fr));
+    }
+  }
+
+  .tuile {
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    gap: 0.75rem;
+  }
+
+  .cadre {
+    overflow: hidden;
+    aspect-ratio: 4 / 3;
+    border-radius: var(--rayon-carte);
+  }
+
+  .cadre :global(.photo) {
+    display: block;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    transition: scale var(--duree-moyenne-2) var(--courbe-standard);
+  }
+
+  .legende {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: var(--espace-1);
+  }
+
+  .titre {
+    margin: 0;
+    font-size: 1.0625rem;
+    font-weight: var(--graisse-moyenne);
+    line-height: 1.3;
+    overflow-wrap: break-word;
+  }
+
+  .titre a {
+    color: inherit;
+    text-decoration: none;
+  }
+
+  .titre a::after {
+    content: '';
+    position: absolute;
+    inset: -0.375rem;
+    border-radius: var(--rayon-carte);
+  }
+
+  .titre a:focus-visible {
+    outline: none;
+  }
+
+  .titre a:focus-visible::after {
+    outline: 3px solid var(--couleur-focus);
+  }
+
+  .legende :global(.fleche) {
+    flex-shrink: 0;
+    margin-top: 0.125rem;
+    transition: translate var(--duree-courte-4) var(--courbe-standard-deceleree);
+  }
+
+  .tuile:has(a:focus-visible) :global(.fleche) {
+    translate: 3px 0;
+  }
+
+  @media (hover: hover) and (pointer: fine) {
+    .tuile:hover .titre a {
+      text-decoration: underline;
+      text-decoration-thickness: from-font;
+    }
+
+    .tuile:hover :global(.photo) {
+      scale: 1.04;
+    }
+
+    .tuile:hover :global(.fleche) {
+      translate: 3px 0;
+    }
+  }
+</style>

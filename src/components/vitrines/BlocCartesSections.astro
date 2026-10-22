@@ -1,0 +1,146 @@
+---
+/*
+ * Bloc « cartes-sections » (accueil) : de deux à quatre cartes côte à côte
+ * dès 900 px, de même hauteur, l'une sous l'autre en dessous. Chaque carte
+ * est une petite section : photo en haut, titre (h2, avec son ancre), texte
+ * et bouton, sur son propre fond.
+ *
+ * Fond et couleurs de texte suivent les tons de src/lib/fonds.ts, comme les
+ * bandes (Section) : blanc sur un fond foncé, bleu foncé sur un fond clair ou
+ * moyen. Le bouton prend la variante claire (`light`) sur un fond foncé.
+ */
+import { Picture } from 'astro:assets'
+import Button from '@/components/mdx/primitives/Button.astro'
+import Titre from './Titre.astro'
+import TexteMarkdown from './TexteMarkdown.astro'
+import { FONDS } from '@/lib/fonds'
+import type { BlocDe } from './types'
+
+type Props = { bloc: BlocDe<'cartes-sections'> }
+
+const { bloc } = Astro.props
+---
+
+<ul class="cartes" data-revelation="groupe">
+  {
+    bloc.cartes.map((carte) => {
+      const fond = carte.fond ? FONDS[carte.fond] : undefined
+      const ton = fond?.ton ?? 'clair'
+      return (
+        <li class:list={['carte', `ton-${ton}`]} style={fond ? `--carte-fond: ${fond.couleur}` : undefined}>
+          <div class="cadre">
+            <Picture src={carte.image} alt="" widths={[400, 600, 800]} sizes="(min-width: 900px) 33vw, 100vw" formats={['avif', 'webp']} fallbackFormat="webp" class="photo" loading="lazy" decoding="async" />
+          </div>
+          <div class="contenu">
+            <Titre texte={carte.titre} id={carte.id} />
+            <TexteMarkdown texte={carte.texte} brut />
+            {carte.bouton && (
+              <div class="pied">
+                <Button href={carte.bouton.lien} primary={!carte.bouton.secondaire} secondary={carte.bouton.secondaire} light={ton === 'fonce'}>
+                  {carte.bouton.texte}
+                </Button>
+              </div>
+            )}
+          </div>
+        </li>
+      )
+    })
+  }
+</ul>
+
+<style>
+  .cartes {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr);
+    gap: var(--espace-grille);
+    margin: 0;
+    padding: 0;
+    list-style: none;
+  }
+
+  @media (min-width: 900px) {
+    .cartes {
+      grid-template-columns: repeat(auto-fit, minmax(0, 1fr));
+      grid-auto-flow: column;
+    }
+  }
+
+  .carte {
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+    border-radius: var(--rayon-carte);
+    background-color: var(--carte-fond, var(--couleur-surface));
+  }
+
+  /* Tons (voir src/lib/fonds.ts et Section.astro) */
+  .ton-fonce {
+    --couleur-lien: var(--couleur-surface);
+    --couleur-lien-survol: var(--couleur-surface);
+    --couleur-focus: var(--couleur-surface);
+    --rouge-orange-texte: var(--jaune);
+    color: var(--couleur-surface);
+  }
+
+  .ton-moyen {
+    --couleur-lien: var(--couleur-texte);
+    --couleur-lien-survol: var(--couleur-texte);
+    --couleur-focus: var(--bleu-fonce);
+    --rouge-orange-texte: var(--couleur-texte);
+    color: var(--couleur-texte);
+  }
+
+  .ton-clair {
+    color: var(--couleur-texte);
+  }
+
+  /* Carte sans fond ou de même couleur que la page : un filet la délimite */
+  .carte:not([style]) {
+    border: 1px solid var(--couleur-bordure);
+  }
+
+  .cadre {
+    overflow: hidden;
+    aspect-ratio: 3 / 2;
+  }
+
+  .cadre :global(picture) {
+    display: block;
+    height: 100%;
+  }
+
+  .cadre :global(.photo) {
+    display: block;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+  }
+
+  .contenu {
+    display: flex;
+    flex: 1 1 auto;
+    flex-direction: column;
+    padding: var(--espace-carte);
+  }
+
+  /* Titre de carte : plus petit que celui d'une bande */
+  .contenu :global(h2.titre-bloc) {
+    font-size: 1.75rem;
+  }
+
+  .contenu :global(ul) {
+    margin-block: var(--espace-1) 0;
+  }
+
+  /* Le bouton se cale en bas : il tombe au même niveau d'une carte à l'autre */
+  .pied {
+    margin-top: auto;
+    padding-top: var(--espace-3);
+  }
+
+  @media (forced-colors: active) {
+    .carte {
+      border: 1px solid CanvasText;
+    }
+  }
+</style>

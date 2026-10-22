@@ -1,0 +1,64 @@
+---
+/*
+ * Conteneur MUI : centré, largeur maximale du thème (xl = 1536 px par
+ * défaut), gouttières MUI de 16 px puis 24 px dès 600 px.
+ */
+import { classes, fusionnerStyles } from '@/lib/styles'
+
+interface Props {
+  maxWidth?: 'xs' | 'sm' | 'md' | 'lg' | 'xl' | false
+  disableGutters?: boolean
+  fixed?: boolean
+  component?: string
+  class?: string
+  className?: string
+  style?: string | Record<string, string | number>
+  [attribut: string]: unknown
+}
+
+const { maxWidth = 'xl', disableGutters = false, fixed: _fixe, component = 'div', class: classe, className, style, ...reste } = Astro.props
+const Balise = component
+---
+
+<Balise class:list={['conteneur-mui', maxWidth && `max-${maxWidth}`, { 'sans-gouttieres': disableGutters }, classes(classe, className)]} style={fusionnerStyles(style)} {...reste}
+  ><slot /></Balise
+>
+
+<style>
+  .conteneur-mui {
+    box-sizing: border-box;
+    width: 100%;
+    margin-inline: auto;
+    padding-inline: 16px;
+  }
+
+  @media (min-width: 600px) {
+    .conteneur-mui {
+      padding-inline: 24px;
+    }
+  }
+
+  .sans-gouttieres {
+    padding-inline: 0;
+  }
+
+  .max-xs {
+    max-width: 444px;
+  }
+
+  .max-sm {
+    max-width: 600px;
+  }
+
+  .max-md {
+    max-width: 900px;
+  }
+
+  .max-lg {
+    max-width: 1200px;
+  }
+
+  .max-xl {
+    max-width: var(--largeur-max);
+  }
+</style>

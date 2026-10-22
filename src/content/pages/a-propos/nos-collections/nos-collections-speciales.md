@@ -1,0 +1,132 @@
+---
+title: Nos collections spéciales
+crumbLabel: Collections spéciales
+secondaryNav:
+  order: 3
+superHero:
+  imageName: espaces
+  title: À propos
+---
+## Nos collections spéciales
+
+Nichée au cœur du savoir et de la mémoire, la Bibliothèque des livres rares et des collections spéciales (BLRCS) est bien plus qu’un lieu de conservation : elle est un moteur pour la recherche, un espace d’éveil intellectuel et un témoin vivant de notre histoire.
+
+Chaque document, chaque reliure ancienne, chaque carte ou manuscrit est porteur d’un récit unique. Ensemble, ces trésors forment un patrimoine inestimable qu’il nous incombe de préserver, de rendre accessible, et de faire rayonner. 
+
+Bientôt, une nouvelle plateforme permettra la consultation en ligne de ces documents rares, souvent uniques au monde. Ce projet s'inscrit dans la continuité des importants efforts de numérisation de certains fonds et collections spéciales déjà mis en ligne en accès ouvert sur notre plateforme [Calypso](https://calypso.bib.umontreal.ca/).
+
+Pour en savoir plus sur les livres rares et anciens, et sur nos collections, consultez le [guide des Livres rares et collections spéciales](https://boite-outils.bib.umontreal.ca/trouver-evaluer/livres-rares-collections-speciales).
+
+La Bibliothèque des livres rares et collections spéciales est également accessible en semaine, au 4e étage de la [Bibliothèque des lettres et sciences humaines](https://bib.umontreal.ca/nous-joindre). 
+
+La Bibliothèque des livres rares et collections spéciales est soutenue par une généreuse communauté de donateurs et donatrices. C’est grâce à leur appui que l’Université de Montréal peut, entre autres, renforcer ses efforts pour préserver, rendre accessible et développer cette collection unique. Merci de [nous soutenir](/nous-soutenir/).
+
+:::image-texte
+![](./images/Photo_ClaudeG_bureau_matahari-carufel.webp)
+
+### Collection Claude-Gingras
+
+Rassemblant plus de 17 000 disques vinyle, 11 700 disques compacts, 2 400 partitions annotées, ainsi que des notes de concerts, des ouvrages spécialisés et autres documents, la collection Claude-Gingras revisite l’histoire de la musique classique d’ici et d’ailleurs à travers le regard du célèbre critique musical sur plus de soixante ans de carrière.
+
+Cette expérience virtuelle vous invite à découvrir la richesse de la collection à travers le regard affûté de Claude Gingras.
+
+Le projet de mise en valeur de la collection Claude-Gingras a été rendu possible grâce à la générosité de Madame Jacqueline Desmarais et de sa succession, en hommage à son amitié avec Claude Gingras et à leur passion commune pour la musique classique.
+
+::bouton[Explorer la collection Claude-Gingras]{lien=https://claude-gingras.bib.umontreal.ca/}
+:::
+
+:::image-texte{position=gauche}
+![](./images/CarteGeo_Sanson.webp)
+
+### Canadiana et Americana
+
+Le fonds consacré à l’histoire du Québec, du Canada et de l’Amérique en général constitue l’un des fleurons de notre bibliothèque. Composé de monographies (dont plusieurs livres anciens), de périodiques, d’archives et de documents iconographiques, il s’articule principalement autour deux collections particulières d’exception : la collection Baby (classée au Registre des biens culturels du Québec) et la collection Louis-Melzack. Ajoutées aux titres appartenant à notre collection générale, elles forment un ensemble documentaire d’une richesse exceptionnelle.
+:::
+
+:::image-texte{position=droite}
+![](./images/collection-speciale-lettres-sciences-humaines.webp)
+
+### Lettres et sciences humaines
+
+Notre bibliothèque possède un large éventail de titres en humanités, en particulier en littérature de langue française. Au sein de nos collections particulières, mentionnons celle de Joseph-Édouard Perrault (4000 documents, dont plusieurs reliés avec goût, incluant certains travaillés par le célèbre relieur français René Kieffer) de Sir Joseph-Édouard Chapleau (4000 ouvrages, dont plusieurs éditions complètes de grands auteurs français) et de Gilles Blain (près de 400 documents consacrés à l’œuvre de Jean Cocteau). En poésie québécoise, les collections de Michel Beaulieu (7000 documents) et de la poétesse Janou Saint-Denis demeurent des incontournables.
+:::
+
+:::image-texte{position=gauche}
+![](./images/ArtAmenagement-Viollet-le-Duc.webp)
+
+### Art, aménagement, musique
+
+Notre fonds fait la part belle aux ouvrages touchant les arts et l’architecture. Parmi les trésors provenant du fonds de l’École d’architecture figure notre exemplaire de "Le magnificenze di Roma" (1751) du célèbre Piranese, dans lequel apparaît pour la première fois la fameuse série des "prisons imaginaires". Pour ce qui est de nos collections particulières, signalons l’existence de la collection Gilles-Rioux (riche en ouvrages portant sur le surréalisme), de la collection David-M. Lank (art animalier) et du Fonds Jacques-Fournier (livres d’artistes).
+:::
+
+:::image-texte{position=droite}
+![](./images/theologie-hore-virginis-marie.webp)
+
+### Théologie et philosophie
+
+De par ses origines en tant qu’institution catholique, l’Université de Montréal a dès ses débuts acquis nombre de documents anciens en théologie ; la collection Verreau, constituée de trois cents titres (dont une quinzaine d’incunables) témoigne de la richesse de notre fonds sur le sujet. Quant à la philosophie, elle est aussi bien représentée, notamment par les collections Hoffmann (Antiquité, Moyen-Âge) et Menger (Siècle des lumières, XIXe siècle)
+:::
+
+:::image-texte{position=gauche}
+![](./images/education-Villeneuve.webp)
+
+### Éducation
+
+En plus des ouvrages tirés de sa collection générale, le fonds de la Bibliothèque en sciences de l’éducation se distingue par la présence de deux collections particulières d’exception. La collection Rey-Herme renferme plus de 3,500 ouvrages dans le domaine de l’éducation en Europe, et plus particulièrement en France, du XVIe au XXe siècle ; la collection Villeneuve inclut quant à elle plus de 8,000 titres (surtout des manuels scolaires des XIXe et XXe siècles), principalement d’origine canadienne-française.
+:::
+
+:::image-texte{position=droite}
+![](./images/collection-speciale-droit.webp)
+
+### Droit
+
+Surtout composé de sources en droit civil français à la base du Code civil du Bas-Canada de 1866 (l’un des piliers de la société canadienne-française), notre fonds est aussi riche en ouvrages de droit commercial et de droit criminel anglo-saxons.
+:::
+
+:::image-texte{position=gauche}
+![](./images/collection-sans-image2.webp)
+
+### Sciences politiques, économiques et sociales
+
+Bien garnie en ouvrages s’intéressant aux enjeux politiques et sociétaux, notre collection se démarque aussi par la profusion de titres portant sur les questions économiques. Les collections particulières Raynauld (histoire de la pensée économique) et Édouard-Montpetit (plusieurs milliers de titres, avec un intérêt marqué envers l’économie du Canada français) demeurent à cet égard tout à fait remarquables.
+:::
+
+:::image-texte{position=droite}
+![](./images/sciences-med-Pariseau-Rondelet.webp)
+
+### Sciences et médecine
+
+Notre collection sur ce thème est d’une ampleur et d’une diversité impressionnantes. Au premier chef, on retrouve la collection particulière Léo-Pariseau, acquise par l’Université en 1943, qui contient près de 2,700 ouvrages sur l’histoire des sciences et de la médecine, incluant des titres de grands savants tels Ambroise Paré, André Vésale ou Paracelse. D’autres collections, telle celle de l’aliéniste Éloi-Philippe Chagnon (4,000 documents, dont plusieurs périodiques et tirés à part) ou celle de Léon Lortie (1,000 documents sur la médecine) apportent un complément à la collection Pariseau. Enfin, mentionnons la collection Marie-Victorin, issue de la bibliothèque originelle de l’Institut de botanique.
+:::
+
+:::image-texte{position=gauche}
+![](./images/Incunable-Koberger.webp)
+
+### Incunables
+
+Le terme « incunable » réfère aux livres imprimés durant les cinquante années suivant l’invention de l’imprimerie par Gutenberg en 1450. Notre fonds contient une quarantaine d’incunables, portant principalement sur des questions théologiques, notamment "Expositio super Canonem Missae" (1470) et "Catena Aurea seu Continuum in Quatuor Evangelistas" (1475).
+:::
+
+:::image-texte{position=droite}
+![](./images/manuscrits-Journal-Murray.webp)
+
+### Manuscrits
+
+Les documents manuscrits présents dans notre collection sont de nature variée. Pour ne donner que deux exemples, on y retrouve le "Summa de paenitentia" de Raymond de Penaforte, un manuscrit sur vélin produit en Angleterre au XIIIe siècle, ainsi que le « Journal » du gouverneur James Murray, recueil d’ordonnances, proclamations et règlements datant de l’époque du régime militaire (1760-1764), suite à la prise de Québec en 1759.
+:::
+
+:::image-texte{position=gauche}
+![](./images/Fac-Similes-Nuremberg.webp)
+
+### Fac-similés
+
+Un fac-similé est une reproduction exacte d’un document. Notre collection comporte une multitude de fac-similés, utiles pour l’étude de titres rares et/ou anciens autrement inaccessibles. Ainsi, la collection Marcel-Lajeunesse renferme plus deux cents fac-similés de livres d’heures et de livres enluminés. Notre fonds comprend aussi d’autres fac-similés d’ouvrages, allant de la célèbre "Chronique de Nuremberg" à des manuscrits aztèques, en passant par la fameuse Bible à 42 lignes de Gutenberg conservée à la Bibliothèque Mazarine à Paris.
+:::
+
+:::image-texte{position=droite}
+![](./images/guerre-Dernierquart.webp)
+
+### Iconographie (gravures, estampes, cartes, plans, affiches)
+
+Nos collections « spéciales » regorgent de documents iconographiques d’intérêt. La collection Bartin, notamment, renferme plusieurs centaines d’estampes originales ou de reproductions qui témoignent de la finesse et du talent des maîtres de l’art de la gravure de la Renaissance au Siècle des Lumières. Dans un tout autre registre, notre collection d’affiches de guerre comporte plus de 4,000 affiches des deux guerres mondiales et de l’entre-deux guerres, provenant d’une multitude de pays. Enfin, les collections Baby, Melzack, Victor-Morin et Pariseau incluent des gravures et d’autres documents iconographiques relatifs à une variété de sujets, de l’histoire canadienne à la médecine.
+:::

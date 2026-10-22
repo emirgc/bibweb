@@ -1,0 +1,17 @@
+---
+/*
+ * Variante de couleur d'AccordionGroup pour la page science ouverte :
+ * la source en était une copie conforme dont seule la couleur par défaut
+ * (vertPale) changeait.
+ */
+import AccordionGroup from './AccordionGroup.astro'
+
+interface Props {
+  color?: 'bleuPrincipal' | 'rose' | 'vertPale'
+  [attribut: string]: unknown
+}
+
+const { color = 'vertPale', ...reste } = Astro.props
+---
+
+<AccordionGroup color={color} {...reste}><slot /></AccordionGroup>

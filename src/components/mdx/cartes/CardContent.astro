@@ -1,0 +1,30 @@
+---
+/*
+ * Contenu d'une carte de MUI (CardContent) : 16 px de marge, 24 px en bas
+ * quand il termine la carte.
+ */
+import { classes, fusionnerStyles, type Style } from '@/lib/styles'
+
+interface Props {
+  component?: string
+  class?: string
+  className?: string
+  style?: Style
+  [attribut: string]: unknown
+}
+
+const { component = 'div', class: classe, className, style, sx: _sx, ...reste } = Astro.props
+const Balise = typeof component === 'string' ? component : 'div'
+---
+
+<Balise class:list={['contenu', classes(classe, className)]} style={fusionnerStyles(style)} {...reste}><slot /></Balise>
+
+<style>
+  .contenu {
+    padding: 16px;
+  }
+
+  .contenu:last-child {
+    padding-bottom: 24px;
+  }
+</style>

@@ -1,0 +1,197 @@
+---
+/*
+ * Recherche Sofia de l'accueil (RechercheSofiaAccueil de coquille-web), en
+ * bas du SuperHero : un champ arrondi qui lance la recherche dans Sofia
+ * (WorldCat Discovery), et l'accroche « L'outil de recherche Sofia » :
+ * en petit et centrée sous le champ sur mobile et tablette (la source la
+ * masquait sous 600 px), à côté du champ dès 1200 px.
+ *
+ * - Un vrai formulaire GET, partagé avec le menu (@/lib/sofia) : sans
+ *   JavaScript, la recherche part quand même.
+ * - Corrigé : le champ a une étiquette (la source n'avait qu'un placeholder
+ *   et un aria-description non standard), le formulaire est un repère
+ *   role="search", et le placeholder passe à 4,5:1.
+ * - Les variantes mobile et bureau sont basculées en CSS (la source le
+ *   faisait avec useSmall, d'où un saut à l'hydratation). Le dégradé de la
+ *   source est repris avec les jetons (neutre 700, à 46 %).
+ */
+import { MagnifyingGlassIcon } from '@phosphor-icons/react/dist/ssr/MagnifyingGlass'
+import { ACTION_SOFIA, PARAMETRES_SOFIA } from '@/lib/sofia'
+import { classes, fusionnerStyles, type Style } from '@/lib/styles'
+
+interface Props {
+  class?: string
+  style?: Style
+}
+
+const { class: classe, style } = Astro.props
+---
+
+<div class:list={['bande', classes(classe)]} style={fusionnerStyles(style)}>
+  <div class="interieur">
+    <form class="champ surface-claire" action={ACTION_SOFIA} method="get" role="search" aria-label="Sofia" data-recherche-sofia>
+      {Object.entries(PARAMETRES_SOFIA).map(([nom, valeur]) => <input type="hidden" name={nom} value={valeur} />)}
+      <label for="recherche-sofia-accueil" class="visuellement-masque">Rechercher dans Sofia</label>
+      <input
+        id="recherche-sofia-accueil"
+        class="saisie"
+        type="search"
+        name="queryString"
+        placeholder="Rechercher des articles, des livres, des films..."
+        required
+        autocomplete="off"
+      />
+      <button type="submit" class="bouton" aria-label="Chercher">
+        <MagnifyingGlassIcon size={32} aria-hidden="true" focusable="false" className="icone" />
+      </button>
+    </form>
+    <p class="accroche">L'outil de recherche Sofia&nbsp;:<br />un monde de savoirs à explorer</p>
+  </div>
+</div>
+
+<script>
+  import { brancherRechercheSofia } from '@/lib/sofia'
+
+  brancherRechercheSofia()
+</script>
+
+<style>
+  .bande {
+    background: color-mix(in srgb, var(--couleur-neutre-700) 46%, transparent);
+  }
+
+  .interieur {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 1rem;
+    max-width: var(--largeur-max);
+    margin-inline: auto;
+    padding: 1.5rem;
+  }
+
+  .champ {
+    display: flex;
+    align-items: center;
+    gap: 0.8889rem;
+    width: 100%;
+    min-height: 56px;
+    padding: 0 0.5rem 0 1rem;
+    border-radius: var(--rayon-plein);
+    background-color: var(--couleur-surface);
+    box-shadow: var(--ombre-1);
+  }
+
+  .champ:has(.saisie:focus-visible) {
+    outline: 3px solid var(--couleur-surface);
+    outline-offset: 3px;
+  }
+
+  .saisie {
+    flex: 1 1 auto;
+    min-width: 0;
+    padding: 0.5rem 0;
+    border: 0;
+    background: transparent;
+    color: var(--couleur-texte);
+    font: inherit;
+  }
+
+  .saisie:focus-visible {
+    outline: none;
+  }
+
+  .saisie::placeholder {
+    color: var(--couleur-texte-secondaire);
+    opacity: 1;
+  }
+
+  /* La croix d'effacement de type=search fait doublon avec la loupe */
+  .saisie::-webkit-search-cancel-button {
+    display: none;
+  }
+
+  .bouton {
+    display: flex;
+    flex-shrink: 0;
+    align-items: center;
+    justify-content: center;
+    width: 2.75rem;
+    height: 2.75rem;
+    padding: 0;
+    border: 0;
+    border-radius: var(--rayon-plein);
+    background: transparent;
+    color: var(--bleu-principal);
+    cursor: pointer;
+    transition: background-color var(--duree-courte-4) var(--courbe-standard);
+  }
+
+  .bouton:hover {
+    background-color: color-mix(in srgb, var(--bleu-principal) 6%, transparent);
+  }
+
+  /* Le SVG vient de React : il ne porte pas l'attribut de portée d'Astro */
+  .bouton > :global(.icone) {
+    width: 24px;
+    height: 24px;
+    fill: currentColor;
+  }
+
+  .accroche {
+    margin: 0;
+    color: var(--couleur-surface);
+    font-size: 1rem;
+    font-weight: var(--graisse-forte);
+    line-height: 1.4;
+    text-align: center;
+  }
+
+  /* De 900 à 1199 px, la languette fixe des liens rapides (40 px au bord
+     droit) recouvrait de 4 px le bouton « Chercher » quand la bande défilait
+     sous elle : la marge droite la dégage (et la gauche aussi, pour garder
+     le champ centré). Dès 1200 px, la règle suivante
+     reprend ses propres marges. */
+  @media (min-width: 900px) {
+    .interieur {
+      padding-inline: max(1.5rem, 40px + var(--espace-1));
+    }
+  }
+
+  @media (min-width: 1200px) {
+    .bande {
+      background: linear-gradient(
+        90deg,
+        transparent 30%,
+        color-mix(in srgb, var(--couleur-neutre-700) 46%, transparent) 44%,
+        color-mix(in srgb, color-mix(in srgb, var(--couleur-neutre-700) 45%, var(--bleu-200)) 46%, transparent) 100%
+      );
+    }
+
+    .interieur {
+      flex-direction: row;
+      min-height: 9.5625rem;
+      padding: 2.875rem 4.125rem 2.875rem 3.75rem;
+    }
+
+    .champ {
+      flex: 0 0 auto;
+      width: calc(65% - 0.65rem);
+      min-height: 80px;
+      padding: 0 1rem 0 2rem;
+    }
+
+    .bouton > :global(.icone) {
+      width: 32px;
+      height: 32px;
+    }
+
+    .accroche {
+      flex: 1 1 35%;
+      min-width: 0;
+      font-size: 1.3333rem;
+      line-height: 1.5;
+      text-align: start;
+    }
+  }
+</style>

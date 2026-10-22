@@ -1,0 +1,208 @@
+---
+/*
+ * Page Nouvelles (ListeNouvelles de coquille-web) : nos communications et la
+ * revue de presse, regroupées par année, avec un filtre Tout / Nouvelles /
+ * Revue de presse.
+ *
+ * - La liste complète est rendue au build ; le filtre est un petit script
+ *   qui masque les éléments des autres types. Sans JavaScript, la liste
+ *   complète s'affiche et les boutons du filtre, inopérants, sont masqués.
+ * - Boutons bascule (aria-pressed) dans un groupe nommé ; le nombre
+ *   d'éléments affichés est annoncé dans une région role="status".
+ * - Le filtre se retrouve dans l'URL (?type=revue-de-presse), pour partager
+ *   un lien vers la revue de presse seule.
+ * - `moreLink`, ignoré par la source, n'est pas repris.
+ */
+import ElementNouvelle from './ElementNouvelle.astro'
+import { TYPE_NOUVELLE, TYPE_PRESSE, toutesLesActualites, type Actualite } from './actualites'
+import { classes, fusionnerStyles, type Style } from '@/lib/styles'
+
+interface Props {
+  id?: string
+  class?: string
+  style?: Style
+  [attribut: string]: unknown
+}
+
+const { id = 'liste-nouvelles', class: classe, style, moreLink: _ignore } = Astro.props
+
+const FILTRES = [
+  { valeur: 'tout', libelle: 'Tout', type: '' },
+  { valeur: 'nouvelles', libelle: 'Nouvelles', type: TYPE_NOUVELLE },
+  { valeur: 'revue-de-presse', libelle: 'Revue de presse', type: TYPE_PRESSE },
+]
+
+const nouvelles = await toutesLesActualites()
+const compte = (type: string) => (type ? nouvelles.filter((n) => n.type === type).length : nouvelles.length)
+
+// Déjà triées par date décroissante : on regroupe les années consécutives
+const groupes = nouvelles.reduce<{ annee: number; items: Actualite[] }[]>((acc, item) => {
+  const dernier = acc.at(-1)
+  if (dernier?.annee === item.annee) dernier.items.push(item)
+  else acc.push({ annee: item.annee, items: [item] })
+  return acc
+}, [])
+
+const annonce = (n: number) => `${n} ${n > 1 ? 'éléments affichés' : 'élément affiché'}`
+---
+
+<div id={id} class:list={['liste-nouvelles', classes(classe)]} style={fusionnerStyles(style)} data-liste-nouvelles>
+  <div class="filtres" role="group" aria-label="Filtrer les nouvelles">
+    {
+      FILTRES.map(({ valeur, libelle, type }) => (
+        <button type="button" class="filtre" aria-pressed={valeur === 'tout' ? 'true' : 'false'} data-filtre={valeur} data-type={type}>
+          {libelle}
+          <span class="compte">{compte(type)}</span>
+        </button>
+      ))
+    }
+  </div>
+
+  <p class="visuellement-masque" role="status" data-annonce>{annonce(nouvelles.length)}</p>
+
+  {
+    groupes.length ? (
+      groupes.map(({ annee, items }) => (
+        <section class="annee" aria-labelledby={`${id}-${annee}`} data-annee>
+          <h2 id={`${id}-${annee}`} class="titre-annee">
+            {annee}
+          </h2>
+          <ul>
+            {items.map((item) => (
+              <ElementNouvelle item={item} data-type={item.type} />
+            ))}
+          </ul>
+        </section>
+      ))
+    ) : (
+      <p>Aucune nouvelle pour le moment.</p>
+    )
+  }
+</div>
+
+<script>
+  const VALEURS = ['tout', 'nouvelles', 'revue-de-presse']
+
+  for (const racine of document.querySelectorAll<HTMLElement>('[data-liste-nouvelles]')) {
+    const boutons = [...racine.querySelectorAll<HTMLButtonElement>('[data-filtre]')]
+    const annonce = racine.querySelector<HTMLElement>('[data-annonce]')
+    const elements = [...racine.querySelectorAll<HTMLElement>('li[data-type]')]
+    const annees = [...racine.querySelectorAll<HTMLElement>('[data-annee]')]
+
+    function appliquer(valeur: string, majUrl: boolean) {
+      const bouton = boutons.find((b) => b.dataset.filtre === valeur) ?? boutons[0]
+      const type = bouton.dataset.type
+      for (const b of boutons) b.setAttribute('aria-pressed', String(b === bouton))
+      let visibles = 0
+      for (const li of elements) {
+        const visible = !type || li.dataset.type === type
+        li.hidden = !visible
+        if (visible) visibles++
+      }
+      for (const section of annees) section.hidden = !section.querySelector('li[data-type]:not([hidden])')
+      if (annonce) annonce.textContent = `${visibles} ${visibles > 1 ? 'éléments affichés' : 'élément affiché'}`
+      if (majUrl) {
+        const url = new URL(window.location.href)
+        if (bouton.dataset.filtre === 'tout') url.searchParams.delete('type')
+        else url.searchParams.set('type', bouton.dataset.filtre ?? '')
+        window.history.replaceState(window.history.state, '', url)
+      }
+    }
+
+    for (const b of boutons) b.addEventListener('click', () => appliquer(b.dataset.filtre ?? 'tout', true))
+
+    const demande = new URLSearchParams(window.location.search).get('type')
+    if (demande && VALEURS.includes(demande) && demande !== 'tout') appliquer(demande, false)
+  }
+</script>
+
+<style>
+  .filtres {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--espace-1);
+    margin-bottom: var(--espace-bloc);
+  }
+
+  /* Sans JavaScript, le filtre ne ferait rien : la liste reste complète */
+  @media (scripting: none) {
+    .filtres {
+      display: none;
+    }
+  }
+
+  .filtre {
+    min-height: 2.75rem;
+    padding: 0.5rem 1.25rem;
+    border: 1px solid var(--bleu-200);
+    border-radius: var(--rayon-plein);
+    background-color: transparent;
+    color: var(--bleu-fonce);
+    font: inherit;
+    font-size: 1rem;
+    font-weight: var(--graisse-moyenne);
+    line-height: 1.3;
+    cursor: pointer;
+    touch-action: manipulation;
+    transition:
+      background-color var(--duree-courte-4) var(--courbe-standard),
+      color var(--duree-courte-4) var(--courbe-standard);
+  }
+
+  .filtre:hover {
+    background-color: color-mix(in srgb, var(--bleu-fonce) 6%, transparent);
+  }
+
+  .filtre[aria-pressed='true'] {
+    border-color: var(--bleu-fonce);
+    background-color: var(--bleu-fonce);
+    color: var(--couleur-surface);
+  }
+
+  /* En couleurs forcées, le fond disparaît : un contour épais marque le
+     filtre actif */
+  @media (forced-colors: active) {
+    .filtre[aria-pressed='true'] {
+      outline: 3px solid SelectedItem;
+      outline-offset: -3px;
+    }
+  }
+
+  .compte {
+    margin-left: 0.5em;
+    opacity: 0.8;
+  }
+
+  /* Entre deux années ; la dernière laisse la bande donner l'espace du bas */
+  .annee {
+    margin-bottom: var(--espace-blocs);
+  }
+
+  .annee:last-of-type {
+    margin-bottom: 0;
+  }
+
+  .annee[hidden],
+  .annee :global(li[hidden]) {
+    display: none;
+  }
+
+  .titre-annee {
+    margin: 0 0 0.5rem;
+    font-size: 1.5rem;
+    font-weight: 700;
+    line-height: 1.2;
+  }
+
+  @media (min-width: 900px) {
+    .titre-annee {
+      font-size: 2.25rem;
+      font-weight: var(--graisse-forte);
+    }
+  }
+
+  ul {
+    margin: 0;
+    padding: 0;
+  }
+</style>

@@ -1,0 +1,175 @@
+---
+/*
+ * Carte-lien bleue avec icône (Card2 de coquille-web).
+ *
+ * Bleu principal (survol : bleu principal foncé), 250 à 400 px de large puis
+ * sans limite dès 600 px, marges --espace-carte, icône de 55 px, titre de 1,75rem,
+ * pastille fléchée en bas à droite. Texte blanc : 7,10:1 au repos, 10,3:1
+ * au survol.
+ *
+ * Un seul lien, sur le titre : son ::after couvre la carte, son nom
+ * accessible est le titre. Le type de lien (flèche, rel) est fixé au build ;
+ * la source l'établissait après l'hydratation.
+ */
+import { ArrowRightIcon } from '@phosphor-icons/react/dist/ssr/ArrowRight'
+import { ArrowUpRightIcon } from '@phosphor-icons/react/dist/ssr/ArrowUpRight'
+import RenduJsx from '@/components/partage/RenduJsx.astro'
+import { classes, fusionnerStyles, type Style } from '@/lib/styles'
+import { lienCarte } from '@/lib/liens'
+
+interface Props {
+  title: unknown
+  Icon?: any
+  href: string
+  target?: string
+  rel?: string
+  id?: string
+  class?: string
+  className?: string
+  style?: Style
+  [attribut: string]: unknown
+}
+
+const { title, Icon, href, target, rel, class: classe, className, style, sx: _sx, ...reste } = Astro.props
+
+if (typeof href !== 'string') throw new Error('Card2 : la propriété `href` doit être une chaîne.')
+
+const { interne, rel: relFinal, annonce } = lienCarte(href, target, rel)
+const Fleche = interne ? ArrowRightIcon : ArrowUpRightIcon
+---
+
+<div class:list={['carte', classes(classe, className)]} style={fusionnerStyles(style)} {...reste}>
+  <div class="icone">{Icon && <Icon size={55} aria-hidden="true" focusable="false" />}</div>
+  <div class="titre">
+    <a class="lien-carte" href={href} target={target} rel={relFinal}
+      >{typeof title === 'string' ? title : <RenduJsx valeur={title} />}{annonce && <span class="visuellement-masque">{annonce}</span>}</a
+    >
+  </div>
+  <div class="pied">
+    <span class:list={['pastille', { externe: !interne }]}><Fleche size="1.5rem" weight="light" aria-hidden="true" focusable="false" /></span>
+  </div>
+</div>
+
+<style>
+  .carte {
+    position: relative;
+    isolation: isolate;
+    display: flex;
+    flex: 1 1 0;
+    flex-direction: column;
+    gap: var(--espace-3);
+    box-sizing: border-box;
+    min-width: 250px;
+    max-width: 400px;
+    height: 100%;
+    margin-inline: auto;
+    padding: var(--espace-carte);
+    border-radius: var(--rayon-carte);
+    background-color: var(--bleu-principal);
+    color: var(--couleur-surface);
+  }
+
+  @media (min-width: 600px) {
+    .carte {
+      max-width: none;
+    }
+  }
+
+  /* Fond de survol en calque : on anime son opacité plutôt que la couleur */
+  .carte::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    z-index: -1;
+    border-radius: inherit;
+    background-color: var(--bleu-principal-fonce);
+    opacity: 0;
+    transition: opacity var(--duree-moyenne-2) var(--courbe-standard);
+  }
+
+  .carte:hover::before {
+    opacity: 1;
+  }
+
+  /* Focus sur toute la carte ; liseré blanc puis contour, lisible sur tout fond */
+  .carte:has(.lien-carte:focus-visible) {
+    outline: 3px solid var(--couleur-focus);
+    outline-offset: 2px;
+    box-shadow: 0 0 0 2px var(--couleur-surface);
+  }
+
+  .lien-carte:focus-visible {
+    outline: none;
+  }
+
+  .icone {
+    display: flex;
+    color: color-mix(in srgb, var(--couleur-surface) 53%, transparent);
+  }
+
+  .titre {
+    font-size: 1.75rem;
+    font-weight: var(--graisse-moyenne);
+    line-height: 1.2;
+  }
+
+  .lien-carte {
+    color: inherit;
+    text-decoration: none;
+  }
+
+  .lien-carte::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    border-radius: var(--rayon-carte);
+  }
+
+  .pied {
+    display: flex;
+    flex-grow: 1;
+    align-items: flex-end;
+    justify-content: flex-end;
+  }
+
+  .pastille {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: var(--taille-pastille);
+    height: var(--taille-pastille);
+    border-radius: var(--rayon-plein);
+    background-color: var(--bleu-principal-fonce);
+  }
+
+  /* Survol et focus : la flèche avance d'un cran vers sa destination
+     (rétroaction, transform seulement). Survol réservé aux pointeurs fins :
+     au toucher, un survol fantôme resterait après le tapotement. */
+  .pastille > :global(svg) {
+    transition: transform var(--duree-courte-4) var(--courbe-standard-deceleree);
+  }
+
+  @media (hover: hover) and (pointer: fine) {
+    .carte:hover .pastille > :global(svg) {
+      transform: translateX(3px);
+    }
+
+    .carte:hover .externe > :global(svg) {
+      transform: translate(2px, -2px);
+    }
+  }
+
+  .carte:has(.lien-carte:focus-visible) .pastille > :global(svg) {
+    transform: translateX(3px);
+  }
+
+  .carte:has(.lien-carte:focus-visible) .externe > :global(svg) {
+    transform: translate(2px, -2px);
+  }
+
+  @media (forced-colors: active) {
+    .carte {
+      border: 1px solid CanvasText;
+    }
+  }
+</style>

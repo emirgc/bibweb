@@ -1,0 +1,65 @@
+---
+/*
+ * Bloc « texte-icones » : titre, texte et bouton à gauche, grille d'icônes
+ * légendées à droite (HeroWithText2), deux par rangée dès 900 px.
+ * `boutons` se suivent dans le pied de la colonne, comme dans la source
+ * (enseignement : un bouton secondaire puis un primaire).
+ */
+import HeroWithText2 from '@/components/mdx/mise-en-page/HeroWithText2.astro'
+import Button from '@/components/mdx/primitives/Button.astro'
+import Grid from '@/components/mdx/primitives/Grid.astro'
+import Box from '@/components/mdx/primitives/Box.astro'
+import Titre from './Titre.astro'
+import TexteMarkdown from './TexteMarkdown.astro'
+import { composantIcone } from '@/lib/icones'
+import { couleurPalette } from '@/lib/couleurs'
+import type { BlocDe } from './types'
+
+type Props = { bloc: BlocDe<'texte-icones'> }
+
+const { bloc } = Astro.props
+const icones = await Promise.all(bloc.icones.map((element) => composantIcone(element.icone)))
+const styleIcone = { color: couleurPalette(bloc.couleurIcones) }
+---
+
+<HeroWithText2>
+  <Fragment slot="leftColl">
+    <Titre texte={bloc.titre} id={bloc.id} />
+    {bloc.texte && <TexteMarkdown texte={bloc.texte} />}
+  </Fragment>
+  {
+    bloc.bouton && (
+      <Button slot="leftFooter" href={bloc.bouton.lien} primary={!bloc.bouton.secondaire} secondary={bloc.bouton.secondaire}>
+        {bloc.bouton.texte}
+      </Button>
+    )
+  }
+  {
+    bloc.boutons && (
+      <Fragment slot="leftFooter">
+        {bloc.boutons.map((bouton) => (
+          <Button href={bouton.lien} primary={!bouton.secondaire} secondary={bouton.secondaire}>
+            {bouton.texte}
+          </Button>
+        ))}
+      </Fragment>
+    )
+  }
+  <Grid slot="rightColl" container spacing="var(--espace-element)">
+    {
+      bloc.icones.map((element, i) => {
+        const Icone = icones[i]
+        return (
+          <Grid size={{ xs: 12, md: 6 }}>
+            <Box p={2} height="100%" style={{ fontWeight: 'var(--graisse-forte)' }}>
+              <Grid size="auto">
+                <Icone style={styleIcone} size={50} aria-hidden="true" />
+              </Grid>
+              {element.texte}
+            </Box>
+          </Grid>
+        )
+      })
+    }
+  </Grid>
+</HeroWithText2>

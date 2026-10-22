@@ -1,0 +1,233 @@
+---
+title: Primitives
+noindex: true
+---
+
+import { ArrowSquareOutIcon } from '@phosphor-icons/react/dist/ssr/ArrowSquareOut'
+import { InfoIcon } from '@phosphor-icons/react/dist/ssr/Info'
+
+# Primitives
+
+Démonstration des primitives MDX : liens, boutons, alertes, citation, tableaux, mise en page, typographie et listes, avec les variantes de props employées dans le contenu.
+
+## Link
+
+<p>Lien interne : <Link to="/espaces/">nos espaces</Link>. Lien relatif : <Link to="../peb/">prêt entre bibliothèques</Link>.</p>
+<p>Courriel : <Link to="mailto:pret-conservation@bib.umontreal.ca">courriel</Link>. Téléphone : <Link to="tel:+15143436111">514 343-6111</Link>.</p>
+<p>PDF : <Link to="/engagements/rapport-GES-bibliotheques-UdeM-2024.pdf">Rapport GES 2024</Link>.</p>
+<p>Externe dans un nouvel onglet : <Link to="https://www.umontreal.ca/" target="_blank">Université de Montréal</Link>.</p>
+<p><Link to="/obtenir/" Icon>Icône booléenne (flèche)</Link></p>
+<p style={{ marginTop: '1em' }}><Link to="https://www.google.com/maps?ll=45.499267,-73.618308" Icon={ArrowSquareOutIcon}>Voir l'itinéraire</Link></p>
+
+## Button
+
+<Button href="/espaces/">Primaire interne</Button>{' '}
+<Button primary href="https://studio.bib.umontreal.ca/espaces/">Primaire, sous-domaine</Button>{' '}
+<Button secondary href="https://www.umontreal.ca/">Secondaire externe</Button>{' '}
+<Button href="/engagements/rapport-GES-bibliotheques-UdeM-2024.pdf" variant="contained" color="bleuFonce" className="no-pdf-icon">PDF</Button>{' '}
+<Button href="/espaces/" variant="contained" color="blue">Contenu bleu</Button>{' '}
+<Button size="small">Bouton sans lien</Button>{' '}
+<Button href="/espaces/" className="blueOutlineNoIcon">Contour bleu</Button>
+
+<Box style={{ background: 'var(--bleu-fonce)', padding: '1rem 1.5rem 2rem', borderRadius: 'var(--rayon-petit)', marginTop: '1rem' }}>
+  <Button primary light href="/engagements/">Découvrir nos engagements</Button>{' '}
+  <Button secondary light href="/engagements/">Secondaire clair</Button>
+</Box>
+
+## Alert
+
+<Alert>Information par défaut, avec un <Link to="mailto:pret-conservation@bib.umontreal.ca">courriel</Link>.</Alert>
+
+<Alert severity="success"><p>Succès.</p></Alert>
+
+<Alert severity="warning">
+  <p>Avertissement sur deux paragraphes.</p>
+  <p><b>Contactez-nous avant de vous déplacer.</b></p>
+</Alert>
+
+<Alert severity="error">Erreur.</Alert>
+
+<Alert severity="info" icon={false}>
+  <p><strong>Sans icône</strong> (icon=&#123;false&#125;)</p>
+</Alert>
+
+<Alert>
+  <AlertTitle>À noter</AlertTitle>
+  Les CV sont conservés pour une période d’un an.
+</Alert>
+
+## Blockquote
+
+<Blockquote source="Dr Gilles Théorêt, diplômé de l’Université de Montréal">
+  <p>Adopter un livre rare, c’est participer à la transmission d’un patrimoine.</p>
+</Blockquote>
+
+## BibTable
+
+<BibTable aria-label="Calendrier des ventes">
+  <thead>
+    <tr>
+      <th>Dates</th>
+      <th>Pavillon</th>
+      <th>Produits</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>3-4 fév.</td>
+      <td>Marie-Victorin</td>
+      <td>UdeM + Lecture en cadeau</td>
+    </tr>
+    <tr>
+      <td>10-11 fév.</td>
+      <td>Roger-Gaudry</td>
+      <td>Lecture en cadeau</td>
+    </tr>
+  </tbody>
+</BibTable>
+
+## Table (MUI)
+
+<TableContainer component={Paper}>
+  <Table style={{ minWidth: 650 }} aria-label="Durées de prêt">
+    <TableHead>
+      <TableRow>
+        <TableCell>Type de document</TableCell>
+        <TableCell align="right">Durée du prêt</TableCell>
+      </TableRow>
+    </TableHead>
+    <TableBody>
+      <TableRow>
+        <TableCell>Livres, partitions</TableCell>
+        <TableCell align="right">30 jours</TableCell>
+      </TableRow>
+      <TableRow>
+        <TableCell component="th">Réserve de cours (en-tête de rangée)</TableCell>
+        <TableCell align="right">Livres et partitions : 3 heures <br /> Audiovisuel : 6 heures</TableCell>
+      </TableRow>
+    </TableBody>
+  </Table>
+</TableContainer>
+
+<Paper style={{ padding: '1rem', marginTop: '1rem' }}>Paper seul (elevation 1).</Paper>
+
+## Liste
+
+<Liste>
+  <li>Puce (défaut)</li>
+  <li>Deuxième élément</li>
+</Liste>
+
+<Liste type="ol">
+  <li>Liste numérotée</li>
+  <li>Deuxième élément</li>
+</Liste>
+
+<Liste variant="fleche">
+  <li><Link to="/a-propos/politiques-reglement/">Flèche avec lien</Link></li>
+  <li>Deuxième élément</li>
+</Liste>
+
+## List (MUI)
+
+<List>
+  <ListItem>
+    <ListItemIcon><InfoIcon size={24} aria-hidden="true" /></ListItemIcon>
+    <ListItemText primary="Élément avec icône" secondary="Texte secondaire" />
+  </ListItem>
+  <ListItem disablePadding>
+    <ListItemButton href="/espaces/">
+      <ListItemText primary="Élément cliquable (lien)" />
+    </ListItemButton>
+  </ListItem>
+</List>
+
+## Divider
+
+Avant le séparateur.
+
+<Divider />
+
+Après le séparateur.
+
+## Typography
+
+<Typography variant="h2" component="h3">Variant h2, balise h3</Typography>
+<Typography variant="h3" component="h3" gutterBottom>Variant h3, gutterBottom</Typography>
+<Typography variant="h4" component="h4">Variant h4 (Lora)</Typography>
+<Typography variant="h4Figtree" component="p">Variant h4Figtree</Typography>
+<Typography variant="h5" component="p">Variant h5</Typography>
+<Typography variant="h6" component="p">Variant h6</Typography>
+<Typography>Sans props (body1, balise p)</Typography>
+<Typography variant="body2" color="text.secondary">body2, color text.secondary</Typography>
+<Typography variant="subtitle1" component="div">subtitle1 dans un div</Typography>
+<Typography color="primary">color primary</Typography>
+<Typography color="rougeOrange">color rougeOrange (texte orange)</Typography>
+<Typography variant="caption">caption</Typography>
+<Typography variant="overline" component="p">overline</Typography>
+<Typography variant="legal" component="p">legal</Typography>
+<Typography variant="display1" component="div">display1</Typography>
+<Typography variant="display2" component="div">display2</Typography>
+<Typography variant="display3" component="div">display3</Typography>
+<Typography variant="display4" component="div">display4</Typography>
+<Typography variant="display5" component="div">display5</Typography>
+<Typography variant="titreSuperHeroSmall" component="div">titreSuperHeroSmall</Typography>
+<Typography variant="p">variant p (devient un p en body1)</Typography>
+
+## Grid
+
+<Grid container spacing={2} id="grille-demo">
+  <Grid size={{ xs: 12, md: 6 }}><Box p={2} style={{ background: 'var(--bleu-100)' }}>xs 12, md 6</Box></Grid>
+  <Grid size={{ xs: 12, md: 6 }}><Box p={2} style={{ background: 'var(--bleu-100)' }}>xs 12, md 6</Box></Grid>
+  <Grid size={{ xs: 12, sm: 6, md: 4, lg: 3 }}><Box p={2} style={{ background: 'var(--rose-300)' }}>xs 12, sm 6, md 4, lg 3</Box></Grid>
+  <Grid size={{ xs: 12, sm: 6, md: 4, lg: 3 }}><Box p={2} style={{ background: 'var(--rose-300)' }}>xs 12, sm 6, md 4, lg 3</Box></Grid>
+  <Grid size={{ xs: 12, sm: 6, md: 4, lg: 3 }}><Box p={2} style={{ background: 'var(--rose-300)' }}>xs 12, sm 6, md 4, lg 3</Box></Grid>
+  <Grid size={{ xs: 12, sm: 6, md: 4, lg: 3 }}><Box p={2} style={{ background: 'var(--rose-300)' }}>xs 12, sm 6, md 4, lg 3</Box></Grid>
+  <Grid size={{ xs: 12, md: 6 }} offset={{ md: 6 }}><Box p={2} style={{ background: 'var(--jaune-pale)' }}>md 6, offset md 6</Box></Grid>
+</Grid>
+
+<Grid container spacing=".62rem" alignItems="center" style={{ marginTop: '1rem' }}>
+  <Grid size="auto"><Box p={1} style={{ background: 'var(--bleu-200)' }}>auto</Box></Grid>
+  <Grid size="grow"><Box p={1} style={{ background: 'var(--bleu-200)' }}>grow</Box></Grid>
+  <Grid size={4}><Box p={1} style={{ background: 'var(--bleu-200)' }}>4</Box></Grid>
+</Grid>
+
+<Grid container direction="row" spacing={1.25} justifyContent="center" gap="1rem" style={{ marginTop: '1rem' }}>
+  <Grid size={{ xs: 6, md: 14 }}><Box p={1} style={{ background: 'var(--rose-100)' }}>xs 6, md 14 (borné à 12)</Box></Grid>
+</Grid>
+
+## GridOffset
+
+<GridOffset offset={1}>
+  <Box p={2} style={{ background: 'var(--bleu-100)' }}>GridOffset offset 1 : 10 colonnes centrées</Box>
+</GridOffset>
+
+<GridOffset offset=".5">
+  <Box p={2} style={{ background: 'var(--bleu-100)', marginTop: '1rem' }}>GridOffset offset .5</Box>
+</GridOffset>
+
+## LayoutGrid, LayoutContainer, Container
+
+<LayoutGrid>
+  <Grid size={{ xs: 12, md: 6 }}><Box p={2} style={{ background: 'var(--rose-100)' }}>LayoutGrid (espacement 64 px)</Box></Grid>
+  <Grid size={{ xs: 12, md: 6 }}><Box p={2} style={{ background: 'var(--rose-100)' }}>Deuxième colonne</Box></Grid>
+</LayoutGrid>
+
+<LayoutContainer style={{ marginTop: '1rem', background: 'var(--bleu-100)' }}>
+  <p>LayoutContainer : 1536 px au plus, gouttières du site.</p>
+</LayoutContainer>
+
+<Container maxWidth="md" style={{ background: 'var(--jaune-pale)', marginTop: '1rem' }}>
+  <p>Container maxWidth md.</p>
+</Container>
+
+## Box
+
+<Box display="flex" alignItems="center" justifyContent="center" my={4} px={2} style={{ background: 'var(--bleu-100)' }}>
+  <Box flex="1" display="flex" justifyContent="center" alignItems="center" p={2}>Box flex avec props système</Box>
+</Box>
+
+<Box component="figure" style={{ margin: 0 }}>
+  <Box component="img" src="/favicon.svg" alt="" style={{ width: 48, height: 48 }} />
+  <figcaption>Box component figure et img</figcaption>
+</Box>

@@ -1,0 +1,39 @@
+---
+title: Listes dynamiques
+noindex: true
+lvl: 1
+---
+
+Les nouvelles et la revue de presse sont lues au build ; les événements (RSS du calendrier UdeM) et les formations (API JSON) sont chargés dans le navigateur, avec un squelette pendant le chargement.
+
+## QuoiDeNeuf
+
+Trois colonnes dès 1200 px (deux, puis la troisième dessous, dès 900 px), des onglets en dessous.
+
+<QuoiDeNeuf onglets={[
+  { id: 'demo-evenements', label: 'Événements' },
+  { id: 'demo-nouvelles', label: 'Nouvelles' },
+  { id: 'demo-formations', label: 'Formations' },
+]}>
+  <ListeEvenements id="demo-evenements" limit={4} />
+  <ListeNouvellesAccueil title="Nouvelles" id="demo-nouvelles" limit={4} />
+  <ListeFormationsAccueil id="demo-formations" limit={4} />
+</QuoiDeNeuf>
+
+## ListeEvenements seule (limite par défaut : 3, service invalide)
+
+<ListeEvenements id="demo-evenements-seuls" service="pas une url" />
+
+## RechercheSofiaAccueil
+
+<Section bg="bleuFonce">
+  <RechercheSofiaAccueil />
+</Section>
+
+## ListeFormations (page Études)
+
+<ListeFormations moreText="Toutes nos formations" moreLink="https://calendrier.bib.umontreal.ca/calendar?cid=7690&t=m&d=0000-00-00&cal=7690&inc=0" />
+
+## ListeNouvelles (page Nouvelles)
+
+<ListeNouvelles id="demo-liste-nouvelles" />

@@ -1,0 +1,37 @@
+---
+/*
+ * Deux colonnes de texte 6/12, centrées verticalement, gouttière de 64 px (HeroWithText2 de coquille-web).
+ * Mise en page commune : ColonnesTexte.astro. Les props JSX du contenu
+ * (leftColl, rightColl, leftFooter, rightFooter) sont acceptées telles
+ * quelles, ou en slots du même nom.
+ */
+import RenduJsx from '@/components/partage/RenduJsx.astro'
+import ColonnesTexte from './ColonnesTexte.astro'
+import type { Style } from '@/lib/styles'
+
+interface Props {
+  leftColl?: unknown
+  rightColl?: unknown
+  leftFooter?: unknown
+  rightFooter?: unknown
+  class?: string
+  className?: string
+  style?: Style
+  [attribut: string]: unknown
+}
+
+const { leftColl, rightColl, leftFooter, rightFooter, class: classe, className, sx: _sx, ...reste } = Astro.props
+// Un slot passé mais vide (un bloc de vitrine qui le pose sans boutons) ne
+// compte pas : sinon le pied vide ajoutait sa marge (environ 36 px).
+const slotRempli = async (slot: string) => Astro.slots.has(slot) && (await Astro.slots.render(slot)).trim() !== ''
+const present = async (valeur: unknown, slot: string) => (valeur !== undefined && valeur !== null && valeur !== false) || (await slotRempli(slot))
+const piedGauche = await present(leftFooter, 'leftFooter')
+const piedDroit = await present(rightFooter, 'rightFooter')
+---
+
+<ColonnesTexte rapport="6-6" avecPiedGauche={piedGauche} avecPiedDroit={piedDroit} class={classe ?? className} {...reste}>
+  <Fragment slot="gauche"><slot name="leftColl"><RenduJsx valeur={leftColl} /></slot></Fragment>
+  <Fragment slot="droite"><slot name="rightColl"><RenduJsx valeur={rightColl} /></slot></Fragment>
+  <Fragment slot="piedGauche"><slot name="leftFooter"><RenduJsx valeur={leftFooter} /></slot></Fragment>
+  <Fragment slot="piedDroit"><slot name="rightFooter"><RenduJsx valeur={rightFooter} /></slot></Fragment>
+</ColonnesTexte>

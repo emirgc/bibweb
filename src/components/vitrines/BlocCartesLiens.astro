@@ -1,0 +1,32 @@
+---
+/*
+ * Bloc « cartes-liens » (nous-joindre) : grille de cartes-liens bleues à
+ * icône (Card2), une à quatre par rangée selon la largeur, de même hauteur,
+ * --espace-grille entre elles (.62rem et 4rem de marges dans la source).
+ */
+import Grid from '@/components/mdx/primitives/Grid.astro'
+import Card2 from '@/components/mdx/cartes/Card2.astro'
+import { composantIcone } from '@/lib/icones'
+import type { BlocDe } from './types'
+
+type Props = { bloc: BlocDe<'cartes-liens'> }
+
+const { bloc } = Astro.props
+const icones = await Promise.all(bloc.cartes.map((carte) => composantIcone(carte.icone)))
+---
+
+<Grid container spacing="var(--espace-grille)" class="cartes-liens" style={{ alignItems: 'stretch' }} id={bloc.id} data-revelation="groupe">
+  {
+    bloc.cartes.map((carte, i) => (
+      <Grid size={{ xs: 12, sm: 6, md: 4, lg: 3 }}>
+        <Card2 title={carte.titre} Icon={icones[i]} href={carte.lien} />
+      </Grid>
+    ))
+  }
+</Grid>
+
+<style>
+  .cartes-liens {
+    margin-block: var(--espace-bloc);
+  }
+</style>

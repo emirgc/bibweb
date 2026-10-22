@@ -1,0 +1,116 @@
+---
+/*
+ * Gabarit d'une nouvelle (NouvelleTemplate) : fil d'Ariane sans le maillon
+ * de l'année, en-tête de l'article (titre, date, image), contenu, puis les
+ * données structurées NewsArticle. Contrairement à coquille-web, le titre,
+ * la date et l'image viennent du frontmatter : le contenu n'a plus à répéter
+ * le titre en Typography (14 nouvelles le faisaient). Quand ce titre
+ * différait du `title` (3 nouvelles), il est repris dans `titreAffiche`.
+ */
+import { sansBase } from '@/lib/chemin'
+import { Picture } from 'astro:assets'
+import Base from './Base.astro'
+import FilAriane from '@/components/coquille/FilAriane.astro'
+import Retroaction from '@/components/coquille/Retroaction.astro'
+import type { Nouvelle } from '@/lib/contenu'
+
+interface Props {
+  nouvelle: Nouvelle
+}
+
+const { nouvelle } = Astro.props
+const { title, titreAffiche, date, authors, newsImage } = nouvelle.data
+const dateIso = date.toISOString().slice(0, 10)
+const dateTexte = new Intl.DateTimeFormat('fr-CA', { dateStyle: 'long', timeZone: 'UTC' }).format(date)
+
+const jsonLd = {
+  '@context': 'https://schema.org',
+  '@type': 'NewsArticle',
+  headline: title,
+  datePublished: `${dateIso}T00:00:00-05:00`,
+  dateModified: `${dateIso}T00:00:00-05:00`,
+  ...(authors?.length && { author: authors.map((a) => ({ '@type': 'Person', name: a.split(',')[0].trim() })) }),
+  publisher: { '@type': 'Organization', name: "Bibliothèques de l'Université de Montréal" },
+}
+---
+
+<Base titre={title} niveau={3} image={newsImage?.src?.src}>
+  <script slot="head" type="application/ld+json" set:html={JSON.stringify(jsonLd)} />
+  <div class="conteneur nouvelle">
+    <FilAriane url={sansBase(Astro.url.pathname)} />
+    <main id="contenu-principal" tabindex="-1">
+      <article>
+        <header class="entete-article">
+          <h1>{titreAffiche ?? title}</h1>
+          <p class="date"><time datetime={dateIso}>{dateTexte}</time></p>
+        </header>
+        {
+          newsImage?.src && (
+            <figure class="image-article">
+              <Picture src={newsImage.src} alt={newsImage.alt ?? ''} formats={['avif', 'webp']} fallbackFormat="webp" widths={[600, 900, 1200]} sizes="(min-width: 900px) 800px, 100vw" loading="eager" fetchpriority="high" />
+              {(newsImage.legend || newsImage.caption || newsImage.source) && (
+                <figcaption>
+                  {newsImage.legend ?? newsImage.caption}
+                  {newsImage.source && <span class="credit">Photo : {newsImage.source}</span>}
+                </figcaption>
+              )}
+            </figure>
+          )
+        }
+        <div class="corps-article">
+          <slot />
+        </div>
+      </article>
+    </main>
+    <Retroaction />
+  </div>
+</Base>
+
+<style>
+  .nouvelle {
+    padding-block: 60px 2rem;
+  }
+
+  main:focus {
+    outline: none;
+  }
+
+  article {
+    max-width: 50rem;
+  }
+
+  .entete-article h1 {
+    font-size: 2.5rem;
+    margin-block: 0.5rem 0.75rem;
+  }
+
+  @media (min-width: 900px) {
+    .entete-article h1 {
+      font-size: 3.5rem;
+    }
+  }
+
+  .date {
+    color: var(--rouge-orange-texte);
+    font-size: 0.875rem;
+  }
+
+  .image-article {
+    margin: var(--espace-4) 0;
+  }
+
+  .image-article :global(img) {
+    width: 100%;
+    border-radius: var(--rayon-moyen);
+  }
+
+  figcaption {
+    margin-top: 0.5rem;
+    color: var(--couleur-texte-secondaire);
+    font-size: 0.875rem;
+  }
+
+  .credit {
+    display: block;
+  }
+</style>

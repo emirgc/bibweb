@@ -1,0 +1,66 @@
+---
+/*
+ * Liste maison (Liste de coquille-web) : `type` ul ou ol, `variant` puce ou
+ * fleche (flèche Phosphor à la place de la puce). role="list" garde la
+ * sémantique de liste que Safari retire quand la puce est masquée.
+ * Corrigé : plus de styles appliqués après le montage ni d'exception.
+ */
+import { classes, fusionnerStyles } from '@/lib/styles'
+
+interface Props {
+  type?: 'ul' | 'ol'
+  variant?: 'puce' | 'fleche'
+  class?: string
+  className?: string
+  style?: string | Record<string, string | number>
+  [attribut: string]: unknown
+}
+
+const { type = 'ul', variant = 'puce', class: classe, className, style, ...reste } = Astro.props
+const Balise = type === 'ol' ? 'ol' : 'ul'
+const variante = variant === 'fleche' ? 'fleche' : 'puce'
+---
+
+<Balise role="list" class:list={['liste', `liste-${variante}`, `liste-${Balise}`, classes(classe, className)]} style={fusionnerStyles(style)} {...reste}><slot /></Balise>
+
+<style>
+  .liste-puce {
+    padding-left: 40px;
+    list-style-type: disc;
+  }
+
+  .liste-ol {
+    list-style-type: decimal;
+  }
+
+  .liste-fleche {
+    padding-left: 0.5em;
+    list-style-type: none;
+  }
+
+  .liste-fleche > :global(li) {
+    position: relative;
+    padding-left: 1.8125em;
+  }
+
+  .liste-fleche > :global(li)::before {
+    content: '';
+    position: absolute;
+    top: 0.2916em;
+    left: 4px;
+    width: 1em;
+    height: 1em;
+    background-color: currentColor;
+    mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 256 256'%3E%3Cpath d='m221.66 133.66-72 72a8 8 0 0 1-11.32-11.32L196.69 136H40a8 8 0 0 1 0-16h156.69l-58.35-58.34a8 8 0 0 1 11.32-11.32l72 72a8 8 0 0 1 0 11.32Z'/%3E%3C/svg%3E")
+      center / contain no-repeat;
+  }
+
+  /* Le masque ne s'affiche pas en couleurs forcées : on garde un repère */
+  @media (forced-colors: active) {
+    .liste-fleche > :global(li)::before {
+      content: '→' / '';
+      background: none;
+      mask: none;
+    }
+  }
+</style>

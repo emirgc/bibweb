@@ -1,0 +1,39 @@
+---
+/*
+ * Tableau (MUI Table) : un vrai <table>, cellules séparées par un filet. Les
+ * <th> écrits sans portée la reçoivent (col dans l'en-tête, row ailleurs).
+ */
+import { porteeDesEntetes } from './tableau'
+import { classes, fusionnerStyles } from '@/lib/styles'
+
+interface Props {
+  size?: 'small' | 'medium'
+  class?: string
+  className?: string
+  style?: string | Record<string, string | number>
+  [attribut: string]: unknown
+}
+
+const { size = 'medium', class: classe, className, style, stickyHeader: _collant, ...reste } = Astro.props
+const contenu = porteeDesEntetes(Astro.slots.has('default') ? await Astro.slots.render('default') : '')
+---
+
+<table class:list={['tableau', { compact: size === 'small' }, classes(classe, className)]} style={fusionnerStyles(style)} {...reste} set:html={contenu}></table>
+
+<style>
+  .tableau {
+    width: 100%;
+    border-collapse: collapse;
+    border-spacing: 0;
+  }
+
+  /* Dernière rangée sans filet : ce que le contenu demandait par sx sur chaque TableRow */
+  .tableau :global(tbody > tr:last-child > *) {
+    border-bottom: 0;
+  }
+
+  .compact :global(td),
+  .compact :global(th) {
+    padding: 6px 16px;
+  }
+</style>

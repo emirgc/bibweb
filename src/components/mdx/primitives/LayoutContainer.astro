@@ -1,0 +1,21 @@
+---
+/*
+ * Conteneur de mise en page (LayoutContainer de coquille-web) : 1536 px au
+ * plus, gouttières de 20 px puis 64 px dès 900 px. `class` et `style` vont à
+ * l'enveloppe extérieure, comme `sx` dans la source ; le reste au conteneur.
+ */
+import { classes, fusionnerStyles } from '@/lib/styles'
+
+interface Props {
+  class?: string
+  className?: string
+  style?: string | Record<string, string | number>
+  [attribut: string]: unknown
+}
+
+const { class: classe, className, style, ...reste } = Astro.props
+---
+
+<div class={classes(classe, className)} style={fusionnerStyles(style)}>
+  <div class="conteneur" {...reste}><slot /></div>
+</div>

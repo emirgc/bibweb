@@ -1,0 +1,233 @@
+---
+/*
+ * Bannière des pages de niveau 0 et 1 (SuperHero2 de coquille-web) : photo
+ * sous un voile noir de 50 %, titre <h1> en bas à gauche.
+ *
+ * Hauteurs de la source : 26 / 30 / 34rem (moins de 600 px, jusqu'à 899 px,
+ * au-delà), 15 / 16 / 18rem en `size="small"`. La source la plaçait en
+ * position absolue (sous les bandeaux, mesurés en JS) avec un espaceur de
+ * hauteur - 4 / 6 / 8rem : le contenu suivant chevauchait donc le bas de la
+ * bannière, d'où les `<Section marginTop>` qui suivent.
+ * Ici, elle est dans le flux : glissée de 5rem sous l'en-tête transparent dès
+ * 1200 px (raccourcie d'autant en dessous, sous la barre compacte opaque), et
+ * une marge basse de 5rem - (4 | 6 | 8rem) reproduit le même chevauchement.
+ * Plus de mesure ni de saut au chargement.
+ */
+import { Picture } from 'astro:assets'
+import RenduJsx from '@/components/partage/RenduJsx.astro'
+import Typography from '@/components/mdx/primitives/Typography.astro'
+import { imageBanniere, largeursPour } from '@/lib/bannieres'
+import { classes, fusionnerStyles, type Style } from '@/lib/styles'
+
+interface Props {
+  title: string
+  /** Texte ou élément sous le titre (aussi possible en slot « subTitle ») */
+  subTitle?: unknown
+  imageName: string
+  alt?: string
+  size?: 'default' | 'small'
+  /** Inutilisé, comme dans la source */
+  lvl?: number
+  class?: string
+  className?: string
+  style?: Style
+  [attribut: string]: unknown
+}
+
+const { title, subTitle, imageName, alt = '', size = 'default', lvl: _lvl, class: classe, className, style, ...reste } = Astro.props
+if (size !== 'default' && size !== 'small') throw new Error('SuperHero2 : `size` vaut « default » ou « small ».')
+const image = imageBanniere(imageName)
+const aSousTitre = subTitle !== undefined || Astro.slots.has('subTitle')
+const aEnfants = Astro.slots.has('default')
+---
+
+<div class:list={['super-hero-2', `taille-${size}`, classes(classe, className)]} style={fusionnerStyles(style)} {...reste}>
+  <Picture
+    src={image}
+    formats={['avif', 'webp']} fallbackFormat="webp"
+    widths={largeursPour(image)}
+    sizes="100vw"
+    alt={alt}
+    loading="eager"
+    fetchpriority="high"
+    class="super-hero-image"
+  />
+  <div class="texte">
+    <div class="colonne">
+      <Typography component="h1" variant={size === 'small' ? 'titreSuperHeroSmall' : 'titreSuperHero'} class="titre">{title}</Typography>
+      {
+        aSousTitre && (
+          <div class="sous-titre">
+            <slot name="subTitle"><RenduJsx valeur={subTitle} /></slot>
+          </div>
+        )
+      }
+    </div>
+  </div>
+  {
+    aEnfants && (
+      <div class="enfants">
+        <slot />
+      </div>
+    )
+  }
+</div>
+
+<style>
+  .super-hero-2 {
+    /* Hauteur totale de la source, et ce que son espaceur en retranchait */
+    --hauteur: 26rem;
+    --retrait: 4rem;
+
+    display: flex;
+    position: relative;
+    isolation: isolate;
+    flex-direction: column;
+    justify-content: flex-end;
+    width: 100%;
+    /* Hauteur minimale et non fixe : avec le texte agrandi à 200 % (WCAG
+       1.4.4), le titre débordait et était rogné ; la bannière grandit */
+    min-height: calc(var(--hauteur) - 5rem);
+    margin-bottom: calc(5rem - var(--retrait));
+    overflow: hidden;
+    color: var(--couleur-surface);
+    --couleur-lien: var(--couleur-surface);
+    --couleur-lien-survol: var(--couleur-surface);
+    --couleur-focus: var(--couleur-surface);
+  }
+
+  .taille-small {
+    --hauteur: 15rem;
+  }
+
+  @media (min-width: 600px) {
+    .super-hero-2 {
+      --hauteur: 30rem;
+      --retrait: 6rem;
+    }
+
+    .taille-small {
+      --hauteur: 16rem;
+    }
+  }
+
+  @media (min-width: 900px) {
+    .super-hero-2 {
+      --hauteur: 34rem;
+      --retrait: 8rem;
+    }
+
+    .taille-small {
+      --hauteur: 18rem;
+    }
+  }
+
+  @media (min-width: 1200px) {
+    /* Glissée sous l'en-tête : le texte reste sous ses 5rem */
+    .super-hero-2 {
+      min-height: var(--hauteur);
+      margin-top: -5rem;
+      padding-top: 5rem;
+    }
+  }
+
+  /* Voile de 50 % : le titre blanc garde au moins 4,37:1 sur 95 % des pixels
+     de chaque image (mesuré), le sous-titre aussi */
+  .super-hero-2::before {
+    content: '';
+    position: absolute;
+    z-index: -1;
+    inset: 0;
+    background-color: color-mix(in srgb, var(--couleur-voile) 50%, transparent);
+  }
+
+  .super-hero-2 :global(.super-hero-image) {
+    position: absolute;
+    z-index: -2;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+  }
+
+  /* Même boîte qu'une Section : marges internes et largeur maximale */
+  .texte {
+    width: 100%;
+    max-width: var(--largeur-max);
+    margin-inline: auto;
+    padding: 48px 16px;
+  }
+
+  /* La source tirait la Section de -4rem vers le bas en taille réduite.
+     Plafonné à 72 px : la marge interne du bas est en px, et avec le texte
+     agrandi à 200 % les 4rem (136 px) faisaient passer le bas du titre sous
+     la bannière, qui le rognait (6,5 px à 390 px). Au texte par défaut,
+     4rem vaut 68 ou 72 px : inchangé. */
+  .taille-small .texte {
+    margin-bottom: max(-4rem, -72px);
+  }
+
+  .colonne {
+    width: 100%;
+  }
+
+  .super-hero-2 :global(.titre) {
+    margin: 0;
+    overflow-wrap: break-word;
+  }
+
+  .sous-titre {
+    margin-top: 8px;
+  }
+
+  .enfants {
+    width: 100%;
+    padding: 0 1rem 1rem;
+  }
+
+  @media (min-width: 600px) {
+    .texte {
+      padding-inline: 20px;
+    }
+
+    .colonne {
+      width: calc(100% * 10 / 12);
+    }
+
+    .sous-titre {
+      margin-top: 12px;
+    }
+
+    .enfants {
+      padding: 0 1.5rem 2rem;
+    }
+  }
+
+  @media (min-width: 900px) {
+    .texte {
+      padding: 64px 40px;
+    }
+
+    .colonne {
+      width: calc(100% * 8 / 12);
+    }
+
+    .taille-small .colonne {
+      width: 100%;
+    }
+
+    .sous-titre {
+      margin-top: 16px;
+    }
+
+    .enfants {
+      padding: 0 3.75rem 4.25rem;
+    }
+  }
+
+  @media (min-width: 1200px) {
+    .texte {
+      padding: 96px 64px;
+    }
+  }
+</style>

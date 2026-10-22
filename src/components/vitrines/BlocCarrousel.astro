@@ -1,0 +1,26 @@
+---
+/*
+ * Bloc « carrousel » : titre, texte et cartes-liens à icône (Carousel1 et
+ * CardWithIcon). Toutes les cartes d'un carrousel ont la même couleur et la
+ * même taille ; `lienTout` devient le bouton sous le carrousel. La
+ * description n'a plus les 12 px de marge propres au carrousel : l'écart
+ * avec les cartes est --espace-bloc, comme dans les autres blocs.
+ */
+import Carousel1 from '@/components/mdx/mise-en-page/Carousel1.astro'
+import CardWithIcon from '@/components/mdx/cartes/CardWithIcon.astro'
+import Titre from './Titre.astro'
+import TexteMarkdown from './TexteMarkdown.astro'
+import { composantIcone } from '@/lib/icones'
+import type { BlocDe } from './types'
+
+type Props = { bloc: BlocDe<'carrousel'> }
+
+const { bloc } = Astro.props
+const icones = await Promise.all(bloc.cartes.map((carte) => composantIcone(carte.icone)))
+---
+
+<Carousel1 moreText={bloc.lienTout?.texte} moreLink={bloc.lienTout?.lien} moreTarget={bloc.lienTout?.nouvelOnglet ? '_blank' : undefined}>
+  <Titre slot="title" texte={bloc.titre} id={bloc.id} />
+  {bloc.texte && <TexteMarkdown slot="description" texte={bloc.texte} espacerParagraphes />}
+  {bloc.cartes.map((carte, i) => <CardWithIcon color={bloc.couleurCartes} title={carte.titre} Icon={icones[i]} moreText={carte.appel} href={carte.lien} small={bloc.petitesCartes} />)}
+</Carousel1>

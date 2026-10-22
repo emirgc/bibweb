@@ -1,0 +1,241 @@
+---
+/*
+ * Élément de liste riche (RichListItemWithLink de coquille-web) : titre,
+ * description, et à droite un bouton (`linkText`) ou une pastille fléchée ;
+ * toute la ligne est cliquable, avec un filet dessous.
+ *
+ * Corrigé : la source imbriquait un lien (Button ou IconButton href) dans un
+ * autre lien (ListItemButton), ce qui est invalide, et la pastille n'avait
+ * pas de nom. Il n'y a plus qu'un lien, sur le titre ; son ::after couvre la
+ * ligne pour la garder entièrement cliquable. Le bouton et la pastille
+ * deviennent de simples repères visuels (aria-hidden), et le nom du lien
+ * reste court (le titre). Le filet est une bordure, et non plus un <li>
+ * vide masqué. Le niveau du titre (h3 en dur) devient réglable, sans changer
+ * sa taille : propre au composant, elle ne suit plus celle des h2 et h3 du
+ * thème (jusqu'à 3,5rem), trop grande pour un titre d'élément de liste.
+ *
+ * Couleurs : `color="vertFonce"` (sur une Section vert foncé) met une
+ * pastille vert pâle avec une flèche bleu foncé (7,32:1 ; la flèche blanche
+ * de la source n'atteignait que 2,48:1) et un filet de la couleur du texte.
+ */
+import { ArrowRightIcon } from '@phosphor-icons/react/dist/ssr/ArrowRight'
+import { ArrowUpRightIcon } from '@phosphor-icons/react/dist/ssr/ArrowUpRight'
+import { analyserLien } from '@/lib/liens'
+import { classes, fusionnerStyles, type Style } from '@/lib/styles'
+
+interface Props {
+  title: string
+  description?: string
+  href: string
+  linkText?: string | null
+  color?: 'default' | 'vertFonce'
+  niveauTitre?: 2 | 3 | 4 | 5 | 6
+  class?: string
+  className?: string
+  style?: Style
+  [attribut: string]: unknown
+}
+
+const { title, description, href, linkText = null, color = 'default', niveauTitre = 3, class: classe, className, style, sx: _sx, ...reste } = Astro.props
+if (!href) throw new Error(`RichListItemWithLink « ${title} » : la propriété \`href\` est requise.`)
+const { interne } = analyserLien(href)
+const Fleche = interne ? ArrowRightIcon : ArrowUpRightIcon
+const Titre = `h${niveauTitre}`
+---
+
+<li class:list={['element-riche', `couleur-${color}`, classes(classe, className)]} style={fusionnerStyles(style)} {...reste}>
+  <div class="texte">
+    <Titre class="titre"><a class="lien-ligne" href={href}>{title}</a></Titre>
+    {description && <div class="description">{description}</div>}
+  </div>
+  {
+    linkText ? (
+      <span class="bouton" aria-hidden="true">
+        {linkText}
+        <Fleche size={24} aria-hidden="true" focusable="false" />
+      </span>
+    ) : (
+      <span class:list={['pastille', { externe: !interne }]} aria-hidden="true">
+        <Fleche size={24} aria-hidden="true" focusable="false" />
+      </span>
+    )
+  }
+</li>
+
+<style>
+  .element-riche {
+    --pastille-fond: var(--bleu-fonce);
+    --pastille-fleche: var(--couleur-surface);
+    --filet: var(--bleu-principal);
+
+    display: flex;
+    position: relative;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: var(--espace-element);
+    /* ListItem (8 px) puis ListItemButton (8 px) de la source */
+    padding-block: var(--espace-element);
+    border-bottom: 1px solid var(--filet);
+  }
+
+  .couleur-vertFonce {
+    --pastille-fond: var(--vert-pale);
+    --pastille-fleche: var(--bleu-fonce);
+    --filet: currentColor;
+  }
+
+
+  .texte {
+    flex: 1 1 auto;
+    width: 100%;
+    margin-block: 4px;
+  }
+
+  /* Même taille quel que soit le niveau (h2 sans titre de bloc, h3 sinon) */
+  .titre {
+    margin-block: 0.5em;
+    font-size: 1.3333rem;
+    font-weight: var(--graisse-forte);
+    line-height: 1.25;
+  }
+
+  .lien-ligne {
+    color: inherit;
+    text-decoration: none;
+  }
+
+  .lien-ligne:focus-visible {
+    outline: none;
+  }
+
+  /* Zone cliquable de la ligne, débordant de 1rem de chaque côté comme le
+     ListItemButton de la source ; elle porte aussi le survol et le focus.
+     Sous 600 px, la gouttière de Section ne fait que 16 px pour un rem de
+     17 px : -1rem débordait de 1 px et faisait défiler la page en largeur
+     (/engagements/ à 390 px). On plafonne donc le débord à la gouttière. */
+  .lien-ligne::after {
+    content: '';
+    position: absolute;
+    inset: 0 max(-1rem, -16px);
+    border-radius: var(--rayon-minuscule);
+    transition: background-color var(--duree-courte-3) var(--courbe-standard);
+  }
+
+  .element-riche:hover .lien-ligne::after {
+    background-color: color-mix(in srgb, currentColor 4%, transparent);
+  }
+
+  .lien-ligne:focus-visible::after {
+    outline: 3px solid var(--couleur-focus);
+    outline-offset: -3px;
+  }
+
+  .element-riche:hover .lien-ligne {
+    text-decoration: underline;
+    text-decoration-thickness: from-font;
+  }
+
+  .description {
+    padding-top: 0.25rem;
+    font-size: 17px;
+    line-height: 1.4;
+  }
+
+  .bouton,
+  .pastille {
+    flex: none;
+    margin-bottom: 0.75rem;
+  }
+
+  /* Apparence du Button primary de la source */
+  .bouton {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    min-height: 3.125rem;
+    padding: 6px 16px 6px 25px;
+    border-radius: var(--rayon-plein);
+    background-color: var(--bleu-fonce);
+    color: var(--couleur-surface);
+    font-size: 0.875rem;
+    font-weight: var(--graisse-normale);
+    letter-spacing: 0.02857em;
+    line-height: 1;
+  }
+
+  /* Petite pastille du site (jeton), comme les listes Quoi de neuf */
+  .pastille {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: var(--taille-pastille-petite);
+    height: var(--taille-pastille-petite);
+    border-radius: 50%;
+    background-color: var(--pastille-fond);
+    color: var(--pastille-fleche);
+  }
+
+  .bouton :global(svg),
+  .pastille :global(svg) {
+    fill: currentColor;
+  }
+
+  /* Survol et focus : la flèche avance d'un cran vers sa destination
+     (rétroaction, transform seulement). Survol réservé aux pointeurs fins :
+     au toucher, un survol fantôme resterait après le tapotement. */
+  :is(.pastille, .bouton) > :global(svg) {
+    transition: transform var(--duree-courte-4) var(--courbe-standard-deceleree);
+  }
+
+  @media (hover: hover) and (pointer: fine) {
+    .element-riche:hover :is(.pastille, .bouton) > :global(svg) {
+      transform: translateX(3px);
+    }
+
+    .element-riche:hover .externe > :global(svg) {
+      transform: translate(2px, -2px);
+    }
+  }
+
+  .element-riche:has(.lien-ligne:focus-visible) :is(.pastille, .bouton) > :global(svg) {
+    transform: translateX(3px);
+  }
+
+  .element-riche:has(.lien-ligne:focus-visible) .externe > :global(svg) {
+    transform: translate(2px, -2px);
+  }
+
+
+  @media (min-width: 900px) {
+    .element-riche {
+      flex-direction: row;
+      align-items: center;
+    }
+
+    .titre {
+      font-size: 1.5rem;
+    }
+
+    .texte > * {
+      max-width: 83.3333%;
+    }
+
+    .bouton,
+    .pastille {
+      margin-bottom: 0;
+    }
+  }
+
+  @media (min-width: 1200px) {
+    .texte > * {
+      max-width: 66.6667%;
+    }
+  }
+
+  @media (forced-colors: active) {
+    .pastille,
+    .bouton {
+      border: 1px solid CanvasText;
+    }
+  }
+</style>

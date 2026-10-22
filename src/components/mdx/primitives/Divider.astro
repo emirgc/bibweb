@@ -1,0 +1,49 @@
+---
+/* Séparateur (MUI Divider) : filet de la couleur des bordures, marges de 1rem */
+import { classes, fusionnerStyles } from '@/lib/styles'
+
+interface Props {
+  orientation?: 'horizontal' | 'vertical'
+  flexItem?: boolean
+  class?: string
+  className?: string
+  style?: string | Record<string, string | number>
+  [attribut: string]: unknown
+}
+
+const { orientation = 'horizontal', flexItem = false, class: classe, className, style, variant: _v, ...reste } = Astro.props
+const vertical = orientation === 'vertical'
+---
+
+<hr
+  class:list={['separateur', { vertical, 'element-flex': flexItem }, classes(classe, className)]}
+  aria-orientation={vertical ? 'vertical' : undefined}
+  style={fusionnerStyles(style)}
+  {...reste}
+/>
+
+<style>
+  .separateur {
+    flex-shrink: 0;
+    margin: var(--espace-element) 0;
+    border: 0;
+    border-bottom: 1px solid var(--couleur-bordure);
+  }
+
+  .vertical {
+    height: auto;
+    margin: 0 1rem;
+    border-bottom: 0;
+    border-right: 1px solid var(--couleur-bordure);
+  }
+
+  .element-flex {
+    align-self: stretch;
+  }
+
+  @media (forced-colors: active) {
+    .separateur {
+      border-color: CanvasText;
+    }
+  }
+</style>

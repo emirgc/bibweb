@@ -1,0 +1,24 @@
+---
+/* Icône d'un élément de liste MUI : colonne de 56 px, couleur secondaire */
+import { classes, fusionnerStyles } from '@/lib/styles'
+
+interface Props {
+  class?: string
+  className?: string
+  style?: string | Record<string, string | number>
+  [attribut: string]: unknown
+}
+
+const { class: classe, className, style, ...reste } = Astro.props
+---
+
+<span class:list={['icone-liste', classes(classe, className)]} style={fusionnerStyles(style)} {...reste}><slot /></span>
+
+<style>
+  .icone-liste {
+    display: inline-flex;
+    flex-shrink: 0;
+    min-width: 56px;
+    color: var(--couleur-texte-secondaire);
+  }
+</style>

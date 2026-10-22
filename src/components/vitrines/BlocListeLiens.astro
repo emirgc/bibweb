@@ -1,0 +1,31 @@
+---
+/*
+ * Bloc « liste-liens » : titre, texte et liste de liens décrits (RichList).
+ * Sur un fond vert foncé, les pastilles prennent la variante vertFonce.
+ * Sans titre de bloc, les titres des liens montent d'un niveau (h2) pour
+ * garder une hiérarchie sans trou sous le h1 de la bannière.
+ *
+ * Titre, texte et liste partagent la colonne de texte (GridOffset 0.5) : le
+ * titre était pleine largeur, en avance d'une demi-colonne sur la liste.
+ */
+import GridOffset from '@/components/mdx/primitives/GridOffset.astro'
+import RichList from '@/components/mdx/mise-en-page/RichList.astro'
+import RichListItemWithLink from '@/components/mdx/mise-en-page/RichListItemWithLink.astro'
+import Titre from './Titre.astro'
+import TexteMarkdown from './TexteMarkdown.astro'
+import type { BlocDe } from './types'
+
+type Props = { bloc: BlocDe<'liste-liens'> }
+
+const { bloc } = Astro.props
+const couleur = bloc.fond === 'vertFonce' ? 'vertFonce' : 'default'
+const niveauTitre = bloc.titre ? 3 : 2
+---
+
+<GridOffset offset={0.5}>
+  {bloc.titre && <Titre texte={bloc.titre} id={bloc.id} />}
+  {bloc.texte && <TexteMarkdown texte={bloc.texte} />}
+  <RichList offset={0}>
+    {bloc.liens.map((lien) => <RichListItemWithLink title={lien.titre} description={lien.description} href={lien.lien} color={couleur} niveauTitre={niveauTitre} linkText={lien.appel} />)}
+  </RichList>
+</GridOffset>

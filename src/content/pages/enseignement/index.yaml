@@ -1,0 +1,155 @@
+# Page vitrine /enseignement/ : voir docs/REDACTION.md, section « Vitrines »
+title: Enseignement
+crumbLabel: Enseignement
+
+banniere:
+  titre: Épauler l'enseignement, c'est notre rayon
+  image: enseignement
+
+sections:
+  - type: texte-icones
+    fond: bleu100
+    titre: Inscrivez-nous à votre cours
+    texte: Pour intégrer facilement les notions de recherche d’information et d’évaluation de la crédibilité et de la pertinence des sources dans vos cours, faites appel à notre équipe spécialisée!
+    boutons:
+      - texte: Voir des sujets de formation
+        lien: /enseignement/formations-cours/
+        secondaire: true
+      - texte: Contactez votre bibliothécaire disciplinaire
+        lien: /nous-joindre/notre-equipe/
+    couleurIcones: bleuPrincipal
+    icones:
+      - icone: chalkboard-teacher
+        texte: Création de formations sur mesure pour votre cours
+      - icone: mountains
+        texte: Collaboration avec votre bibliothécaire dans StudiUM
+      - icone: toolbox
+        texte: Création de guides de sources et outils pertinents
+      - icone: medal
+        texte: Identification de ressources pertinentes pour vos cours
+
+  - type: liste-liens
+    titre: 5,75M de titres à portée de main
+    liens:
+      - titre: Réserve de cours
+        description: Assurez un accès aux documents importants dans le cadre de vos cours en créant une réserve de cours pour la session.
+        lien: /enseignement/reserve/
+        appel: Mettre un livre à la réserve
+      - titre: Suggestion d’achat
+        description: Il vous manque un document qui serait utile pour votre cours? Nous l’achèterons pour vous !
+        lien: /nous-joindre/suggestion-achat/
+        appel: Faire une suggestion
+      - titre: Collections spéciales
+        description: Nous conservons plus de 150 000 documents anciens, rares ou précieux, qui sont entièrement à la disposition de la communauté UdeM pour la consultation et la recherche.
+        lien: /a-propos/nos-collections/nos-collections-speciales/
+        appel: En savoir plus
+
+  - type: image-texte
+    fond: bleu600
+    titre: Ajoutez une touche techno
+    texte: |
+      Ateliers, laboratoire de visualisation, studios d’enregistrement et d’édition, nos espaces de création numérique offrent plusieurs possibilités pour intégrer les technologies créatives et la production média à votre enseignement:
+
+      - Enseigner dans nos espaces de création
+      - Produire du contenu pour un cours
+      - Intégrer les technologies dans les travaux pratiques
+    image: ./images/touche-techno.webp
+    positionImage: gauche
+    bouton:
+      texte: Découvrir nos espaces
+      lien: /espaces/
+
+  - type: liste-liens
+    titre: Tout savoir sur le droit d'auteur
+    texte: Avant de consulter, partager et reproduire des documents dans le cadre d’un cours, il vaut mieux se renseigner. Nous sommes là pour vous aider à choisir l’option de partage qui convient à votre situation.
+    liens:
+      - titre: Donner accès aux lectures suggérées
+        description: Partager des documents tout en respectant le droit d'auteur? Vous pouvez le faire grâce à la licence Copibec, aux abonnements des bibliothèques ou selon les exceptions prévues par le droit d'auteur.
+        lien: https://boite-outils.bib.umontreal.ca/c.php?g=740213&p=5341400
+        appel: Voir les informations
+      - titre: Faire une déclaration de reproduction
+        description: Si vous devez utiliser du matériel protégé dans votre cours, vous devez déclarer vos reproductions en vertu de la licence Copibec, via l’outil Savia.
+        lien: https://boite-outils.bib.umontreal.ca/recherche/declaration-reproduction
+        appel: Faire une déclaration
+      - titre: Respecter le droit d’auteur en cours
+        description: Le service de droit d’auteur des bibliothèques UdeM est votre allié pour respecter le droit d’auteur dans vos activités d’enseignement universitaire.
+        lien: https://umontreal.ca.panopto.com/Panopto/Pages/Viewer.aspx?id=5d866c03-9380-4feb-8a7e-b33200fcd1c0
+        appel: Écouter la capsule vidéo
+      - titre: Autres services
+        description: Notre équipe offre également du soutien au droit d’auteur en contexte de recherche.
+        lien: /recherche/
+        appel: Voir les services pour la recherche
+
+  - type: texte
+    fond: rose300
+    titre: Faites rayonner vos REL avec nos services en soutien à la création et la diffusion
+    texte: Des manuels de cours aux capsules interactives, vos ressources éducatives libres (REL) prennent forme avec l'appui des Bibliothèques. Grâce à notre plateforme d'édition et diffusion spécialisée, à nos services-conseils et à l'accompagnement offert dans le cadre de la fabriqueREL (depuis la demande de subvention jusqu'à la concrétisation du projet), nous travaillons à vos côtés pour maximiser la réussite et la visibilité de vos travaux.
+    boutons:
+      - texte: Contacter mon bibliothécaire disciplinaire
+        lien: /nous-joindre/notre-equipe/
+      - texte: Voir le guide sur les REL
+        lien: https://boite-outils.bib.umontreal.ca/trouver-evaluer/rel
+        secondaire: true
+      - texte: Plateforme d'édition Pressbooks
+        lien: https://rel.bib.umontreal.ca/
+        secondaire: true
+
+  - type: carrousel-images
+    fond: vertFonce
+    titre: Changez de décor!
+    texte: Nous offrons plusieurs salles de formation à réserver. Consultez notre répertoire de salles pour donner un cours dans un environnement pensé pour l’apprentissage de groupe, le partage des connaissances ou le visionnement multimédia en groupe.
+    cartes:
+      - titre: Salle didactique
+        image: ../images/didactheque.webp
+        lien: https://calendrier.bib.umontreal.ca/space/19189
+        appel: Bibliothèque Thérèse-Gouin-Décarie
+      - titre: Atelier de zines
+        image: ./images/BLSH-zines.webp
+        lien: https://studio.bib.umontreal.ca/espaces/zines
+        appel: Bibliothèque lettres et sciences humaines
+      - titre: Salle didactique
+        image: ./images/didactheque-laval.webp
+        lien: https://calendrier.bib.umontreal.ca/space/17823
+        appel: Campus Laval
+      - titre: Salle multifonctionnelle
+        image: ./images/salle-multifonctionnelle-1.webp
+        lien: https://calendrier.bib.umontreal.ca/space/34414
+        appel: Campus St-Hyacinthe
+      - titre: Espace d’innovation et de créativité
+        image: ./images/math-info-2477-08.webp
+        lien: https://calendrier.bib.umontreal.ca/space/34410
+        appel: Bibliothèque mathématiques et informatique
+      - titre: Salle de travail en équipe
+        image: ./images/math-info-travail-equipe-2420-7.webp
+        lien: https://calendrier.bib.umontreal.ca/space/34412
+        appel: Bibliothèque mathématiques et informatique
+      - titre: Salle multifonctionnelle
+        image: ./images/math-info-2465-11.webp
+        lien: https://calendrier.bib.umontreal.ca/space/34413
+        appel: Bibliothèque mathématiques et informatique
+      - titre: Salle Perrault
+        image: ./images/lrcs-perrault.webp
+        lien: https://calendrier.bib.umontreal.ca/space/34702
+        appel: Livres rares et collections spéciales
+      - titre: Espace d’innovation et de créativité
+        image: ./images/salle-travail-equipe_MY.webp
+        lien: https://calendrier.bib.umontreal.ca/space/34702
+        appel: Bibliothèque Marguerite-d’Youville
+
+  - type: texte-icones
+    fond: rose300
+    titre: Aider les étudiants et étudiantes, c’est réussir ensemble
+    texte: N’hésitez pas à parler de nos services aux personnes inscrites à vos cours qui pourraient en bénéficier!
+    bouton:
+      texte: Découvrir le soutien aux études
+      lien: /etudes/
+    couleurIcones: rougeOrange
+    icones:
+      - icone: magnifying-glass
+        texte: Développement d’une stratégie de recherche et conseils sur les outils de recherche
+      - icone: head-circuit
+        texte: Conseil sur l'utilisation responsable de l'intelligence artificielle
+      - icone: laptop
+        texte: Initiation aux logiciels bibliographiques
+      - icone: copyright
+        texte: Réponses aux questions de droits d’auteur

@@ -1,0 +1,119 @@
+---
+/*
+ * Mise en page commune de HeroWithText (colonnes 3/12 et 8/12, en haut) et
+ * HeroWithText2 (6/12 et 6/12, centrées, gouttière de 64 px) : la source
+ * dupliquait le composant à quelques valeurs près.
+ *
+ * Sous 900 px : une colonne, et les pieds passent sous les deux colonnes.
+ * Chaque pied n'est rendu qu'une fois : sa colonne devient `display:
+ * contents` sur mobile et il descend par `order`, au lieu des deux rendus de
+ * la source selon useSmall.
+ *
+ * Mêmes écarts que HeroWithImage (voir son commentaire) : --espace-titre
+ * sous le titre, --espace-bloc avant les boutons et entre les parties
+ * empilées, --espace-element entre les boutons. La source donnait 2rem
+ * sous le titre et 45 px entre les colonnes empilées de HeroWithText2.
+ */
+import GridOffset from '@/components/mdx/primitives/GridOffset.astro'
+import { classes, fusionnerStyles, type Style } from '@/lib/styles'
+
+interface Props {
+  rapport: '3-8' | '6-6'
+  avecPiedGauche?: boolean
+  avecPiedDroit?: boolean
+  class?: string
+  style?: Style
+  [attribut: string]: unknown
+}
+
+const { rapport, avecPiedGauche = false, avecPiedDroit = false, class: classe, style, ...reste } = Astro.props
+---
+
+<GridOffset offset={0.5} class={classes('hero-avec-texte', classe)} style={fusionnerStyles(style)} {...reste}>
+  <div class:list={['rangee', `rapport-${rapport}`]} data-revelation="groupe">
+    <div class="colonne">
+      <div class="contenu"><slot name="gauche" /></div>
+      {
+        avecPiedGauche && (
+          <div class="pied">
+            <slot name="piedGauche" />
+          </div>
+        )
+      }
+    </div>
+    <div class="colonne">
+      <div class="contenu"><slot name="droite" /></div>
+      {
+        avecPiedDroit && (
+          <div class="pied">
+            <slot name="piedDroit" />
+          </div>
+        )
+      }
+    </div>
+  </div>
+</GridOffset>
+
+<style>
+  .rangee {
+    display: flex;
+    flex-direction: column;
+    gap: var(--espace-bloc);
+    width: 100%;
+  }
+
+  .colonne {
+    display: contents;
+  }
+
+  .contenu > :global(:first-child) {
+    margin-top: 0;
+  }
+
+  .contenu > :global(:is(h2, h3, h4):first-child) {
+    margin-block: 0 var(--espace-titre);
+  }
+
+  .contenu > :global(:last-child) {
+    margin-bottom: 0;
+  }
+
+  .pied {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: var(--espace-element);
+    order: 1;
+  }
+
+  .pied > :global(*),
+  .pied :global(.bouton) {
+    margin: 0;
+  }
+
+  @media (min-width: 900px) {
+    .rangee {
+      display: grid;
+    }
+
+    .colonne {
+      display: block;
+    }
+
+    .pied {
+      padding-top: var(--espace-bloc);
+    }
+
+    .rapport-3-8 {
+      grid-template-columns: 3fr 8fr 1fr;
+      align-items: start;
+      gap: 0;
+    }
+
+    .rapport-6-6 {
+      grid-template-columns: 1fr 1fr;
+      align-items: center;
+      gap: var(--espace-8);
+    }
+  }
+</style>

@@ -1,0 +1,31 @@
+---
+/*
+ * Bloc « image-fond » (accueil, « S'engager pour une science ouverte ») :
+ * titre, texte et bouton dans la moitié droite dès 900 px. La photo est le
+ * fond de la bande (Section `image`, posée par GabaritVitrine) : elle est
+ * décorative, et le voile de la Section garde le texte blanc lisible.
+ */
+import Grid from '@/components/mdx/primitives/Grid.astro'
+import Button from '@/components/mdx/primitives/Button.astro'
+import Titre from './Titre.astro'
+import TexteMarkdown from './TexteMarkdown.astro'
+import type { BlocDe } from './types'
+
+type Props = { bloc: BlocDe<'image-fond'> }
+
+const { bloc } = Astro.props
+---
+
+<Grid container spacing={2} style={{ paddingTop: '3rem', paddingBottom: '3rem' }}>
+  <Grid size={{ xs: 12, md: 6 }} offset={{ md: 6 }}>
+    <Titre texte={bloc.titre} id={bloc.id} />
+    <TexteMarkdown texte={bloc.texte} brut />
+    {
+      bloc.bouton && (
+        <Button href={bloc.bouton.lien} primary={!bloc.bouton.secondaire} secondary={bloc.bouton.secondaire} style={{ marginTop: '2rem' }}>
+          {bloc.bouton.texte}
+        </Button>
+      )
+    }
+  </Grid>
+</Grid>

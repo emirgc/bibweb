@@ -1,0 +1,27 @@
+---
+/*
+ * Bloc « image-texte » : titre, texte et bouton à côté d'une image
+ * décorative (HeroWithImage). `positionImage` dit de quel côté est l'image.
+ */
+import HeroWithImage from '@/components/mdx/mise-en-page/HeroWithImage.astro'
+import Button from '@/components/mdx/primitives/Button.astro'
+import Titre from './Titre.astro'
+import TexteMarkdown from './TexteMarkdown.astro'
+import type { BlocDe } from './types'
+
+type Props = { bloc: BlocDe<'image-texte'> }
+
+const { bloc } = Astro.props
+---
+
+<HeroWithImage Image={bloc.image} align={bloc.positionImage === 'gauche' ? 'right' : 'left'}>
+  <Titre texte={bloc.titre} id={bloc.id} />
+  <TexteMarkdown texte={bloc.texte} brut />
+  {
+    bloc.bouton && (
+      <Button slot="footer" href={bloc.bouton.lien} primary={!bloc.bouton.secondaire} secondary={bloc.bouton.secondaire}>
+        {bloc.bouton.texte}
+      </Button>
+    )
+  }
+</HeroWithImage>

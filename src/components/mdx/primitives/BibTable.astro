@@ -1,0 +1,125 @@
+---
+/*
+ * Tableau maison (BibTable de coquille-web) : coins arrondis, en-tête bleu
+ * 200, première colonne en gras bleu. Le contenu écrit <thead> et <tbody> à
+ * la main.
+ *
+ * Corrigé : la source passait le <table> en display:block sous 600 px, ce qui
+ * lui retire sa sémantique de tableau dans plusieurs navigateurs. Ici, un
+ * conteneur défile horizontalement, atteignable au clavier, et les <th>
+ * reçoivent leur portée.
+ */
+import { porteeDesEntetes } from './tableau'
+import { classes, fusionnerStyles } from '@/lib/styles'
+
+interface Props {
+  /** Nom de la zone défilante (sinon, le aria-label du tableau ou « Tableau ») */
+  'aria-label'?: string
+  class?: string
+  className?: string
+  style?: string | Record<string, string | number>
+  [attribut: string]: unknown
+}
+
+const { class: classe, className, style, ...reste } = Astro.props
+const contenu = porteeDesEntetes(Astro.slots.has('default') ? await Astro.slots.render('default') : '')
+const nomZone = (reste['aria-label'] as string | undefined) ?? 'Tableau'
+---
+
+<div class="defilement" role="region" aria-label={nomZone} tabindex="0">
+  <table class:list={['tableau-bib', classes(classe, className)]} style={fusionnerStyles(style)} {...reste} set:html={contenu}></table>
+</div>
+
+<style>
+  .defilement {
+    margin: 1.5rem 0;
+    overflow-x: auto;
+    border: 1px solid var(--couleur-bordure);
+    border-radius: var(--rayon-tres-petit);
+  }
+
+  .tableau-bib {
+    width: 100%;
+    border-collapse: separate;
+    border-spacing: 0;
+    color: var(--couleur-texte);
+    font-family: var(--police-sans);
+    font-size: 0.8125rem;
+    font-weight: var(--graisse-moyenne);
+    line-height: 1.5;
+  }
+
+  .tableau-bib :global(thead tr) {
+    background-color: var(--bleu-200);
+  }
+
+  .tableau-bib :global(thead th) {
+    padding: 10px 12px;
+    border-bottom: 2px solid var(--bleu-principal);
+    color: var(--bleu-600);
+    font-size: inherit;
+    font-weight: var(--graisse-forte);
+    text-align: left;
+    white-space: nowrap;
+  }
+
+  .tableau-bib :global(tbody tr) {
+    background-color: var(--couleur-fond);
+    transition: background-color var(--duree-moyenne-1) var(--courbe-emphase);
+  }
+
+  .tableau-bib :global(tbody tr:hover) {
+    background-color: color-mix(in srgb, var(--couleur-bordure) 35%, var(--couleur-fond));
+  }
+
+  .tableau-bib :global(tbody tr:not(:last-child) > *) {
+    border-bottom: 1px solid var(--couleur-bordure);
+  }
+
+  .tableau-bib :global(tbody td),
+  .tableau-bib :global(tbody th) {
+    padding: 10px 12px;
+    vertical-align: middle;
+    text-align: left;
+  }
+
+  .tableau-bib :global(tbody > tr > :first-child) {
+    color: var(--bleu-principal);
+    font-weight: var(--graisse-forte);
+  }
+
+  @media (min-width: 600px) {
+    .defilement {
+      border-radius: var(--rayon-petit);
+    }
+
+    .tableau-bib {
+      font-size: 1rem;
+    }
+
+    .tableau-bib :global(thead th),
+    .tableau-bib :global(tbody td),
+    .tableau-bib :global(tbody th) {
+      padding: 10px 16px;
+    }
+
+    .tableau-bib :global(tbody > tr > :first-child) {
+      white-space: nowrap;
+    }
+  }
+
+  @media (min-width: 900px) {
+    .tableau-bib {
+      font-size: 0.875rem;
+    }
+
+    .tableau-bib :global(thead th) {
+      padding: 14px 24px;
+    }
+
+    .tableau-bib :global(tbody td),
+    .tableau-bib :global(tbody th) {
+      padding: 12px 24px;
+    }
+  }
+</style>

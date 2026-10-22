@@ -1,0 +1,163 @@
+import { defineCollection } from 'astro:content'
+import { glob, file } from 'astro/loaders'
+import { z } from 'astro/zod'
+import slugify from '@sindresorhus/slugify'
+import { existsSync } from 'node:fs'
+import { join } from 'node:path'
+import { schemaVitrine } from '@/components/vitrines/schema'
+
+/*
+ * Collections de contenu.
+ *
+ * Les identifiants reproduisent les URL de coquille-web (gatsby-node.mjs),
+ * pour que toutes les adresses actuelles restent valides :
+ * - pages : `<dossier>/<slugify(nom de fichier)>`, `index` donne le dossier.
+ *   Le `slug:` du frontmatter est ignoré, comme dans Gatsby où il ne
+ *   s'appliquait jamais aux pages (un bogue heureux : l'appliquer aurait
+ *   changé des URL publiques, par exemple /a-propos/carriere/carriere/).
+ * - nouvelles : `<année>/<slug du frontmatter, casse conservée>`, ou le nom
+ *   de fichier passé dans slugify s'il n'y a pas de slug.
+ *
+ * Deux types de pages partagent l'arborescence src/content/pages (voir
+ * docs/CONVENTIONS.md) : les pages de texte (.md, ou .mdx pendant la
+ * transition), collection `pages`, et les vitrines (.yaml), collection
+ * `vitrines`. Une URL n'a qu'une source : deux fichiers qui donnent le même
+ * identifiant (diplomes.md et diplomes.mdx, recherche/index.mdx et
+ * recherche/index.yaml) font échouer le build.
+ */
+
+const BASE_PAGES = './src/content/pages'
+
+// Retire l'extension, puis met le nom de fichier en forme d'URL ; le chemin
+// des dossiers est gardé tel quel (Gatsby ne le passait pas dans slugify).
+function idDePage(entry: string) {
+  const segments = entry.replace(/\.(mdx?|yaml)$/i, '').split('/')
+  const nom = segments.pop() ?? ''
+  const fin = /^index$/i.test(nom) ? '' : slugify(nom)
+  return [...segments, fin].filter(Boolean).join('/') || 'index'
+}
+
+// Fichier source de chaque identifiant de page, toutes collections
+// confondues. Le chargeur rappelle generateId à chaque modification : on ne
+// signale un doublon que si l'autre fichier existe encore (sinon, c'est un
+// renommage, par exemple de .mdx en .md).
+const sourcesParId = new Map<string, string>()
+
+function idUnique(entry: string) {
+  const id = idDePage(entry)
+  const autre = sourcesParId.get(id)
+  if (autre && autre !== entry && existsSync(join(BASE_PAGES, autre))) {
+    throw new Error(
+      `Deux fichiers donnent la même page /${id === 'index' ? '' : `${id}/`} : src/content/pages/${autre} et src/content/pages/${entry}. ` +
+        'Une page existe en un seul exemplaire : texte (.md ou .mdx) ou vitrine (.yaml). Supprimez l’un des deux.',
+    )
+  }
+  sourcesParId.set(id, entry)
+  return id
+}
+
+const secondaryNav = z
+  .object({
+    title: z.string().optional(),
+    order: z.number().optional(),
+    hidden: z.boolean().optional(),
+  })
+  .optional()
+
+const superHero = z
+  .object({
+    imageName: z.string(),
+    title: z.string().optional(),
+    // Format de la bannière d'une page de niveau 1 en .md (SuperHero2)
+    size: z.enum(['default', 'small']).optional(),
+  })
+  .optional()
+
+// Langue du contenu de la page (BCP 47, ex. `en`) ; absente = français.
+// Le gabarit la met sur <html> ; la coquille reste en français.
+const lang = z
+  .string()
+  .trim()
+  .regex(/^[a-z]{2,3}(-[A-Za-z0-9]{2,8})*$/, 'Code de langue BCP 47 attendu (ex. en, en-CA)')
+  .optional()
+
+const pages = defineCollection({
+  loader: glob({
+    base: BASE_PAGES,
+    pattern: '**/*.{md,mdx}',
+    generateId: ({ entry }) => idUnique(entry),
+  }),
+  schema: z.object({
+    title: z.string().trim().optional(),
+    description: z.string().optional(),
+    crumbLabel: z.string().trim().optional(),
+    template: z.enum(['doc', 'blank']).optional(),
+    secondaryNav,
+    superHero,
+    noindex: z.boolean().optional(),
+    lvl: z.number().optional(),
+    lang,
+  }),
+})
+
+const nouvelles = defineCollection({
+  loader: glob({
+    base: './src/content/nouvelles',
+    pattern: '**/*.mdx',
+    generateId: ({ entry, data }) => {
+      const segments = entry.replace(/\.mdx?$/i, '').split('/')
+      const nom = segments.pop() ?? ''
+      const slug = typeof data.slug === 'string' && data.slug.trim() ? data.slug.trim() : slugify(nom)
+      return [...segments, slug].join('/')
+    },
+  }),
+  schema: ({ image }) =>
+    z.object({
+      title: z.string().trim(),
+      /** Titre affiché (h1) quand il diffère du `title` (onglet, listes), comme dans la source */
+      titreAffiche: z.string().trim().optional(),
+      slug: z.string().optional(),
+      date: z.coerce.date(),
+      type: z.literal('interne').default('interne'),
+      source: z.string().optional(),
+      newsUrl: z.string().url().optional(),
+      authors: z.array(z.string()).optional(),
+      crumbLabel: z.string().optional(),
+      newsImage: z
+        .object({
+          src: image().optional(),
+          alt: z.string().nullish(),
+          legend: z.string().nullish(),
+          caption: z.string().nullish(),
+          source: z.string().nullish(),
+        })
+        .optional(),
+    }),
+})
+
+// Revue de presse : un seul fichier JSON que l'équipe édite à la main
+const revueDePresse = defineCollection({
+  loader: file('src/content/revue-de-presse/articles.json', {
+    parser: (texte) => JSON.parse(texte).map((article: { url: string }) => ({ id: article.url, ...article })),
+  }),
+  schema: z.object({
+    title: z.string().trim(),
+    date: z.coerce.date(),
+    source: z.string().trim(),
+    url: z.string().url(),
+    lang: z.string().default('fr'),
+  }),
+})
+
+// Vitrines : pages d'accueil et de section en données YAML, rendues par
+// src/layouts/GabaritVitrine.astro (schéma des blocs : components/vitrines/schema.ts)
+const vitrines = defineCollection({
+  loader: glob({
+    base: BASE_PAGES,
+    pattern: '**/*.yaml',
+    generateId: ({ entry }) => idUnique(entry),
+  }),
+  schema: ({ image }) => schemaVitrine(image, { secondaryNav, lang }),
+})
+
+export const collections = { pages, vitrines, nouvelles, revueDePresse }

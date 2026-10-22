@@ -1,0 +1,65 @@
+---
+/*
+ * Cellule de tableau (MUI TableCell). Un <td> marqué data-cellule, que
+ * TableHead change en <th scope="col"> ; component="th" donne un en-tête de
+ * rangée (scope="row" par défaut).
+ */
+import { classes, fusionnerStyles } from '@/lib/styles'
+
+interface Props {
+  align?: 'left' | 'center' | 'right' | 'justify' | 'inherit'
+  component?: 'td' | 'th'
+  scope?: 'col' | 'row' | 'colgroup' | 'rowgroup'
+  colSpan?: number
+  rowSpan?: number
+  class?: string
+  className?: string
+  style?: string | Record<string, string | number>
+  [attribut: string]: unknown
+}
+
+const { align, component = 'td', scope, colSpan, rowSpan, class: classe, className, style, variant: _variante, padding: _rembourrage, ...reste } = Astro.props
+const estEntete = component === 'th'
+const alignement = align && align !== 'inherit' ? `aligne-${align}` : undefined
+---
+
+{
+  estEntete ? (
+    <th scope={scope ?? 'row'} colspan={colSpan} rowspan={rowSpan} class:list={['cellule', alignement, classes(classe, className)]} style={fusionnerStyles(style)} {...reste}>
+      <slot />
+    </th>
+  ) : (
+    <td data-cellule scope={scope} colspan={colSpan} rowspan={rowSpan} class:list={['cellule', alignement, classes(classe, className)]} style={fusionnerStyles(style)} {...reste}>
+      <slot />
+    </td>
+  )
+}
+
+<style>
+  .cellule {
+    padding: 16px;
+    border-bottom: 1px solid var(--couleur-bordure);
+    color: var(--couleur-texte);
+    font-size: 0.875rem;
+    font-weight: var(--graisse-moyenne);
+    line-height: 1.43;
+    text-align: left;
+    vertical-align: inherit;
+  }
+
+  :global(thead) .cellule {
+    line-height: 1.5rem;
+  }
+
+  .aligne-center {
+    text-align: center;
+  }
+
+  .aligne-right {
+    text-align: right;
+  }
+
+  .aligne-justify {
+    text-align: justify;
+  }
+</style>

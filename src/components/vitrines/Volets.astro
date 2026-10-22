@@ -1,0 +1,102 @@
+---
+/*
+ * Accordéons d'une vitrine (AccordionGroup, un seul volet ouvert à la fois).
+ * Le bloc qui les emploie les place dans la colonne de texte (GridOffset
+ * 0.5), avec son titre : la source les décalait d'une colonne (GridOffset 1),
+ * en retrait du titre et des autres blocs de texte.
+ * Le titre d'un volet est un h3 : il suit toujours le h2 d'un bloc.
+ *
+ * Les `coordonnees` reprennent les lignes à icônes de /nous-joindre/
+ * (courriel, téléphone, adresse et itinéraire) : le rédacteur ne donne que
+ * les valeurs ; le lien tel: se déduit du numéro affiché.
+ */
+import { EnvelopeIcon } from '@phosphor-icons/react/dist/ssr/Envelope'
+import { PhoneIcon } from '@phosphor-icons/react/dist/ssr/Phone'
+import { MapTrifoldIcon } from '@phosphor-icons/react/dist/ssr/MapTrifold'
+import { ArrowSquareOutIcon } from '@phosphor-icons/react/dist/ssr/ArrowSquareOut'
+import AccordionGroup from '@/components/mdx/accordeons/AccordionGroup.astro'
+import Accordion from '@/components/mdx/accordeons/Accordion.astro'
+import AccordionSummary from '@/components/mdx/accordeons/AccordionSummary.astro'
+import AccordionDetails from '@/components/mdx/accordeons/AccordionDetails.astro'
+import Link from '@/components/mdx/primitives/Link.astro'
+import Typography from '@/components/mdx/primitives/Typography.astro'
+import TexteMarkdown from './TexteMarkdown.astro'
+import type { BlocDe } from './types'
+
+type Volet = BlocDe<'accordeons'>['volets'][number]
+
+interface Props {
+  volets: Volet[]
+  couleur: BlocDe<'accordeons'>['couleur']
+}
+
+const { volets, couleur } = Astro.props
+const styleIcone = { color: 'var(--bleu-principal)', flex: 'none' }
+---
+
+<AccordionGroup color={couleur} style={{ width: '100%' }}>
+  {
+    volets.map((volet) => (
+      <Accordion id={volet.id}>
+        <AccordionSummary>{volet.titre}</AccordionSummary>
+        <AccordionDetails>
+          {volet.texte && <TexteMarkdown texte={volet.texte} espacerParagraphes />}
+          {volet.coordonnees && (
+            <div class="coordonnees">
+              {volet.coordonnees.courriel && (
+                <div class="ligne">
+                  <EnvelopeIcon size={24} style={styleIcone} aria-hidden="true" />
+                  <Link to={`mailto:${volet.coordonnees.courriel}`}>{volet.coordonnees.courriel}</Link>
+                </div>
+              )}
+              {volet.coordonnees.telephone && (
+                <div class="ligne">
+                  <PhoneIcon size={24} style={styleIcone} aria-hidden="true" />
+                  <Link to={`tel:${volet.coordonnees.telephone.replace(/\s+/g, '-')}`}>{volet.coordonnees.telephone}</Link>
+                </div>
+              )}
+              {(volet.coordonnees.adresse || volet.coordonnees.itineraire) && (
+                <div class="ligne adresse">
+                  <MapTrifoldIcon size={24} style={styleIcone} aria-hidden="true" />
+                  <div>
+                    {volet.coordonnees.adresse && (
+                      <Typography>
+                        {volet.coordonnees.adresse.map((ligne, i) => (
+                          <Fragment>
+                            {i > 0 && <br />}
+                            {ligne}
+                          </Fragment>
+                        ))}
+                      </Typography>
+                    )}
+                    {volet.coordonnees.itineraire && (
+                      <Link to={volet.coordonnees.itineraire} Icon={ArrowSquareOutIcon}>
+                        Voir l'itinéraire
+                      </Link>
+                    )}
+                  </div>
+                </div>
+              )}
+            </div>
+          )}
+        </AccordionDetails>
+      </Accordion>
+    ))
+  }
+</AccordionGroup>
+
+<style>
+  .ligne {
+    display: flex;
+    align-items: center;
+    gap: var(--espace-1);
+  }
+
+  .ligne:not(:last-child) {
+    padding-bottom: var(--espace-1);
+  }
+
+  .adresse {
+    align-items: start;
+  }
+</style>

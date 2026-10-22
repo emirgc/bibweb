@@ -1,0 +1,836 @@
+---
+/*
+ * Répertoire du personnel (RepertoirePersonnel de coquille-web).
+ *
+ * Toute la liste est rendue au build, en HTML : sans JavaScript, on lit les
+ * 141 fiches d'un trait. Le script ci-dessous ajoute ensuite, en
+ * amélioration progressive, la recherche, les filtres par bibliothèque et
+ * par discipline, la synchronisation avec l'ancre de l'URL (#sante, #droit…,
+ * utilisée par les liens des fiches de bibliothèques), le préremplissage par
+ * ?q= (résultats « Personnel » de la recherche du site) et la pagination de
+ * 8 fiches, comme dans la source.
+ *
+ * Corrections par rapport à la source : libellés visibles sur les champs,
+ * nombre de résultats annoncé (role="status"), liens tel: valides, lien
+ * Teams (récupéré mais jamais affiché), noms accessibles explicites sur les
+ * liens, ancre mise à jour sans polluer l'historique ni remonter en haut de
+ * la page, photos recadrées et optimisées au build.
+ */
+import type { ImageMetadata } from 'astro'
+import { Picture } from 'astro:assets'
+import { PhoneIcon } from '@phosphor-icons/react/dist/ssr/Phone'
+import { EnvelopeSimpleIcon } from '@phosphor-icons/react/dist/ssr/EnvelopeSimple'
+import { MicrosoftTeamsLogoIcon } from '@phosphor-icons/react/dist/ssr/MicrosoftTeamsLogo'
+import { MagnifyingGlassIcon } from '@phosphor-icons/react/dist/ssr/MagnifyingGlass'
+import { XIcon } from '@phosphor-icons/react/dist/ssr/X'
+import { personnel } from '@/lib/personnel'
+import { bibliotheques } from '@/data/bibliotheques'
+import { normaliserMots, cle, majuscule, SEPARATEUR, prochainNumero } from './normaliser'
+
+interface Props {
+  /** Niveau du titre de chaque fiche (nom de la personne) : 2 sous un h1, 3 sous un h2 */
+  niveauTitre?: 2 | 3 | 4 | 5 | 6
+  class?: string
+  style?: string
+}
+
+const { niveauTitre = 3, class: classe, style } = Astro.props
+const Titre = `h${niveauTitre}` as 'h3'
+
+// Photos du dossier, indexées par nom de fichier ; `_profile` sert de repli
+const fichiersPhotos = import.meta.glob<{ default: ImageMetadata }>('/src/content/personnel/photos/*.{jpg,jpeg,png,webp}', { eager: true })
+const photos = new Map(Object.entries(fichiersPhotos).map(([chemin, module]) => [chemin.split('/').pop() ?? '', module.default]))
+const photoParDefaut = photos.get('_profile.webp')
+
+// Un numéro comme « 514 343-6111, poste 3585 » donnait un href tel: invalide
+function lienTelephone(texte: string) {
+  const [principal, poste] = texte.split(/,?\s*(?:poste|p\.|ext\.?)\s*/i)
+  let chiffres = principal.replace(/\D/g, '')
+  if (chiffres.length === 10) chiffres = `1${chiffres}`
+  if (chiffres.length < 7) return undefined
+  const extension = poste?.replace(/\D/g, '')
+  return `tel:+${chiffres}${extension ? `;ext=${extension}` : ''}`
+}
+
+const personnes = personnel()
+
+// Valeurs des listes : une option par valeur distincte (comparée sans
+// accents ni casse), libellé de la première occurrence, tri alphabétique.
+function options(valeurs: string[]) {
+  const parCle = new Map<string, string>()
+  for (const valeur of valeurs) if (!parCle.has(cle(valeur))) parCle.set(cle(valeur), majuscule(valeur))
+  return [...parCle].map(([valeur, libelle]) => ({ valeur, libelle })).sort((a, b) => a.libelle.localeCompare(b.libelle, 'fr'))
+}
+
+// Le tableur mêle bibliothèques, directions et services : d'où le libellé
+// « bibliothèques ou directions » de la source.
+const optionsBibliotheques = options(personnes.flatMap((p) => p.bibliotheques)).map((o) => {
+  const bib = bibliotheques.find((b) => [b.id, b.titre, b.autreTitre, ...b.alias].some((v) => cle(v) === o.valeur))
+  return { ...o, ancre: bib?.id }
+})
+const optionsDisciplines = options(personnes.flatMap((p) => p.disciplines))
+
+// Ancre de l'URL → option : l'id de la fiche (#sante), son titre, son autre
+// titre, ou le nom tel qu'il figure dans le tableur (ancien format de la source).
+const ancres: Record<string, string> = {}
+for (const o of optionsBibliotheques) {
+  ancres[o.valeur] = o.valeur
+  const bib = bibliotheques.find((b) => b.id === o.ancre)
+  if (bib) for (const v of [bib.id, bib.titre, bib.autreTitre]) ancres[cle(v)] = o.valeur
+}
+
+const fiches = personnes.map((p) => ({
+  ...p,
+  photoImage: (p.photo && photos.get(p.photo)) || photoParDefaut,
+  hrefTelephone: p.telephone ? lienTelephone(p.telephone) : undefined,
+  hrefTeams: p.teams && /^https:\/\//.test(p.teams) ? p.teams : undefined,
+  texte: normaliserMots([p.nom, p.prenom, p.fonction, p.disciplines.join(' '), p.bibliotheques.join(' '), p.direction].join(' ')),
+  // Comme la source : la première lettre en majuscule, la suite telle quelle
+  disciplinesAffichees: p.disciplines.map((d, i) => (i === 0 ? majuscule(d) : d)).join(', '),
+}))
+
+const total = fiches.length
+const n = prochainNumero()
+const ids = { q: `repertoire-q-${n}`, bib: `repertoire-bib-${n}`, disc: `repertoire-disc-${n}` }
+---
+
+<div class:list={['repertoire', classe]} style={style} data-repertoire data-ancres={JSON.stringify(ancres)}>
+  <form class="filtres" role="search" aria-label="Répertoire du personnel" data-filtres>
+    <div class="champ">
+      <label for={ids.q}>Rechercher</label>
+      <div class="boite">
+        <MagnifyingGlassIcon size={24} aria-hidden="true" />
+        <input type="search" id={ids.q} name="q" placeholder="Chercher un nom, une discipline, etc." autocomplete="off" spellcheck="false" data-recherche />
+      </div>
+    </div>
+    <div class="champ">
+      <label for={ids.bib}>Bibliothèque ou direction</label>
+      <div class="boite liste-deroulante">
+        <select id={ids.bib} name="bibliotheque" data-filtre="bibliotheque">
+          <option value="">Toutes les bibliothèques ou directions</option>
+          {
+            optionsBibliotheques.map((o) => (
+              <option value={o.valeur} data-ancre={o.ancre}>
+                {o.libelle}
+              </option>
+            ))
+          }
+        </select>
+      </div>
+    </div>
+    <div class="champ">
+      <label for={ids.disc}>Discipline</label>
+      <div class="boite liste-deroulante">
+        <select id={ids.disc} name="discipline" data-filtre="discipline">
+          <option value="">Toutes les disciplines</option>
+          {optionsDisciplines.map((o) => <option value={o.valeur}>{o.libelle}</option>)}
+        </select>
+      </div>
+    </div>
+  </form>
+
+  <div class="actifs" hidden data-actifs></div>
+  <template data-icone-retirer><XIcon size={18} weight="bold" aria-hidden="true" /></template>
+
+  <p class="compte" role="status" data-statut>{total} personnes</p>
+
+  <ul class="fiches" aria-label="Membres du personnel" tabindex="-1" data-liste>
+    {
+      fiches.map((p) => (
+        <li class="fiche" data-texte={p.texte} data-bibliotheque={p.bibliotheques.map((b) => cle(b)).join(SEPARATEUR)} data-discipline={p.disciplines.map((d) => cle(d)).join(SEPARATEUR)}>
+          <div class="entete">
+            {/* alt vide : le nom est juste à côté, une description répéterait le titre */}
+            {p.photoImage && <Picture class="photo" src={p.photoImage} alt="" width={100} height={100} densities={[1, 2]} fit="cover" position="center" formats={['avif', 'webp']} fallbackFormat="webp" loading="lazy" decoding="async" />}
+            <Titre class="nom">{p.nomComplet}</Titre>
+          </div>
+          <div class="details">
+            <div>
+              <p class="fonction">{majuscule(p.fonction)}</p>
+              {p.direction && <p class="direction">{majuscule(p.direction)}</p>}
+              {p.disciplines.length > 0 && <p class="disciplines">{p.disciplinesAffichees}</p>}
+            </div>
+            <ul class="contacts">
+              {p.telephone && (
+                <li>
+                  {p.hrefTelephone ? (
+                    <a href={p.hrefTelephone}>
+                      <PhoneIcon size={25} aria-hidden="true" />
+                      <span>
+                        <span class="visuellement-masque">Appeler {p.nomComplet} au </span>
+                        {p.telephone}
+                      </span>
+                    </a>
+                  ) : (
+                    <span class="sans-lien">
+                      <PhoneIcon size={25} aria-hidden="true" />
+                      <span>
+                        <span class="visuellement-masque">Téléphone : </span>
+                        {p.telephone}
+                      </span>
+                    </span>
+                  )}
+                </li>
+              )}
+              {p.courriel && (
+                <li>
+                  <a href={`mailto:${p.courriel}`}>
+                    <EnvelopeSimpleIcon size={25} aria-hidden="true" />
+                    <span class="courriel">
+                      <span class="visuellement-masque">Écrire à {p.nomComplet} : </span>
+                      {p.courriel}
+                    </span>
+                  </a>
+                </li>
+              )}
+              {p.hrefTeams && (
+                <li>
+                  <a href={p.hrefTeams} target="_blank" rel="noopener noreferrer">
+                    <MicrosoftTeamsLogoIcon size={25} aria-hidden="true" />
+                    <span>
+                      Clavarder sur Teams<span class="visuellement-masque"> avec {p.nomComplet} (nouvel onglet)</span>
+                    </span>
+                  </a>
+                </li>
+              )}
+            </ul>
+            {
+              p.bibliotheques.length > 0 && (
+                <ul class="bibliotheques">
+                  {p.bibliotheques.map((b) => (
+                    <li>{majuscule(b)}</li>
+                  ))}
+                </ul>
+              )
+            }
+          </div>
+        </li>
+      ))
+    }
+  </ul>
+
+  <nav class="pagination" aria-label="Pagination du répertoire" hidden data-pagination>
+    <ul data-pages></ul>
+  </nav>
+</div>
+
+<script>
+  import { normaliserMots, cle, SEPARATEUR } from './normaliser'
+
+  const PAR_PAGE = 8
+  // Délai avant d'annoncer le nombre de résultats pendant la frappe : une
+  // annonce par pause plutôt qu'une par lettre.
+  const DELAI_ANNONCE = 600
+
+  function texteStatut(nombre: number, page: number, pages: number) {
+    if (nombre === 0) return 'Aucune personne ne correspond à ces critères.'
+    const personnes = nombre === 1 ? '1 personne' : `${nombre} personnes`
+    return pages > 1 ? `${personnes}, page ${page} sur ${pages}` : personnes
+  }
+
+  // Numéros affichés, comme la pagination MUI de la source : premières et
+  // dernières pages, la page courante et ses voisines, des ellipses entre.
+  // `voisines` : pages montrées de chaque côté de la page courante (siblingCount
+  // de MUI, boundaryCount 1). Le nombre de cases reste constant (2 × voisines
+  // + 5) : une ellipse ne remplace jamais une seule page.
+  function numeros(page: number, pages: number, voisines: number): number[] {
+    if (pages <= 2 * voisines + 5) return Array.from({ length: pages }, (_, i) => i + 1)
+    const debut = Math.max(Math.min(page - voisines, pages - 2 * voisines - 2), 3)
+    const fin = Math.min(Math.max(page + voisines, 2 * voisines + 3), pages - 2)
+    const milieu = Array.from({ length: fin - debut + 1 }, (_, i) => debut + i)
+    return [1, ...(debut > 3 ? [] : [2]), ...milieu, ...(fin < pages - 2 ? [] : [pages - 1]), pages]
+  }
+
+  // Sous 600 px, des boutons de 44 px (cible tactile) ne tiennent sur une
+  // rangée que sans les voisines de la page courante : on rend les deux
+  // suites (larges, une voisine ; compactes, aucune) dans une seule liste,
+  // et le CSS masque ce qui n'appartient qu'à l'une (display: none, donc
+  // absent aussi de l'arbre d'accessibilité). Pas de choix en JS selon la
+  // largeur : rien ne bouge au redimensionnement.
+  type Case = ({ numero: number } | { ellipse: true }) & { seulement?: 'large' | 'compacte' }
+  function suite(page: number, pages: number): Case[] {
+    const larges = numeros(page, pages, 1)
+    const compactes = numeros(page, pages, 0)
+    const tous = [...new Set([...larges, ...compactes])].sort((a, b) => a - b)
+    const resultat: Case[] = []
+    const saut = (liste: number[], n: number) => {
+      const i = liste.indexOf(n)
+      return i >= 0 && i < liste.length - 1 && liste[i + 1] - n > 1
+    }
+    for (const n of tous) {
+      const dansLarges = larges.includes(n)
+      const dansCompactes = compactes.includes(n)
+      resultat.push({ numero: n, seulement: dansLarges && dansCompactes ? undefined : dansLarges ? 'large' : 'compacte' })
+      const sautLarge = saut(larges, n)
+      const sautCompact = saut(compactes, n)
+      if (sautLarge || sautCompact)
+        resultat.push({ ellipse: true, seulement: sautLarge && sautCompact ? undefined : sautLarge ? 'large' : 'compacte' })
+    }
+    return resultat
+  }
+
+  function initialiser(racine: HTMLElement) {
+    const formulaire = racine.querySelector<HTMLFormElement>('[data-filtres]')!
+    const recherche = racine.querySelector<HTMLInputElement>('[data-recherche]')!
+    const filtres = [...racine.querySelectorAll<HTMLSelectElement>('[data-filtre]')]
+    const [filtreBib] = filtres
+    const statut = racine.querySelector<HTMLElement>('[data-statut]')!
+    const liste = racine.querySelector<HTMLElement>('[data-liste]')!
+    const fiches = [...liste.querySelectorAll<HTMLElement>(':scope > li')]
+    const navigation = racine.querySelector<HTMLElement>('[data-pagination]')!
+    const pages = racine.querySelector<HTMLElement>('[data-pages]')!
+    const actifs = racine.querySelector<HTMLElement>('[data-actifs]')!
+    const iconeRetirer = racine.querySelector<HTMLTemplateElement>('[data-icone-retirer]')!
+    const ancres: Record<string, string> = JSON.parse(racine.dataset.ancres ?? '{}')
+
+    let page = 1
+    let minuterie: number | undefined
+
+    // Ancre → filtre bibliothèque ; renvoie vrai si l'ancre en désignait une
+    function lireAncre() {
+      let ancre = ''
+      try {
+        ancre = decodeURIComponent(location.hash.slice(1))
+      } catch {
+        return false
+      }
+      const valeur = ancre && ancres[cle(ancre)]
+      if (!valeur) return false
+      filtreBib.value = valeur
+      return true
+    }
+
+    // replaceState : choisir un filtre ne crée pas d'entrée d'historique et
+    // ne fait pas défiler la page (la source faisait les deux).
+    function ecrireAncre() {
+      const option = filtreBib.selectedOptions[0]
+      const base = location.pathname + location.search
+      const ancre = filtreBib.value ? `#${option.dataset.ancre ?? encodeURIComponent(option.textContent?.trim() ?? '')}` : ''
+      history.replaceState(history.state, '', base + ancre)
+    }
+
+    function rendrePuces() {
+      actifs.replaceChildren()
+      for (const filtre of filtres) {
+        if (!filtre.value) continue
+        const libelle = filtre.selectedOptions[0].textContent?.trim() ?? ''
+        const bouton = document.createElement('button')
+        bouton.type = 'button'
+        bouton.className = 'puce'
+        bouton.setAttribute('aria-label', `Retirer le filtre : ${libelle}`)
+        const texte = document.createElement('span')
+        texte.textContent = libelle
+        bouton.append(texte, iconeRetirer.content.cloneNode(true))
+        bouton.addEventListener('click', () => {
+          filtre.value = ''
+          if (filtre === filtreBib) ecrireAncre()
+          page = 1
+          rendre()
+          // La puce disparaît : le focus revient sur la liste correspondante
+          filtre.focus()
+        })
+        actifs.append(bouton)
+      }
+      actifs.hidden = actifs.childElementCount === 0
+    }
+
+    function rendrePagination(nombrePages: number) {
+      navigation.hidden = nombrePages <= 1
+      pages.replaceChildren()
+      if (nombrePages <= 1) return
+      const element = (contenu: Node | string, cible: number | null, libelle: string, courant = false) => {
+        const li = document.createElement('li')
+        const bouton = document.createElement('button')
+        bouton.type = 'button'
+        bouton.setAttribute('aria-label', libelle)
+        bouton.append(contenu)
+        // La page courante reste focalisable pour qu'on sache où l'on est
+        if (courant) bouton.setAttribute('aria-current', 'page')
+        else if (cible === null) bouton.disabled = true
+        else bouton.addEventListener('click', () => allerA(cible))
+        li.append(bouton)
+        return li
+      }
+      const fleche = (sens: 'precedente' | 'suivante') => {
+        const span = document.createElement('span')
+        span.className = `fleche fleche-${sens}`
+        span.setAttribute('aria-hidden', 'true')
+        return span
+      }
+      pages.append(element(fleche('precedente'), page > 1 ? page - 1 : null, 'Page précédente'))
+      for (const item of suite(page, nombrePages)) {
+        let li: HTMLLIElement
+        if ('ellipse' in item) {
+          li = document.createElement('li')
+          li.className = 'ellipse'
+          li.setAttribute('aria-hidden', 'true')
+          li.textContent = '…'
+        } else {
+          const { numero } = item
+          li = element(String(numero), numero === page ? null : numero, `Page ${numero}`, numero === page)
+        }
+        if (item.seulement) li.classList.add(`seulement-${item.seulement}`)
+        pages.append(li)
+      }
+      pages.append(element(fleche('suivante'), page < nombrePages ? page + 1 : null, 'Page suivante'))
+    }
+
+    function allerA(numero: number) {
+      page = numero
+      rendre()
+      // Le focus passe au début de la nouvelle page de résultats
+      racine.scrollIntoView({ block: 'start' })
+      liste.focus({ preventScroll: true })
+    }
+
+    function rendre(annonceDifferee = false) {
+      const jetons = normaliserMots(recherche.value).split(' ').filter(Boolean)
+      const [bib, discipline] = filtres.map((f) => f.value)
+      const retenues = fiches.filter(
+        (fiche) =>
+          jetons.every((jeton) => (fiche.dataset.texte ?? '').includes(jeton)) &&
+          (!bib || (fiche.dataset.bibliotheque ?? '').split(SEPARATEUR).includes(bib)) &&
+          (!discipline || (fiche.dataset.discipline ?? '').split(SEPARATEUR).includes(discipline)),
+      )
+      const nombrePages = Math.max(1, Math.ceil(retenues.length / PAR_PAGE))
+      page = Math.min(page, nombrePages)
+      const visibles = new Set(retenues.slice((page - 1) * PAR_PAGE, page * PAR_PAGE))
+      for (const fiche of fiches) fiche.hidden = !visibles.has(fiche)
+      liste.hidden = visibles.size === 0
+
+      rendrePuces()
+      rendrePagination(nombrePages)
+
+      window.clearTimeout(minuterie)
+      const texte = texteStatut(retenues.length, page, nombrePages)
+      if (annonceDifferee) minuterie = window.setTimeout(() => (statut.textContent = texte), DELAI_ANNONCE)
+      else statut.textContent = texte
+    }
+
+    formulaire.addEventListener('submit', (e) => e.preventDefault())
+
+    const q = new URLSearchParams(location.search).get('q')
+    if (q) recherche.value = q
+    lireAncre()
+    rendre()
+
+    recherche.addEventListener('input', () => {
+      page = 1
+      rendre(true)
+    })
+    for (const filtre of filtres) {
+      filtre.addEventListener('change', () => {
+        if (filtre === filtreBib) ecrireAncre()
+        page = 1
+        rendre()
+      })
+    }
+    window.addEventListener('hashchange', () => {
+      if (!lireAncre()) return
+      page = 1
+      rendre()
+    })
+  }
+
+  for (const racine of document.querySelectorAll<HTMLElement>('[data-repertoire]')) initialiser(racine)
+</script>
+
+<style>
+  .repertoire {
+    padding-block: 2rem;
+    scroll-margin-top: var(--hauteur-entete);
+  }
+
+  .repertoire [hidden] {
+    display: none !important;
+  }
+
+  /* ---- Filtres ---- */
+  .filtres {
+    display: grid;
+    gap: 1rem;
+    margin-block-end: 1.5rem;
+  }
+
+  /* Les filtres sont rendus visibles dès le HTML : les révéler au chargement
+     du script poussait la liste de 267 px à 390 px (CLS 0,20). Sans
+     JavaScript, ils ne serviraient à rien : on les masque alors. */
+  @media (scripting: none) {
+    .filtres {
+      display: none;
+    }
+  }
+
+  @media (min-width: 900px) {
+    .filtres {
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+    }
+  }
+
+  .champ {
+    display: flex;
+    flex-direction: column;
+    gap: 0.25rem;
+    min-width: 0;
+  }
+
+  .champ label {
+    font-size: 0.875rem;
+    font-weight: var(--graisse-forte);
+  }
+
+  .boite {
+    position: relative;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    min-height: 2.5rem;
+    padding-inline: 0.75rem;
+    border: 1px solid var(--couleur-texte-secondaire);
+    border-radius: var(--rayon-moyen);
+    background: var(--couleur-surface);
+    color: var(--couleur-texte-secondaire);
+  }
+
+  .boite:focus-within {
+    outline: 3px solid var(--couleur-focus);
+    outline-offset: 2px;
+  }
+
+  .boite input,
+  .boite select {
+    flex: 1;
+    min-width: 0;
+    align-self: stretch;
+    border: 0;
+    background: transparent;
+    color: var(--couleur-texte);
+    font: inherit;
+    font-size: 1rem;
+  }
+
+  .boite input:focus-visible,
+  .boite select:focus-visible {
+    outline: none;
+  }
+
+  .boite input::placeholder {
+    color: var(--couleur-texte-secondaire);
+    opacity: 1;
+  }
+
+  .boite select {
+    appearance: none;
+    padding-inline-end: 2rem;
+    text-overflow: ellipsis;
+    cursor: pointer;
+  }
+
+  /* Flèche de la liste, en masque pour suivre la couleur des jetons */
+  .liste-deroulante::after {
+    content: '';
+    position: absolute;
+    inset-inline-end: 0.875rem;
+    width: 0.75rem;
+    height: 0.75rem;
+    background-color: currentColor;
+    mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 10 6'%3E%3Cpath d='M0 0h10L5 6z'/%3E%3C/svg%3E") center / contain no-repeat;
+    pointer-events: none;
+  }
+
+  /* ---- Filtres actifs ---- */
+  .actifs {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+    margin-block-end: 1rem;
+  }
+
+  .actifs :global(.puce) {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.375rem;
+    min-height: 2rem;
+    padding: 0.25rem 0.625rem 0.25rem 0.875rem;
+    border: 1px solid transparent;
+    border-radius: var(--rayon-plein);
+    background: var(--bleu-100);
+    color: var(--couleur-texte);
+    font: inherit;
+    font-size: 0.875rem;
+    text-align: start;
+    cursor: pointer;
+  }
+
+  .actifs :global(.puce svg) {
+    flex: none;
+    color: var(--bleu-principal);
+  }
+
+  .actifs :global(.puce:hover) {
+    background: var(--bleu-200);
+  }
+
+  /* ---- Résultats ---- */
+  .compte {
+    margin-block: 0 0.5rem;
+    color: var(--couleur-texte-secondaire);
+    font-size: 0.875rem;
+  }
+
+  .fiches {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+    margin: 0;
+    padding: 0;
+    list-style: none;
+  }
+
+  .fiches:focus-visible {
+    outline-offset: 6px;
+  }
+
+  /* Mêmes marge interne et rayon que les autres cartes du site */
+  .fiche {
+    padding: var(--espace-carte);
+    border-radius: var(--rayon-carte);
+    background: var(--couleur-fond);
+    /* Ombre « elevation 1 » de MUI, teintée par le jeton de texte */
+    box-shadow:
+      0 2px 1px -1px color-mix(in srgb, var(--couleur-neutre-700) 20%, transparent),
+      0 1px 1px 0 color-mix(in srgb, var(--couleur-neutre-700) 14%, transparent),
+      0 1px 3px 0 color-mix(in srgb, var(--couleur-neutre-700) 12%, transparent);
+  }
+
+  .entete {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 1rem;
+    text-align: center;
+  }
+
+  .entete :global(.photo) {
+    flex: none;
+    width: 100px;
+    height: 100px;
+    border-radius: 50%;
+    object-fit: cover;
+    background: var(--couleur-bordure);
+  }
+
+  .nom {
+    margin: 0;
+    padding: 1rem 0;
+    font-size: 1.125rem;
+    font-weight: var(--graisse-forte);
+    line-height: 1.1;
+  }
+
+  @media (min-width: 600px) {
+    .entete {
+      flex-direction: row;
+      text-align: start;
+    }
+
+    .nom {
+      padding: 2rem;
+    }
+  }
+
+  .details {
+    display: grid;
+    gap: 1rem;
+    margin-block-start: 1rem;
+  }
+
+  @media (min-width: 900px) {
+    .details {
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+    }
+  }
+
+  .details p {
+    margin: 0;
+  }
+
+  .details .fonction {
+    margin-block: 0.5rem 0.75rem;
+    font-weight: var(--graisse-forte);
+  }
+
+  .direction {
+    padding-inline-end: 0.5rem;
+  }
+
+  .details .disciplines {
+    margin-block-start: 0.5rem;
+    padding-inline-end: 0.5rem;
+    font-size: 0.875rem;
+    font-weight: var(--graisse-normale);
+    line-height: 1.43;
+  }
+
+  .contacts,
+  .bibliotheques {
+    display: flex;
+    flex-direction: column;
+    margin: 0;
+    padding: 0;
+    list-style: none;
+  }
+
+  .contacts {
+    gap: 0.75rem;
+  }
+
+  .contacts a,
+  .contacts .sans-lien {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    min-height: 24px;
+    font-size: 0.875rem;
+    font-weight: var(--graisse-normale);
+  }
+
+  .contacts a {
+    color: var(--couleur-lien);
+    text-decoration: none;
+  }
+
+  .contacts a:hover span {
+    text-decoration: underline;
+  }
+
+  .contacts :global(svg) {
+    flex: none;
+    color: var(--bleu-principal);
+  }
+
+  /* Une adresse sans espace ne doit pas faire déborder la carte à 320 px */
+  .courriel {
+    overflow-wrap: anywhere;
+  }
+
+  .bibliotheques {
+    font-size: 0.875rem;
+    font-weight: var(--graisse-normale);
+    line-height: 1.43;
+  }
+
+  /* ---- Pagination ---- */
+  .pagination {
+    display: flex;
+    justify-content: center;
+    margin-block-start: 3rem;
+  }
+
+  /* Sous 600 px : cibles tactiles de 44 px (2.25rem au-delà, si le texte est
+     agrandi), sans écart ni voisines de la page courante, pour que la rangée
+     (7 boutons au plus) tienne dans 350 px. */
+  .pagination ul {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    align-items: center;
+    gap: 0;
+    margin: 0;
+    padding: 0;
+    list-style: none;
+  }
+
+  .pagination :global(.seulement-large) {
+    display: none;
+  }
+
+  .pagination :global(button) {
+    display: inline-grid;
+    place-items: center;
+    min-width: max(var(--taille-cible), 2.25rem);
+    height: max(var(--taille-cible), 2.25rem);
+    padding-inline: 0.375rem;
+    border: 1px solid transparent;
+    border-radius: var(--rayon-plein);
+    background: transparent;
+    color: var(--couleur-texte);
+    font: inherit;
+    font-size: 0.875rem;
+    cursor: pointer;
+  }
+
+  .pagination :global(button:hover:not(:disabled, [aria-current])) {
+    background: var(--bleu-100);
+  }
+
+  .pagination :global(button[aria-current]) {
+    background: var(--bleu-principal);
+    color: var(--couleur-surface);
+    cursor: default;
+  }
+
+  .pagination :global(button:disabled) {
+    color: var(--couleur-texte-secondaire);
+    opacity: 0.5;
+    cursor: default;
+  }
+
+  .pagination :global(.ellipse) {
+    min-width: 1.5rem;
+    text-align: center;
+  }
+
+  @media (min-width: 600px) {
+    .pagination ul {
+      gap: 0.25rem;
+    }
+
+    .pagination :global(.seulement-large) {
+      display: revert;
+    }
+
+    .pagination :global(.seulement-compacte) {
+      display: none;
+    }
+
+    .pagination :global(button) {
+      min-width: 2.25rem;
+      height: 2.25rem;
+    }
+
+    .pagination :global(.ellipse) {
+      min-width: 2rem;
+    }
+  }
+
+  .pagination :global(.fleche) {
+    width: 0.6rem;
+    height: 0.6rem;
+    border-block-start: 2px solid currentColor;
+    border-inline-end: 2px solid currentColor;
+  }
+
+  .pagination :global(.fleche-precedente) {
+    transform: translateX(15%) rotate(-135deg);
+  }
+
+  .pagination :global(.fleche-suivante) {
+    transform: translateX(-15%) rotate(45deg);
+  }
+
+  /* La page courante ne repose pas sur la seule couleur de fond */
+  @media (forced-colors: active) {
+    .pagination :global(button[aria-current]) {
+      border-color: CanvasText;
+      border-width: 2px;
+    }
+
+    .boite {
+      border-color: CanvasText;
+    }
+
+    .actifs :global(.puce) {
+      border-color: ButtonText;
+    }
+  }
+</style>

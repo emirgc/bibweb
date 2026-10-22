@@ -1,0 +1,387 @@
+---
+/*
+ * Liste complète des formations (ListeFormations de coquille-web, page
+ * Études) : image, date, titre, horaire et lieu, flèche en cercle, puis le
+ * bouton vers le calendrier. Données de l'API JSON des formations, chargées
+ * dans le navigateur.
+ *
+ * Corrigés et écarts :
+ * - une erreur affichait… rien ; elle affiche maintenant un message et le
+ *   lien vers le calendrier reste ;
+ * - délai porté de 2 à 5 s (comme la colonne de l'accueil) ;
+ * - le titre était un h4 dans un lien (et sautait le h3) : c'est un h3 qui
+ *   contient le lien, étiré sur tout l'élément, avec l'apparence d'un h4 ;
+ * - épingle « présentiel » en rouge en dur : rouge orangé du thème ;
+ * - des props invalides ne font plus planter la page (valeurs par défaut) ;
+ * - `id`, ignoré par la source, est posé sur la racine.
+ */
+import { CalendarBlankIcon } from '@phosphor-icons/react/dist/ssr/CalendarBlank'
+import { ClockCountdownIcon } from '@phosphor-icons/react/dist/ssr/ClockCountdown'
+import { MapPinSimpleAreaIcon } from '@phosphor-icons/react/dist/ssr/MapPinSimpleArea'
+import Button from '@/components/mdx/primitives/Button.astro'
+import Pastille from './Pastille.astro'
+import EtatErreur from './EtatErreur.astro'
+import { classes, fusionnerStyles, type Style } from '@/lib/styles'
+
+interface Props {
+  id?: string
+  service?: string
+  limit?: number
+  moreText?: string
+  moreLink?: string
+  class?: string
+  style?: Style
+}
+
+const SERVICE_URL = 'https://api.bib.umontreal.ca/formations/'
+const { id, service, limit: limiteDemandee = 4, moreText = 'Voir plus de formations', moreLink, class: classe, style } = Astro.props
+const limite = typeof limiteDemandee === 'number' && limiteDemandee >= 1 && limiteDemandee <= 50 ? limiteDemandee : 4
+let urlService = SERVICE_URL
+try {
+  if (typeof service === 'string') urlService = new URL(service).toString()
+} catch {
+  // URL invalide : le service par défaut
+}
+---
+
+<div id={id} class:list={['formations', classes(classe)]} style={fusionnerStyles(style)}>
+  <div data-liste-formations data-service={`${urlService}?limit=${limite}`} aria-busy="true">
+    <ul class="liste" data-etat="chargement" aria-hidden="true">
+      {
+        Array.from({ length: limite }, () => (
+          <li class="formation squelette">
+            <span class="image" />
+            <div class="texte">
+              <span class="barre barre-courte" />
+              <span class="barre barre-titre" />
+              <span class="barre barre-courte" />
+            </div>
+          </li>
+        ))
+      }
+    </ul>
+    <p class="visuellement-masque" data-etat="chargement">Chargement des formations…</p>
+    <ul class="liste" data-etat="pret" data-liste hidden></ul>
+    <EtatErreur message="Les formations ne sont pas disponibles pour le moment." />
+    <p data-etat="vide" hidden>Aucune formation à venir pour le moment.</p>
+    <p class="sans-js">Les formations s'affichent avec JavaScript. Consultez le calendrier des formations.</p>
+    <template data-gabarit>
+      <li class="formation">
+        <span class="image" data-champ="vignette"></span>
+        <div class="texte">
+          <p class="ligne date">
+            <CalendarBlankIcon size="1.25rem" aria-hidden="true" focusable="false" className="icone-date" /><span data-champ="date"></span>
+          </p>
+          <h3 class="titre">
+            <a href="#" target="_blank" rel="noopener noreferrer" data-champ="lien"
+              ><span data-champ="titre"></span><span class="visuellement-masque"> (nouvel onglet)</span></a
+            >
+          </h3>
+          <p class="ligne horaire">
+            <ClockCountdownIcon size="1.25rem" aria-hidden="true" focusable="false" className="icone-bleue" /><span data-champ="horaire"></span>
+            <span class="lieu" data-champ="lieu" hidden
+              ><MapPinSimpleAreaIcon size="1.25rem" aria-hidden="true" focusable="false" className="icone-lieu" /><span data-champ="texte-lieu"></span></span
+            >
+          </p>
+        </div>
+        <span class="fleche"><Pastille grande /></span>
+      </li>
+    </template>
+  </div>
+  {
+    moreLink && (
+      <div class="plus">
+        <Button primary href={moreLink} target="_blank" rel="noopener noreferrer">
+          {moreText}
+        </Button>
+      </div>
+    )
+  }
+</div>
+
+<script>
+  import { brancherReessayer, chargerAvecDelai, cloner, montrerEtat, remplir } from './chargement'
+
+  type Formation = { url: string; titre: string; date: string; debut?: string; fin?: string; imageVedette?: string; typeLocalisation?: string; lieu?: string }
+
+  for (const racine of document.querySelectorAll<HTMLElement>('[data-liste-formations]')) {
+    const liste = racine.querySelector<HTMLElement>('[data-liste]')!
+    const gabarit = racine.querySelector<HTMLTemplateElement>('template[data-gabarit]')!
+
+    function charger() {
+      montrerEtat(racine, 'chargement')
+      chargerAvecDelai<Formation[]>(racine.dataset.service!, (r) => r.json(), { delai: 5000 })
+        .then((formations) => {
+          const items = Array.isArray(formations) ? formations : []
+          liste.replaceChildren(
+            ...items.map(({ url, titre, date, debut, fin, imageVedette, typeLocalisation, lieu }) => {
+              const element = cloner(gabarit)
+              remplir(element, { url, titre, image: imageVedette })
+              const champ = (nom: string) => element.querySelector<HTMLElement>(`[data-champ="${nom}"]`)!
+              champ('date').textContent = date
+              champ('horaire').textContent = debut ? `${debut}${fin ? ` à ${fin}` : ''}` : ''
+              const texteLieu = typeLocalisation === 'en-ligne' ? 'En ligne' : typeLocalisation === 'physique' ? (lieu ?? 'En présentiel') : ''
+              if (texteLieu) {
+                champ('texte-lieu').textContent = texteLieu
+                champ('lieu').hidden = false
+                if (typeLocalisation === 'physique') champ('lieu').classList.add('physique')
+              }
+              return element
+            }),
+          )
+          montrerEtat(racine, items.length ? 'pret' : 'vide')
+        })
+        .catch(() => montrerEtat(racine, 'erreur'))
+    }
+
+    brancherReessayer(racine, charger)
+    charger()
+  }
+</script>
+
+<style>
+  .liste {
+    display: flex;
+    flex-direction: column;
+    margin: 0;
+    padding: 0;
+  }
+
+  .liste[hidden],
+  .lieu[hidden] {
+    display: none;
+  }
+
+  .formation {
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    padding-block: 8px;
+    list-style: none;
+    border-radius: var(--rayon-petit);
+    transition: background-color var(--duree-courte-4) var(--courbe-standard);
+  }
+
+  .formation:not(.squelette):hover {
+    background-color: color-mix(in srgb, var(--bleu-principal) 6%, transparent);
+  }
+
+  @media (min-width: 600px) {
+    .formation {
+      flex-direction: row;
+      align-items: flex-start;
+      padding: 8px 16px;
+    }
+  }
+
+  .image {
+    display: block;
+    flex-shrink: 0;
+    width: 100%;
+    overflow: hidden;
+    border-radius: var(--rayon-petit);
+  }
+
+  .image:empty {
+    display: none;
+  }
+
+  .image > :global(img) {
+    display: block;
+    width: 100%;
+    height: auto;
+    max-height: 200px;
+    object-fit: cover;
+  }
+
+  @media (min-width: 600px) {
+    .image {
+      width: 150px;
+    }
+
+    .image > :global(img) {
+      max-height: 160px;
+    }
+  }
+
+  .texte {
+    display: flex;
+    flex-direction: column;
+    flex: 1 1 0;
+    gap: 0.5rem;
+    min-width: 0;
+  }
+
+  .ligne {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 0.25em 0.5em;
+    margin: 0;
+    font-size: 0.875rem;
+    font-weight: var(--graisse-normale);
+    letter-spacing: 0.00875rem;
+    line-height: 1.2;
+  }
+
+  .date {
+    color: var(--rouge-orange-texte);
+  }
+
+  .lieu {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5em;
+  }
+
+  /* Les SVG viennent de React : ils ne portent pas l'attribut de portée */
+  .ligne :global(svg) {
+    flex-shrink: 0;
+    fill: currentColor;
+  }
+
+  .ligne :global(.icone-date) {
+    color: var(--rouge-orange);
+  }
+
+  .ligne :global(.icone-bleue),
+  .ligne :global(.icone-lieu) {
+    color: var(--bleu-principal);
+  }
+
+  .physique :global(.icone-lieu) {
+    color: var(--rouge-orange);
+  }
+
+  .titre {
+    margin: 0;
+    font-family: var(--police-serif);
+    /* Chiffres tabulaires désactivés : dans Lora, ils élargissent aussi
+       l'espace entre les mots (16,7 px au lieu de 10,5 px à 40 px). */
+    font-variant-numeric: lining-nums proportional-nums;
+    font-size: 1.25rem;
+    font-weight: var(--graisse-moyenne);
+    line-height: 1.2;
+    overflow-wrap: break-word;
+  }
+
+  @media (min-width: 900px) {
+    .titre {
+      font-size: 1.875rem;
+    }
+  }
+
+  .titre a {
+    color: var(--bleu-fonce);
+    text-decoration: none;
+  }
+
+  .formation:hover .titre a,
+  .titre a:focus-visible {
+    color: var(--bleu-principal);
+  }
+
+  .titre a::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+  }
+
+  .titre a:focus-visible {
+    outline: none;
+  }
+
+  .titre a:focus-visible::after {
+    outline: 3px solid var(--couleur-focus);
+    outline-offset: 2px;
+    border-radius: var(--rayon-petit);
+  }
+
+  .fleche {
+    display: none;
+    align-self: center;
+    padding-right: 1rem;
+    color: var(--bleu-principal);
+    pointer-events: none;
+  }
+
+  @media (min-width: 600px) {
+    .fleche {
+      display: flex;
+    }
+  }
+
+  /* À gauche, comme tous les boutons « voir tout » des vitrines (carrousels) ;
+     la source le mettait à droite, seul de son espèce */
+  .plus {
+    display: flex;
+    justify-content: flex-start;
+    margin-top: var(--espace-bloc);
+  }
+
+  .plus > :global(.bouton) {
+    margin-top: 0;
+  }
+
+  /* ---- Squelette ---- */
+  .squelette .image {
+    display: block;
+    aspect-ratio: 3 / 2;
+  }
+
+  .squelette .image,
+  .barre {
+    background-color: color-mix(in srgb, var(--bleu-fonce) 11%, transparent);
+    animation: pulsation 1.5s ease-in-out 0.5s infinite;
+  }
+
+  @media (min-width: 600px) {
+    .squelette .image {
+      height: 100px;
+      aspect-ratio: auto;
+    }
+  }
+
+  .barre {
+    display: block;
+    width: 100%;
+    height: 0.875rem;
+    border-radius: var(--rayon-minuscule);
+  }
+
+  .barre-courte {
+    width: 10rem;
+  }
+
+  .barre-titre {
+    height: 2rem;
+  }
+
+  @keyframes pulsation {
+    50% {
+      opacity: 0.4;
+    }
+  }
+
+  .sans-js {
+    display: none;
+  }
+
+  @media (scripting: none) {
+    .sans-js {
+      display: block;
+    }
+
+    [data-etat] {
+      display: none;
+    }
+  }
+
+  @media (forced-colors: active) {
+    .barre,
+    .squelette .image {
+      border: 1px solid CanvasText;
+    }
+  }
+</style>

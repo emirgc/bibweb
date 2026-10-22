@@ -1,0 +1,72 @@
+---
+/*
+ * Génère toutes les pages du site, aux mêmes URL que coquille-web, à partir
+ * des collections `pages` (texte : .md, ou .mdx pendant la transition),
+ * `vitrines` (.yaml) et `nouvelles`. toutesLesPages() fait échouer le build
+ * si une URL a deux sources.
+ */
+import { render } from 'astro:content'
+import GabaritPage from '@/layouts/GabaritPage.astro'
+import GabaritNouvelle from '@/layouts/GabaritNouvelle.astro'
+import GabaritVitrine from '@/layouts/GabaritVitrine.astro'
+import Base from '@/layouts/Base.astro'
+import RenduDirectives from '@/components/partage/RenduDirectives.astro'
+import { composantsMdx } from '@/components/mdx/composants'
+import { toutesLesPages, toutesLesNouvelles, estVitrine, type Page, type Nouvelle } from '@/lib/contenu'
+
+export async function getStaticPaths() {
+  const pages = (await toutesLesPages()).map((page) => ({
+    params: { chemin: page.id === 'index' ? undefined : page.id },
+    props: { type: 'page' as const, entree: page },
+  }))
+  const nouvelles = (await toutesLesNouvelles()).map((nouvelle) => ({
+    params: { chemin: `nouvelles/${nouvelle.id}` },
+    props: { type: 'nouvelle' as const, entree: nouvelle },
+  }))
+  return [...pages, ...nouvelles]
+}
+
+type Props = { type: 'page'; entree: Page } | { type: 'nouvelle'; entree: Nouvelle }
+
+const props = Astro.props as Props
+const vitrine = props.type === 'page' && estVitrine(props.entree) ? props.entree : undefined
+const texte = props.type === 'page' && !estVitrine(props.entree) ? props.entree : undefined
+const entreeRendue = props.type === 'nouvelle' ? props.entree : texte
+const Content = entreeRendue ? (await render(entreeRendue)).Content : null
+// Une page .md passe par RenduDirectives, qui rend ses directives avec les
+// composants du MDX ; un .mdx reçoit ces composants directement
+const markdown = texte?.filePath?.endsWith('.md') ?? false
+---
+
+{
+  vitrine ? (
+    <GabaritVitrine vitrine={vitrine} />
+  ) : Content && props.type === 'nouvelle' ? (
+    <GabaritNouvelle nouvelle={props.entree}>
+      <Content components={composantsMdx} />
+    </GabaritNouvelle>
+  ) : Content && texte?.data.template === 'blank' ? (
+    <Base titre={texte.data.title} vierge>
+      <Content components={composantsMdx} />
+    </Base>
+  ) : (
+    Content && (
+      <GabaritPage
+        titre={texte?.data.title}
+        description={texte?.data.description}
+        noindex={texte?.data.noindex}
+        niveau={texte?.data.lvl}
+        superHero={texte?.data.superHero}
+        lang={texte?.data.lang}
+      >
+        {markdown ? (
+          <RenduDirectives>
+            <Content />
+          </RenduDirectives>
+        ) : (
+          <Content components={composantsMdx} />
+        )}
+      </GabaritPage>
+    )
+  )
+}

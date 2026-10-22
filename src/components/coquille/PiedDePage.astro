@@ -1,0 +1,367 @@
+---
+/*
+ * Pied de page (Footer, LocalFooter et FooterTail de coquille-web). Les liens
+ * viennent de src/data/navigation.ts. Corrections par rapport à la source :
+ * - icônes YouTube et Instagram nommées (elles n'avaient aucun texte) ;
+ * - le titre est un h2 (un h4 sautait des niveaux) ;
+ * - les logos-liens vers l'accueil gardent un nom accessible par leur alt.
+ * Les variantes mobile et bureau sont rendues en HTML et basculées en CSS.
+ */
+import { SirenIcon } from '@phosphor-icons/react/dist/ssr/Siren'
+import { COLONNES_PIED, LIENS_QUEUE_PIED, RESEAUX_PIED, URGENCE } from '@/data/navigation'
+import Licence from './pied/Licence.astro'
+---
+
+<footer class="pied">
+  <div class="local">
+    <div class="interieur">
+      <h2 class="titre">Les bibliothèques de l'Université de Montréal</h2>
+
+      <div class="colonnes">
+        <a class="logo-mobile" href="/">
+          <img src="/images/logo-bib/logo-bib-U-blanc.svg" alt="Les bibliothèques, Université de Montréal – Accueil" width="255" height="71" loading="lazy" decoding="async" />
+        </a>
+
+        {
+          COLONNES_PIED.map((liens, i) => (
+            <Fragment>
+              {i > 0 && <span class="separateur" aria-hidden="true"></span>}
+              <div class="colonne"><ul class="liste">
+                {liens.map(({ libelle, href, rel, Icone }) => (
+                  <li><a href={href} rel={rel}>{Icone && <Icone size={18} aria-hidden="true" />}{libelle}</a></li>
+                ))}
+                {i === 0 && (
+                  <li class="reseaux">
+                    {RESEAUX_PIED.map(({ libelle, href, Icone }) => (
+                      <a href={href} aria-label={libelle}><Icone size={24} aria-hidden="true" /></a>
+                    ))}
+                  </li>
+                )}
+              </ul></div>
+            </Fragment>
+          ))
+        }
+
+        <div class="colonne colonne-logo">
+          <a href="/">
+            <img src="/images/logo-bib/logo-bib-sceau-bleu.svg" alt="Les bibliothèques, Université de Montréal – Accueil" width="302" height="302" loading="lazy" decoding="async" />
+          </a>
+        </div>
+      </div>
+
+      <div class="urgence">
+        <a href={URGENCE.href}><span class="sirene"><SirenIcon size={24} aria-hidden="true" /></span>{URGENCE.libelle}</a>
+      </div>
+    </div>
+  </div>
+
+  <div class="queue">
+    <div class="interieur rangee-queue">
+      <Licence class="licence-bureau" />
+      {
+        LIENS_QUEUE_PIED.map(({ libelle, href }) => (
+          <Fragment>
+            <span class="trait" aria-hidden="true"></span>
+            <a href={href}>{libelle}</a>
+          </Fragment>
+        ))
+      }
+      <span class="trait" aria-hidden="true"></span>
+      <button type="button" class="parametres-temoins" data-parametres-temoins>Paramètres des témoins</button>
+      <Licence class="licence-mobile" />
+    </div>
+  </div>
+</footer>
+
+<script>
+  document.querySelector('[data-parametres-temoins]')?.addEventListener('click', (e) => {
+    e.preventDefault()
+    ;(document.querySelector('bib-consent') as (HTMLElement & { showPreferences?: () => void }) | null)?.showPreferences?.()
+  })
+</script>
+
+<style>
+  .pied {
+    font-size: 1rem;
+  }
+
+  .interieur {
+    width: 100%;
+    max-width: var(--largeur-max);
+    margin-inline: auto;
+  }
+
+  ul {
+    margin: 0;
+    padding: 0;
+    list-style: none;
+  }
+
+  a,
+  button {
+    color: inherit;
+    text-decoration: none;
+  }
+
+  a:hover,
+  button:hover {
+    color: inherit;
+    text-decoration: underline;
+  }
+
+  /* Le bleu du focus global se perd sur les fonds bleus du pied de page */
+  .pied :focus-visible {
+    outline-color: var(--couleur-surface);
+  }
+
+  /* ---- Partie locale ---- */
+  .local {
+    padding-top: 32px;
+    background-color: var(--bleu-fonce);
+    color: var(--couleur-surface);
+  }
+
+  .titre {
+    display: none;
+    margin: 0.5em 0 32px;
+    padding: 8px 64px 0;
+    font-family: var(--police-serif);
+    /* Chiffres tabulaires désactivés : dans Lora, ils élargissent aussi
+       l'espace entre les mots (16,7 px au lieu de 10,5 px à 40 px). */
+    font-variant-numeric: lining-nums proportional-nums;
+    font-size: 1.5rem;
+    font-weight: var(--graisse-moyenne);
+    line-height: 1.2;
+  }
+
+  .colonnes {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 32px;
+    padding: 0 24px 32px;
+  }
+
+  .logo-mobile {
+    display: block;
+    width: 100%;
+    margin-bottom: 24px;
+  }
+
+  .logo-mobile img {
+    width: 100%;
+    max-width: 250px;
+    height: auto;
+  }
+
+  /* La colonne prend sa part de la largeur ; la liste se resserre sur son
+     contenu, ce qui centre les icônes sociales sous les liens */
+  .colonne {
+    display: flex;
+    flex: 1;
+    flex-direction: column;
+    align-items: flex-start;
+    min-width: 0;
+  }
+
+  .liste {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    font-size: 16px;
+  }
+
+  .colonne a {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 16px;
+    font-weight: var(--graisse-normale);
+    line-height: 1.6;
+    text-decoration-skip-ink: none;
+  }
+
+  .colonne :global(svg) {
+    flex-shrink: 0;
+  }
+
+  .reseaux {
+    display: flex;
+    justify-content: center;
+    gap: 24px;
+    margin-top: 30px;
+  }
+
+  /* Cibles de 24 px au moins autour des icônes sociales (WCAG 2.5.8) */
+  .reseaux a {
+    min-width: 24px;
+    min-height: 24px;
+  }
+
+  .separateur,
+  .colonne-logo {
+    display: none;
+  }
+
+  .urgence {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 16px 24px;
+  }
+
+  .urgence a {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 16px;
+    font-weight: var(--graisse-normale);
+    line-height: 1.6;
+  }
+
+  .sirene {
+    display: inline-flex;
+    color: var(--rouge-orange);
+  }
+
+  @media (min-width: 600px) {
+    .urgence {
+      flex-direction: row;
+    }
+  }
+
+  @media (min-width: 900px) {
+    .titre {
+      display: block;
+    }
+
+    .colonnes {
+      flex-direction: row;
+      gap: 0;
+      padding-inline: 64px;
+    }
+
+    .logo-mobile {
+      display: none;
+    }
+
+    .separateur {
+      display: block;
+      align-self: stretch;
+      width: 1px;
+      margin: 0 32px;
+      background-color: color-mix(in srgb, var(--couleur-surface) 20%, transparent);
+    }
+
+    .colonne-logo {
+      display: flex;
+      align-items: flex-end;
+      padding-left: 32px;
+    }
+
+    .colonne-logo img {
+      width: 200px;
+      max-width: 100%;
+      height: auto;
+    }
+
+    .urgence {
+      padding-inline: 64px;
+    }
+  }
+
+  /* ---- Queue ---- */
+  .queue {
+    background-color: var(--bleu-fonce);
+    color: var(--bleu-200);
+  }
+
+  .rangee-queue {
+    display: flex;
+    flex-direction: column;
+    gap: var(--espace-1);
+    padding: 8px 24px 1em;
+    font-size: 14px;
+    line-height: 1.2;
+    letter-spacing: 0.14px;
+  }
+
+  /* Cibles de 24 px de haut au moins (WCAG 2.5.8) : les liens de la queue
+     n'en faisaient que 17 */
+  .rangee-queue > a,
+  .rangee-queue > :global(a),
+  .rangee-queue button {
+    display: inline-flex;
+    align-items: center;
+    min-height: 24px;
+  }
+
+  /* Sur mobile, « Paramètres des témoins » est une commande : cible de 44 px
+     de haut (--taille-cible) sans changer son apparence. La zone déborde de
+     10 px en haut et en bas ; l'écart de la colonne (--espace-1, 8,5 px) est
+     complété par une marge de 1,5 px pour qu'elle ne chevauche pas les liens
+     voisins. */
+  .rangee-queue button {
+    position: relative;
+    margin-block: max(0px, (var(--taille-cible) - 24px) / 2 - var(--espace-1));
+  }
+
+  .rangee-queue button::after {
+    content: '';
+    position: absolute;
+    inset: calc((24px - var(--taille-cible)) / 2) 0;
+  }
+
+  @media (min-width: 900px) {
+    .rangee-queue button {
+      margin-block: 0;
+    }
+
+    .rangee-queue button::after {
+      content: none;
+    }
+  }
+
+  .rangee-queue button {
+    padding: 0;
+    border: 0;
+    background: none;
+    font: inherit;
+    font-weight: var(--graisse-normale);
+    letter-spacing: inherit;
+    text-align: left;
+    cursor: pointer;
+  }
+
+  .trait,
+  .rangee-queue :global(.licence-bureau) {
+    display: none;
+  }
+
+  @media (min-width: 900px) {
+    .queue {
+      background-color: var(--bleu-principal);
+    }
+
+    .rangee-queue {
+      flex-direction: row;
+      align-items: center;
+      height: 50px;
+      padding-bottom: 8px;
+    }
+
+    .trait {
+      display: block;
+      height: 1lh;
+      border-right: 1px solid currentColor;
+    }
+
+    .rangee-queue :global(.licence-bureau) {
+      display: block;
+    }
+
+    .rangee-queue :global(.licence-mobile) {
+      display: none;
+    }
+  }
+</style>

@@ -1,0 +1,82 @@
+---
+/*
+ * Citation (Blockquote de coquille-web) : <figure> avec filet bleu à gauche,
+ * citation entre guillemets français et source en <figcaption>.
+ * Corrigé : `cite` est enfin posé sur <blockquote> ; la source passe du
+ * #607386 (4,3:1) au texte secondaire du thème.
+ */
+import { classes, fusionnerStyles } from '@/lib/styles'
+
+interface Props {
+  /** Adresse de la source, posée sur <blockquote cite> */
+  cite?: string
+  /** Attribution affichée sous la citation */
+  source?: string
+  class?: string
+  className?: string
+  style?: string | Record<string, string | number>
+  [attribut: string]: unknown
+}
+
+const { cite, source, class: classe, className, style, ...reste } = Astro.props
+---
+
+<figure class:list={['citation', classes(classe, className)]} style={fusionnerStyles(style)}>
+  <blockquote cite={cite} {...reste}><slot /></blockquote>
+  {source && <figcaption>{source}</figcaption>}
+</figure>
+
+<style>
+  .citation {
+    position: relative;
+    margin: var(--espace-element) 0;
+    padding: 0 0 0 30px;
+  }
+
+  .citation::before {
+    content: '';
+    position: absolute;
+    top: 2.5%;
+    bottom: 2.5%;
+    left: 0;
+    width: 3px;
+    border-radius: var(--rayon-plein);
+    background-color: var(--bleu-principal);
+  }
+
+  blockquote {
+    position: relative;
+    margin: 0;
+    padding: 0;
+    quotes: '«\00a0' '\00a0»';
+  }
+
+  blockquote > :global(*) {
+    display: inline;
+  }
+
+  blockquote::before,
+  blockquote::after {
+    color: var(--couleur-texte-secondaire);
+  }
+
+  blockquote::before {
+    content: open-quote;
+  }
+
+  blockquote::after {
+    content: close-quote;
+  }
+
+  figcaption {
+    margin-top: 1em;
+    color: var(--couleur-texte-secondaire);
+    font-size: smaller;
+  }
+
+  @media (forced-colors: active) {
+    .citation::before {
+      background-color: CanvasText;
+    }
+  }
+</style>

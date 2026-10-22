@@ -1,0 +1,129 @@
+---
+/*
+ * Boîte générique (MUI Box). `component` choisit la balise ; les props
+ * système que le contenu emploie deviennent du style en ligne (les nombres
+ * d'espacement valent n × 8 px). `sx` n'existe plus : la conversion du
+ * contenu le remplace par `class` ou `style`.
+ */
+import { classes, espacement, fusionnerStyles, type Style } from '@/lib/styles'
+import { couleurTheme } from '@/lib/couleurs'
+
+interface Props {
+  component?: string
+  display?: string
+  flex?: string | number
+  flexDirection?: string
+  flexWrap?: string
+  alignItems?: string
+  justifyContent?: string
+  gap?: number | string
+  textAlign?: string
+  width?: number | string
+  height?: number | string
+  color?: string
+  bgcolor?: string
+  p?: number | string
+  px?: number | string
+  py?: number | string
+  pt?: number | string
+  pr?: number | string
+  pb?: number | string
+  pl?: number | string
+  m?: number | string
+  mx?: number | string
+  my?: number | string
+  mt?: number | string
+  mr?: number | string
+  mb?: number | string
+  ml?: number | string
+  /** Image importée (ImageMetadata) ou adresse, pour component="img" */
+  src?: string | { src: string; width?: number; height?: number }
+  class?: string
+  className?: string
+  style?: Style
+  [attribut: string]: unknown
+}
+
+const {
+  component = 'div',
+  display,
+  flex,
+  flexDirection,
+  flexWrap,
+  alignItems,
+  justifyContent,
+  gap,
+  textAlign,
+  width,
+  height,
+  color,
+  bgcolor,
+  p,
+  px,
+  py,
+  pt,
+  pr,
+  pb,
+  pl,
+  m,
+  mx,
+  my,
+  mt,
+  mr,
+  mb,
+  ml,
+  src,
+  class: classe,
+  className,
+  style,
+  ...reste
+} = Astro.props
+
+const e = espacement
+const styleFinal = fusionnerStyles(
+  {
+    display,
+    flex,
+    flexDirection,
+    flexWrap,
+    alignItems,
+    justifyContent,
+    gap: e(gap),
+    textAlign,
+    width,
+    height,
+    color: couleurTheme(color),
+    backgroundColor: couleurTheme(bgcolor),
+    padding: e(p),
+    paddingInline: e(px),
+    paddingBlock: e(py),
+    paddingTop: e(pt),
+    paddingRight: e(pr),
+    paddingBottom: e(pb),
+    paddingLeft: e(pl),
+    margin: e(m),
+    marginInline: e(mx),
+    marginBlock: e(my),
+    marginTop: e(mt),
+    marginRight: e(mr),
+    marginBottom: e(mb),
+    marginLeft: e(ml),
+  },
+  style,
+)
+
+const Balise = component
+const VIDES = new Set(['img', 'hr', 'br', 'input', 'source', 'wbr'])
+const image = typeof src === 'object' && src !== null ? src : undefined
+const adresse = image ? image.src : src
+---
+
+{
+  VIDES.has(component) ? (
+    <Balise class={classes(classe, className)} style={styleFinal} src={adresse} width={image?.width} height={image?.height} {...reste} />
+  ) : (
+    <Balise class={classes(classe, className)} style={styleFinal} {...reste}>
+      <slot />
+    </Balise>
+  )
+}

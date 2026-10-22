@@ -1,0 +1,61 @@
+---
+/*
+ * Conteneur de tableau (MUI TableContainer). Le contenu l'emploie avec
+ * component={Paper} : on en reprend alors la surface (fond, coins, ombre).
+ * La zone défile horizontalement quand le tableau est plus large que l'écran
+ * (minWidth 650 dans les pages de prêt) ; elle est atteignable au clavier et
+ * prend le nom du tableau.
+ */
+import { classes, fusionnerStyles } from '@/lib/styles'
+
+interface Props {
+  /** Paper (composant) ou nom de balise */
+  component?: unknown
+  'aria-label'?: string
+  class?: string
+  className?: string
+  style?: string | Record<string, string | number>
+  [attribut: string]: unknown
+}
+
+const { component, 'aria-label': libelle, class: classe, className, style, ...reste } = Astro.props
+const surface = component !== undefined && typeof component !== 'string'
+const Balise = typeof component === 'string' ? component : 'div'
+const contenu = Astro.slots.has('default') ? await Astro.slots.render('default') : ''
+// Le nom de la zone reprend celui du tableau, s'il en a un
+const nomTableau = contenu.match(/<table[^>]*\saria-label="([^"]*)"/)?.[1]
+const nom = libelle ?? nomTableau ?? 'Tableau'
+---
+
+<Balise
+  class:list={['conteneur-tableau', { surface }, classes(classe, className)]}
+  style={fusionnerStyles(style)}
+  role="region"
+  aria-label={nom}
+  tabindex="0"
+  {...reste}
+  set:html={contenu}
+></Balise>
+
+<style>
+  .conteneur-tableau {
+    width: 100%;
+    overflow-x: auto;
+  }
+
+  .surface {
+    border-radius: var(--rayon-minuscule);
+    background-color: var(--couleur-fond);
+    color: var(--couleur-texte);
+    box-shadow:
+      0 2px 1px -1px color-mix(in srgb, var(--bleu-fonce) 20%, transparent),
+      0 1px 1px 0 color-mix(in srgb, var(--bleu-fonce) 14%, transparent),
+      0 1px 3px 0 color-mix(in srgb, var(--bleu-fonce) 12%, transparent);
+  }
+
+  @media (forced-colors: active) {
+    .surface {
+      border: 1px solid CanvasText;
+    }
+  }
+</style>

@@ -1,0 +1,57 @@
+---
+/*
+ * Carte de MUI (Card) telle que le MDX l'emploie : surface du thème, coins de
+ * 4 px, ombre légère, contenu rogné aux coins. Surface claire : liens et
+ * focus retrouvent leurs couleurs dans une Section foncée.
+ */
+import { classes, fusionnerStyles, type Style } from '@/lib/styles'
+
+interface Props {
+  /** Ombre plus marquée (raised de MUI) */
+  raised?: boolean
+  variant?: 'elevation' | 'outlined'
+  component?: string
+  class?: string
+  className?: string
+  style?: Style
+  [attribut: string]: unknown
+}
+
+const { raised = false, variant = 'elevation', component = 'div', class: classe, className, style, sx: _sx, ...reste } = Astro.props
+const Balise = typeof component === 'string' ? component : 'div'
+---
+
+<Balise
+  class:list={['carte', 'surface-claire', { contour: variant === 'outlined', relevee: raised }, classes(classe, className)]}
+  style={fusionnerStyles(style)}
+  {...reste}><slot /></Balise
+>
+
+<style>
+  .carte {
+    overflow: hidden;
+    border-radius: var(--rayon-minuscule);
+    background-color: var(--couleur-fond);
+    box-shadow: var(--ombre-1);
+  }
+
+  .relevee {
+    box-shadow: var(--ombre-2);
+  }
+
+  .contour {
+    border: 1px solid var(--couleur-bordure);
+    box-shadow: none;
+  }
+
+  /* Le focus d'une zone d'action ne doit pas être rogné par les coins */
+  .carte:has(:focus-visible) {
+    overflow: visible;
+  }
+
+  @media (forced-colors: active) {
+    .carte {
+      border: 1px solid CanvasText;
+    }
+  }
+</style>

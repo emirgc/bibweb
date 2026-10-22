@@ -1,0 +1,44 @@
+---
+/*
+ * Grille de cartes à photo (CardWithImage) des blocs « cartes-images » et
+ * « onglets » : --espace-grille entre les cartes (.62rem dans la source),
+ * comme toutes les grilles de cartes. Le titre et le texte
+ * passés en slot se placent au début de la grille, comme dans les onglets
+ * d'espaces où ils occupaient toute une rangée. Les marges autour de la
+ * grille sont celles du bloc qui l'emploie (classe `class`), pas un style en
+ * ligne : un style en ligne empêchait la bande d'annuler la marge de son
+ * premier et de son dernier enfant.
+ */
+import Grid from '@/components/mdx/primitives/Grid.astro'
+import CardWithImage from '@/components/mdx/cartes/CardWithImage.astro'
+import type { BlocDe } from './types'
+
+interface Props {
+  cartes: BlocDe<'cartes-images'>['cartes']
+  niveauTitre: 2 | 3
+  class?: string
+}
+
+const { cartes, niveauTitre, class: classe } = Astro.props
+---
+
+<Grid container spacing="var(--espace-grille)" class:list={['grille-cartes-images', classe]} data-revelation="groupe">
+  <slot />
+  {
+    cartes.map((carte) => (
+      <Grid>
+        <CardWithImage title={carte.titre} Image={carte.image} href={carte.lien} moreText={carte.appel} niveauTitre={niveauTitre} />
+      </Grid>
+    ))
+  }
+</Grid>
+
+<style>
+  /* Le titre et le texte du slot sont des éléments flexibles de la grille :
+     sans min-width: 0, ils ne descendent pas sous leur plus long mot, et
+     « avant-garde » (h2) faisait défiler la page de côté avec le texte à
+     200 % (19 px à 900 px) au lieu d'être coupé par overflow-wrap. */
+  :global(.grille-cartes-images > :not(.grille)) {
+    min-width: 0;
+  }
+</style>

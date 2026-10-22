@@ -1,0 +1,71 @@
+---
+/*
+ * Image d'une carte de MUI (CardMedia).
+ *
+ * MUI rendait un <div> à image de fond (`image`) ou un <img> (`component="img"`,
+ * `src`). Ici, toujours une image d'astro:assets en object-fit: cover :
+ * formats et tailles optimisés, et un texte de remplacement (`alt`, sinon
+ * `title`, que MUI ne montrait qu'en infobulle). Le cadrage
+ * (background-position de la source) passe par `object-position` dans `style`.
+ */
+import type { ImageMetadata } from 'astro'
+import { Image } from 'astro:assets'
+import { classes, fusionnerStyles, type Style } from '@/lib/styles'
+
+interface Props {
+  image?: ImageMetadata | string
+  src?: ImageMetadata | string
+  alt?: string
+  title?: string
+  /** Hauteur (nombre en px ou longueur CSS) */
+  height?: number | string
+  component?: string
+  sizes?: string
+  loading?: 'lazy' | 'eager'
+  class?: string
+  className?: string
+  style?: Style
+  [attribut: string]: unknown
+}
+
+const {
+  image,
+  src,
+  alt,
+  title,
+  height,
+  component: _component,
+  sizes = '(min-width: 1536px) 1536px, 100vw',
+  loading = 'lazy',
+  class: classe,
+  className,
+  style,
+  sx: _sx,
+  ...reste
+} = Astro.props
+
+const source = image ?? src
+if (!source) throw new Error('CardMedia : la propriété `image` ou `src` est obligatoire.')
+
+const texte = alt ?? title ?? ''
+const hauteur = typeof height === 'number' || (typeof height === 'string' && /^\d+$/.test(height)) ? `${height}px` : height
+const styleFinal = fusionnerStyles({ height: hauteur }, style)
+const liste = ['media', classes(classe, className)]
+---
+
+{
+  typeof source === 'string' ? (
+    <img class:list={liste} src={source} alt={texte} style={styleFinal} loading={loading} decoding="async" {...reste} />
+  ) : (
+    <Image class:list={liste} src={source} alt={texte} style={styleFinal} widths={[600, 900, 1200, 1536]} sizes={sizes} formats={['avif', 'webp']} loading={loading} {...reste} />
+  )
+}
+
+<style>
+  .media {
+    display: block;
+    width: 100%;
+    object-fit: cover;
+    object-position: center;
+  }
+</style>

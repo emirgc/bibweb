@@ -1,0 +1,100 @@
+---
+/*
+ * Bloc « onglets » (Espaces) : un onglet par atelier, en rangée au-dessus du
+ * contenu (Tabs1 horizontal, centrée). Chaque panneau : le titre (h2, avec
+ * son ancre) et le texte côte à côte dès 900 px, puis les équipements en
+ * galerie de tuiles photo (GalerieTuiles). `etiquette` est le libellé court
+ * de l'onglet.
+ *
+ * Disposition `colonnes` : pas d'onglets ; les panneaux côte à côte dès
+ * 900 px (l'un sous l'autre en dessous), chacun avec son titre, son texte et
+ * sa liste à vignettes. Tout le contenu est visible ; `etiquette` ne sert pas.
+ */
+import Tabs1 from '@/components/mdx/accordeons/Tabs1.astro'
+import Titre from './Titre.astro'
+import TexteMarkdown from './TexteMarkdown.astro'
+import ListeVignettes from './ListeVignettes.astro'
+import GalerieTuiles from './GalerieTuiles.astro'
+import type { BlocDe } from './types'
+
+type Props = { bloc: BlocDe<'onglets'> }
+
+const { bloc } = Astro.props
+---
+
+{
+  bloc.disposition === 'colonnes' && (
+    <div class="colonnes" id={bloc.id}>
+      {bloc.onglets.map((onglet) => (
+        <div class="colonne">
+          <Titre texte={onglet.titre} id={onglet.id} />
+          {onglet.texte && <TexteMarkdown texte={onglet.texte} />}
+          <ListeVignettes elements={onglet.cartes} />
+        </div>
+      ))}
+    </div>
+  )
+}
+{
+  bloc.disposition === 'onglets' && (
+    <Tabs1 tabs={bloc.onglets.map((onglet) => onglet.etiquette)} id={bloc.id} horizontal>
+      {bloc.onglets.map((onglet) => (
+        <div class="atelier">
+          <div class="intro">
+            <Titre texte={onglet.titre} id={onglet.id} />
+            {onglet.texte && <TexteMarkdown texte={onglet.texte} />}
+          </div>
+          <GalerieTuiles elements={onglet.cartes} />
+        </div>
+      ))}
+    </Tabs1>
+  )
+}
+
+<style>
+  /* Onglet : titre et texte côte à côte dès 900 px, puis la galerie */
+  .atelier {
+    display: flex;
+    flex-direction: column;
+    gap: var(--espace-bloc);
+  }
+
+  /* Titre d'atelier plus petit que celui d'une section : il est sous les
+     onglets, qui annoncent déjà le sujet */
+  .atelier :global(h2.titre-bloc) {
+    font-size: 2rem;
+  }
+
+  .intro :global(p:last-child) {
+    margin-bottom: 0;
+  }
+
+  @media (min-width: 900px) {
+    .intro {
+      display: grid;
+      grid-template-columns: minmax(0, 2fr) minmax(0, 3fr);
+      align-items: start;
+      gap: var(--espace-6);
+    }
+
+    .intro :global(h2.titre-bloc) {
+      margin-bottom: 0;
+      font-size: 2.5rem;
+    }
+  }
+
+  /* minmax(0, …) : avec le texte agrandi, un long mot ne force plus la
+     colonne au-delà de l'écran */
+  .colonnes {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr);
+    gap: var(--espace-blocs);
+  }
+
+  @media (min-width: 900px) {
+    .colonnes {
+      grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+      gap: var(--espace-6);
+    }
+  }
+</style>

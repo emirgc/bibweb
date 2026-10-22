@@ -1,0 +1,92 @@
+---
+/*
+ * Zone cliquable d'une carte de MUI (CardActionArea).
+ *
+ * MUI en faisait un <a> qui englobait tout le contenu : dans le MDX, il
+ * contenait un Button, donc un lien dans un lien (HTML invalide, double
+ * annonce). Ici, la zone reste un <div> et un lien de recouvrement la rend
+ * cliquable à la souris. Ce lien est hors du parcours clavier et masqué aux
+ * lecteurs d'écran, qui passent par les liens du contenu (le Button de la
+ * collection Claude-Gingras mène à la même adresse). Sans lien dans le
+ * contenu, donnez `label` : le lien de recouvrement devient alors un vrai
+ * lien, nommé par ce texte.
+ */
+import { classes, fusionnerStyles, type Style } from '@/lib/styles'
+import { lienCarte } from '@/lib/liens'
+
+interface Props {
+  href?: string
+  target?: string
+  rel?: string
+  /** Nom du lien de recouvrement quand le contenu n'a pas son propre lien */
+  label?: string
+  class?: string
+  className?: string
+  style?: Style
+  [attribut: string]: unknown
+}
+
+const { href, target, rel, label, class: classe, className, style, sx: _sx, ...reste } = Astro.props
+const adresse = href?.trim()
+const lien = adresse ? lienCarte(adresse, target, rel) : undefined
+---
+
+<div class:list={['zone', { 'avec-lien': adresse }, classes(classe, className)]} style={fusionnerStyles(style)} {...reste}>
+  <slot />
+  {
+    adresse &&
+      (label ? (
+        <a class="recouvrement" href={adresse} target={target} rel={lien?.rel}>
+          <span class="visuellement-masque">
+            {label}
+            {lien?.annonce}
+          </span>
+        </a>
+      ) : (
+        <a class="recouvrement" href={adresse} target={target} rel={lien?.rel} tabindex="-1" aria-hidden="true" />
+      ))
+  }
+</div>
+
+<style>
+  .zone {
+    position: relative;
+    display: block;
+    width: 100%;
+  }
+
+  .avec-lien {
+    cursor: pointer;
+  }
+
+  .recouvrement {
+    position: absolute;
+    inset: 0;
+    z-index: 1;
+  }
+
+  .recouvrement:focus-visible {
+    outline-offset: -3px;
+  }
+
+  /* Les liens et boutons du contenu passent au-dessus du recouvrement */
+  .zone :global(:is(a, button, input, select, textarea, summary):not(.recouvrement)) {
+    position: relative;
+    z-index: 2;
+  }
+
+  /* Survol : léger voile, comme MUI (opacité 0,04) */
+  .avec-lien::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background-color: currentColor;
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity var(--duree-moyenne-1) var(--courbe-standard);
+  }
+
+  .avec-lien:hover::before {
+    opacity: 0.04;
+  }
+</style>

@@ -1,0 +1,31 @@
+# Page vitrine /a-propos/ : voir docs/REDACTION.md, section « Vitrines »
+title: À propos
+crumbLabel: À propos
+secondaryNav:
+  order: 1
+
+banniere:
+  titre: À propos
+  image: espaces
+
+sections:
+  - type: liste-liens
+    liens:
+      - titre: Notre organisation
+        description: Découvrez les différentes directions des bibliothèques de l'UdeM.
+        lien: /a-propos/notre-organisation/
+      - titre: Mission, vision, valeurs, objectifs
+        description: Apprenez en plus sur comment la planification stratégique 2023-2028 se déploie en mission, vision, valeurs, et objectifs.
+        lien: /a-propos/mission-vision-valeur/
+      - titre: Rapports annuels
+        description: Accédez à nos derniers rapport annuels.
+        lien: /a-propos/rapports-annuels/
+      - titre: Politiques et règlement
+        description: Prenez connaissance de notre code de vie et de notre règlement.
+        lien: /a-propos/politiques-reglement/
+      - titre: Nouvelles
+        description: Parcourez nos dernières nouvelles.
+        lien: /nouvelles/
+      - titre: Carrière
+        description: Accédez aux opportunités de carrière.
+        lien: /a-propos/carriere/

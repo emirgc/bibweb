@@ -1,0 +1,53 @@
+---
+/*
+ * Texte d'un élément de liste MUI : `primary` et `secondary` (ou le contenu).
+ * Rendu en <span> en bloc pour rester valide dans un lien ou un bouton.
+ */
+import { classes, fusionnerStyles } from '@/lib/styles'
+
+interface Props {
+  primary?: string
+  secondary?: string
+  inset?: boolean
+  class?: string
+  className?: string
+  style?: string | Record<string, string | number>
+  [attribut: string]: unknown
+}
+
+const { primary, secondary, inset = false, class: classe, className, style, ...reste } = Astro.props
+---
+
+<span class:list={['texte-liste', { decale: inset }, classes(classe, className)]} style={fusionnerStyles(style)} {...reste}>
+  {primary || Astro.slots.has('default') ? <span class="primaire">{primary}<slot /></span> : null}
+  {secondary && <span class="secondaire">{secondary}</span>}
+</span>
+
+<style>
+  .texte-liste {
+    display: block;
+    flex: 1 1 auto;
+    min-width: 0;
+    margin-block: 4px;
+  }
+
+  .decale {
+    padding-left: 56px;
+  }
+
+  .primaire,
+  .secondaire {
+    display: block;
+  }
+
+  .primaire {
+    font-size: 1rem;
+    line-height: 1.5;
+  }
+
+  .secondaire {
+    color: var(--couleur-texte-secondaire);
+    font-size: 0.875rem;
+    line-height: 1.43;
+  }
+</style>

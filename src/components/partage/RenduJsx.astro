@@ -1,0 +1,23 @@
+---
+/*
+ * Rend une prop qui contient du JSX du MDX (`title={<Typography…/>}`,
+ * `footer={<Button…/>}`, `leftColl={<>…</>}`).
+ *
+ * MDX passe ces valeurs comme nœuds JSX d'Astro ; interpolées telles quelles
+ * dans un gabarit .astro, elles donnent « [object Object] ». On les confie au
+ * moteur JSX d'Astro (le même qui rend le corps du MDX), avec le contexte de
+ * rendu de la page ($$result, fourni par le compilateur à chaque composant).
+ * Une chaîne, un nombre ou un tableau passent aussi.
+ */
+import { renderJSX } from 'astro/runtime/server/jsx.js'
+
+interface Props {
+  valeur?: unknown
+}
+
+const { valeur } = Astro.props
+// @ts-expect-error $$result est injecté par le compilateur d'Astro
+const html = valeur === undefined || valeur === null || valeur === false ? '' : await renderJSX($$result, valeur)
+---
+
+<Fragment set:html={html} />

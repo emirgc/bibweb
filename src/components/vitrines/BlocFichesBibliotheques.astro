@@ -1,0 +1,34 @@
+---
+/*
+ * Bloc « fiches-bibliotheques » : titre, texte et les fiches de toutes les
+ * bibliothèques (FichesBibliotheques, données de src/data/horaires). Chaque
+ * fiche garde son ancre (/espaces/#droit) ; GabaritVitrine pose sur la bande
+ * l'ancre #liste-bibliotheques, visée par d'autres pages. Titre, texte et
+ * fiches partagent la colonne de texte (GridOffset 0.5).
+ */
+import GridOffset from '@/components/mdx/primitives/GridOffset.astro'
+import FichesBibliotheques from '@/components/mdx/horaires/FichesBibliotheques.astro'
+import Titre from './Titre.astro'
+import TexteMarkdown from './TexteMarkdown.astro'
+import type { BlocDe } from './types'
+
+type Props = { bloc: BlocDe<'fiches-bibliotheques'> }
+
+const { bloc } = Astro.props
+---
+
+<GridOffset offset={0.5}>
+  <Titre texte={bloc.titre} id={bloc.id} />
+  {bloc.texte && <div class="intro"><TexteMarkdown texte={bloc.texte} brut /></div>}
+  <FichesBibliotheques />
+</GridOffset>
+
+<style>
+  .intro {
+    margin-bottom: var(--espace-bloc);
+  }
+
+  .intro > :global(:last-child) {
+    margin-bottom: 0;
+  }
+</style>

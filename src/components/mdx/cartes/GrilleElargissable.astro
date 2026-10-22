@@ -1,0 +1,43 @@
+---
+/*
+ * Grille des cartes compactes de la section « Mille et une façons
+ * d'apprendre » de l'accueil : une colonne, puis des rangées de deux dès
+ * 600 px. La source (Box à `sx`) passait dès 1200 px à une rangée flex où la
+ * carte survolée s'élargissait ; avec des cartes compactes (CardWithIcon
+ * fullWidth en rangée), l'élargissement n'a plus d'objet : le survol garde
+ * l'assombrissement du fond de la carte.
+ *
+ * Chaque enfant direct est une cellule : une CardWithIcon fullWidth, ou tout
+ * autre bloc.
+ */
+import { classes, fusionnerStyles, type Style } from '@/lib/styles'
+
+interface Props {
+  class?: string
+  className?: string
+  style?: Style
+  [attribut: string]: unknown
+}
+
+const { class: classe, className, style, ...reste } = Astro.props
+---
+
+<div class:list={['grille', classes(classe, className)]} style={fusionnerStyles(style)} data-revelation="groupe" {...reste}><slot /></div>
+
+<style>
+  .grille {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: var(--espace-grille);
+  }
+
+  .grille > :global(*) {
+    min-width: 0;
+  }
+
+  @media (min-width: 600px) {
+    .grille {
+      grid-template-columns: 1fr 1fr;
+    }
+  }
+</style>

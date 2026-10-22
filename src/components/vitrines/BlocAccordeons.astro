@@ -1,0 +1,32 @@
+---
+/*
+ * Bloc « accordeons » : titre, texte et volets d'accordéon (AccordionGroup),
+ * dans la colonne de texte (GridOffset 0.5), comme les héros et les listes
+ * de liens : le titre est aligné sur les volets.
+ */
+import GridOffset from '@/components/mdx/primitives/GridOffset.astro'
+import Titre from './Titre.astro'
+import TexteMarkdown from './TexteMarkdown.astro'
+import Volets from './Volets.astro'
+import type { BlocDe } from './types'
+
+type Props = { bloc: BlocDe<'accordeons'> }
+
+const { bloc } = Astro.props
+---
+
+<GridOffset offset={0.5}>
+  <Titre texte={bloc.titre} id={bloc.id} />
+  {bloc.texte && <div class="intro"><TexteMarkdown texte={bloc.texte} brut /></div>}
+  <Volets volets={bloc.volets} couleur={bloc.couleur} />
+</GridOffset>
+
+<style>
+  .intro {
+    margin-bottom: var(--espace-bloc);
+  }
+
+  .intro > :global(:last-child) {
+    margin-bottom: 0;
+  }
+</style>

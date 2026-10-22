@@ -1,0 +1,33 @@
+---
+/*
+ * Titre d'un bloc de vitrine : un h2 (sous le h1 de la bannière), à
+ * l'apparence h2 du thème. `id` donne l'ancre publique (/recherche/#orcid) ;
+ * sans `id`, il est calculé à partir du texte, comme pour les titres
+ * Markdown. Le lien d'ancre est le même que celui des pages de texte
+ * (accessible, visible au survol ou au focus).
+ *
+ * Le titre ouvre toujours son bloc : rien au-dessus (la bande ou la colonne
+ * donne l'espace), --espace-titre dessous, le même dans tous les blocs.
+ */
+import Typography from '@/components/mdx/primitives/Typography.astro'
+import { ICONE_ANCRE, idDeTitre } from '@/lib/ancres'
+
+interface Props {
+  texte: string
+  id?: string
+}
+
+const { texte } = Astro.props
+const id = Astro.props.id ?? idDeTitre(texte)
+---
+
+<Typography component="h2" variant="h2" id={id} class="titre-ancre titre-bloc">
+  {texte}<a href={`#${id}`} class="ancre-titre"><span class="visuellement-masque">Lien vers la section « {texte} »</span><svg aria-hidden="true" focusable="false" viewBox="0 0 256 256" width="1em" height="1em" fill="currentColor"><path d={ICONE_ANCRE}></path></svg></a>
+</Typography>
+
+<style>
+  /* h2 en plus de la classe : l'emporte sur la marge de .typo-h2 (Typography) */
+  h2.titre-bloc {
+    margin-block: 0 var(--espace-titre);
+  }
+</style>

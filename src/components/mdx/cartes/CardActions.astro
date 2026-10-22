@@ -1,0 +1,34 @@
+---
+/*
+ * Rangée de boutons d'une carte de MUI (CardActions) : flex centré
+ * verticalement, 8 px de marge et d'écart.
+ */
+import { classes, fusionnerStyles, type Style } from '@/lib/styles'
+
+interface Props {
+  /** Supprime l'écart entre les boutons (disableSpacing de MUI) */
+  disableSpacing?: boolean
+  class?: string
+  className?: string
+  style?: Style
+  [attribut: string]: unknown
+}
+
+const { disableSpacing = false, class: classe, className, style, sx: _sx, ...reste } = Astro.props
+---
+
+<div class:list={['actions', { serre: disableSpacing }, classes(classe, className)]} style={fusionnerStyles(style)} {...reste}><slot /></div>
+
+<style>
+  .actions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    align-items: center;
+    padding: 8px;
+  }
+
+  .serre {
+    gap: 0;
+  }
+</style>

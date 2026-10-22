@@ -1,0 +1,168 @@
+---
+title: Cartes
+noindex: true
+lvl: 1
+---
+
+import { BookmarkSimpleIcon } from '@phosphor-icons/react/dist/ssr/BookmarkSimple'
+import { VideoIcon } from '@phosphor-icons/react/dist/ssr/Video'
+import { PersonSimpleCircleIcon } from '@phosphor-icons/react/dist/ssr/PersonSimpleCircle'
+import { UsersIcon } from '@phosphor-icons/react/dist/ssr/Users'
+import { DownloadSimpleIcon } from '@phosphor-icons/react/dist/ssr/DownloadSimple'
+import { LaptopIcon } from '@phosphor-icons/react/dist/ssr/Laptop'
+import { HandDepositIcon } from '@phosphor-icons/react/dist/ssr/HandDeposit'
+import { PencilSimpleIcon } from '@phosphor-icons/react/dist/ssr/PencilSimple'
+import { ChatIcon } from '@phosphor-icons/react/dist/ssr/Chat'
+import { UsersFourIcon } from '@phosphor-icons/react/dist/ssr/UsersFour'
+import { BookOpenTextIcon } from '@phosphor-icons/react/dist/ssr/BookOpenText'
+import { MegaphoneIcon } from '@phosphor-icons/react/dist/ssr/Megaphone'
+import { HandCoinsIcon } from '@phosphor-icons/react/dist/ssr/HandCoins'
+import { NewspaperClippingIcon } from '@phosphor-icons/react/dist/ssr/NewspaperClipping'
+import { FlowerTulipIcon } from '@phosphor-icons/react/dist/ssr/FlowerTulip'
+import { GraduationCapIcon } from '@phosphor-icons/react/dist/ssr/GraduationCap'
+import { HeartIcon } from '@phosphor-icons/react/dist/ssr/Heart'
+import { HeadCircuitIcon } from '@phosphor-icons/react/dist/ssr/HeadCircuit'
+import { CubeTransparentIcon } from '@phosphor-icons/react/dist/ssr/CubeTransparent'
+import { BinocularsIcon } from '@phosphor-icons/react/dist/ssr/Binoculars'
+import Didactheque from '../../images/didactheque.webp'
+import AtelierZines from './images/lsh-atelier-zines.webp'
+import SalleIndividuelle from '../../images/salle-individuelle.webp'
+import Cabine from '../../images/cabine.webp'
+import SalleSilencieuse from '../../images/salle-silencieuse.webp'
+
+# Cartes
+
+Démonstration des cartes : cartes-liens, cartes à révélation, icône dans un carré et pièces de carte de MUI, avec les variantes de props employées dans le contenu.
+
+## CardWithIcon
+
+<Carousel1 title="Couleurs (vertFonce, liens externes)" description="Les cartes s'élargissent de 10 % au survol ou au focus.">
+  <CardWithIcon color="vertFonce" title="Déposer facilement son article en libre accès" Icon={DownloadSimpleIcon} moreText="Utiliser le formulaire rapide" href="https://depot-libre-acces.bib.umontreal.ca/connexion" />
+  <CardWithIcon title="Qu'est-ce que le libre accès?" Icon={LaptopIcon} moreText="Comprendre le concept" href="https://boite-outils.bib.umontreal.ca/c.php?g=743086&p=5370698" />
+  <CardWithIcon color="primary" title="Couleur primary, lien interne" Icon={BookmarkSimpleIcon} moreText="Voir la page" href="/recherche/" />
+  <CardWithIcon color="rose300" title="Rose 300, lien interne" Icon={HandDepositIcon} moreText="Publier un article" href="/recherche/diffuser/#publier-un-article" />
+  <CardWithIcon color="jaune" title="Jaune, lien vers un PDF" Icon={BookOpenTextIcon} moreText="Lire le rapport" href="/engagements/rapport-GES-bibliotheques-UdeM-2024.pdf" />
+</Carousel1>
+
+<Carousel1 title="small, sans moreText">
+  <CardWithIcon small title="Publier un article" Icon={HandDepositIcon} href="/recherche/diffuser/#publier-un-article" />
+  <CardWithIcon small color="vertFonce" title="Diffuser en libre accès" Icon={DownloadSimpleIcon} href="/recherche/diffuser/#diffuser-en-libre-acces" />
+  <CardWithIcon small color="rose300" title="Petite carte rose" Icon={UsersIcon} moreText="Prendre rendez-vous" href="/nous-joindre/notre-equipe/" />
+</Carousel1>
+
+## CardWithIcon fullWidth dans GrilleElargissable
+
+Cartes compactes : une colonne, puis des rangées de deux dès 600 px.
+
+<Section bg="bleu100">
+  <GrilleElargissable style={{ marginTop: '2.5rem' }}>
+    <CardWithIcon fullWidth title="Ressources et conseils préparés par nos spécialistes" Icon={BookmarkSimpleIcon} moreText="Voir la boîte à outils" href="https://boite-outils.bib.umontreal.ca" />
+    <CardWithIcon fullWidth title="Capsules vidéos et webinaires" Icon={VideoIcon} moreText="Accéder à YouTube" href="https://www.youtube.com/user/BibliothequesUdeM" />
+    <CardWithIcon fullWidth title="Service Accessibilité" Icon={PersonSimpleCircleIcon} moreText="En savoir plus sur le Service Accessibilité" href="/service-accessibilite/" />
+    <CardWithIcon fullWidth title="Soutien personnalisé avec nos spécialistes" Icon={UsersIcon} moreText="Prendre rendez-vous" href="/nous-joindre/notre-equipe/" />
+  </GrilleElargissable>
+</Section>
+
+## Card2
+
+<Grid container spacing={2}>
+  <Grid size={{ xs: 12, sm: 6, md: 4, lg: 3 }}>
+    <Card2 id="a" title="Nous écrire" Icon={PencilSimpleIcon} href="../nous-joindre/nous-ecrire" />
+  </Grid>
+  <Grid size={{ xs: 12, sm: 6, md: 4, lg: 3 }}>
+    <Card2 title="Clavarder" Icon={ChatIcon} href="../nous-joindre/clavarder" />
+  </Grid>
+  <Grid size={{ xs: 12, sm: 6, md: 4, lg: 3 }}>
+    <Card2 title="Consulter le répertoire" Icon={UsersFourIcon} href="../nous-joindre/notre-equipe" />
+  </Grid>
+  <Grid size={{ xs: 12, sm: 6, md: 4, lg: 3 }}>
+    <Card2 title="Lien externe" Icon={BookOpenTextIcon} href="https://www.umontreal.ca/" />
+  </Grid>
+</Grid>
+
+## CardWithImage
+
+<Section bg="vertFonce">
+  <Carousel1 title="Dans une section foncée">
+    <CardWithImage title="Salle didactique" Image={Didactheque} href="https://calendrier.bib.umontreal.ca/space/19189" moreText="Bibliothèque Thérèse-Gouin-Décarie" />
+    <CardWithImage title="Atelier de zines" Image={AtelierZines} href="https://studio.bib.umontreal.ca/espaces/zines" moreText="Bibliothèque lettres et sciences humaines" />
+    <CardWithImage title="Titre très long qui dépasse trois lignes pour vérifier la coupure du titre de la carte" Image={Didactheque} href="/espaces/" />
+  </Carousel1>
+</Section>
+
+## FlipCardWithBg
+
+Survol, focus clavier ou toucher révèlent la description.
+
+<Carousel1 title="Trois fonds">
+  <FlipCardWithBg title="Ambassadrices du libre accès" Icon={MegaphoneIcon}>
+    <p>Appui à la Politique de l’Université de Montréal sur le libre accès aux publications savantes, notamment par une offre de formation, par la promotion, par l’intégration à nos services-conseils et diverses autres initiatives.</p>
+  </FlipCardWithBg>
+  <FlipCardWithBg bg="rose300" title="Financement de projets en libre accès" Icon={HandCoinsIcon}>
+    <p>Dédication d’environ 2,5 % du budget annuel de documentation des bibliothèques au financement d’initiatives de publication en libre accès.</p>
+  </FlipCardWithBg>
+  <FlipCardWithBg bg="vertFonce" title="Ateliers Wikipédia" Icon={NewspaperClippingIcon}>
+    <p>Des ateliers d’initiation et de soutien à l’enrichissement de cette encyclopédie universelle, gratuite et accessible. [Pour en savoir plus](/engagements/ateliers-wiki/)</p>
+  </FlipCardWithBg>
+</Carousel1>
+
+## FlipCardWithImage
+
+<Carousel1 title="Avec et sans sous-titre">
+  <FlipCardWithImage title="Salles de travail individuel" Image={SalleIndividuelle} small>
+    <Button href="https://calendrier.bib.umontreal.ca/r" style={{ backgroundColor: 'var(--couleur-surface)', color: 'var(--couleur-texte)' }}>Réservez votre salle</Button>
+  </FlipCardWithImage>
+  <FlipCardWithImage title="Cabines insonorisées" subtitle="Disponibles :" Image={Cabine} small>
+    <Button href="https://calendrier.bib.umontreal.ca/r" style={{ backgroundColor: 'var(--couleur-surface)', color: 'var(--couleur-texte)' }}>Réservez votre cabine</Button>
+  </FlipCardWithImage>
+  <FlipCardWithImage title="Salles silencieuses" Image={SalleSilencieuse}>
+    <ul>
+      <li>Bibliothèque du campus de Laval</li>
+      <li>Bibliothèque de droit</li>
+      <li>Bibliothèque Marguerite-d'Youville</li>
+      <li>Bibliothèque de médecine vétérinaire</li>
+      <li>Bibliothèque Thérèse-Gouin-Décarie</li>
+      <li>Bibliothèque des lettres et sciences humaines</li>
+      <li>Bibliothèque de santé</li>
+    </ul>
+  </FlipCardWithImage>
+</Carousel1>
+
+## IconInSquare
+
+<Grid container spacing={2}>
+  <Grid size="auto"><IconInSquare color="vertPale" icon={<FlowerTulipIcon color="vertFonce" />} /></Grid>
+  <Grid size="auto"><IconInSquare color="bleu600" icon={<GraduationCapIcon color="#fff" />} /></Grid>
+  <Grid size="auto"><IconInSquare color="rose500" icon={<HeartIcon color="orange" />} /></Grid>
+  <Grid size="auto"><IconInSquare color="vertFonce" icon={<BookOpenTextIcon color="white" />} /></Grid>
+  <Grid size="auto"><IconInSquare color="rose300" icon={<HeadCircuitIcon color="rougeOrange" />} /></Grid>
+  <Grid size="auto"><IconInSquare color="#fff" icon={<CubeTransparentIcon color="bleuPrincipal" />} /></Grid>
+  <Grid size="auto"><IconInSquare color="bleu100" icon={<BinocularsIcon color="bleuPrincipal" />} /></Grid>
+</Grid>
+
+## Card, CardActionArea, CardMedia, CardContent, CardActions
+
+<Section bg="bleuPrincipal">
+  <Card class="carte-gingras" style={{ maxWidth: '80vw', marginInline: 'auto', borderRadius: 'var(--rayon-moyen)', border: '3px solid var(--rouge-orange)', boxShadow: 'none' }}>
+    <CardActionArea href="https://claude-gingras.bib.umontreal.ca/">
+      <CardMedia image={Didactheque} title="Salle didactique de la bibliothèque." style={{ height: 280, objectPosition: 'center 75%' }} />
+      <CardContent>
+        <Typography gutterBottom variant="h3" component="h3">Zone d'action avec un bouton</Typography>
+        <Typography variant="body1">Toute la carte est cliquable à la souris ; au clavier, le bouton est le seul arrêt, sans lien dans un lien.</Typography>
+        <Button primary href="https://claude-gingras.bib.umontreal.ca/">Explorer la collection Claude-Gingras</Button>
+      </CardContent>
+    </CardActionArea>
+  </Card>
+</Section>
+
+<Card style={{ maxWidth: 345 }}>
+  <CardMedia component="img" alt="" height="140" image={AtelierZines} />
+  <CardContent>
+    <Typography gutterBottom variant="h5" component="h3">Carte simple</Typography>
+    <Typography variant="body2" color="text.secondary">Image de 140 px, contenu, puis une rangée d'actions alignée à droite.</Typography>
+  </CardContent>
+  <CardActions style={{ justifyContent: 'flex-end' }}>
+    <Button size="small">Partager</Button>
+    <Button size="small">En savoir plus</Button>
+  </CardActions>
+</Card>

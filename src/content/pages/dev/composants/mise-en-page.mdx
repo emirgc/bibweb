@@ -1,0 +1,190 @@
+---
+title: Mise en page
+noindex: true
+lvl: 1
+---
+
+import Bibliothecaire from '../../images/bibliothecaire-montage.webp'
+import PorteeScientifique from '../../images/portee-scientifique.webp'
+import imageEngagement from '../../images/engagement-accueil.webp'
+
+export const carte = {
+  display: 'flex',
+  flexDirection: 'column',
+  justifyContent: 'space-between',
+  width: '368px',
+  maxWidth: '85vw',
+  minHeight: '220px',
+  padding: '1.5rem',
+  borderRadius: 'var(--rayon-petit)',
+  background: 'var(--couleur-surface)',
+  color: 'var(--couleur-texte)',
+  boxShadow: 'var(--ombre-1)',
+}
+
+<SuperHero2 title="Amplifier l’impact de vos recherches" imageName="recherche" subTitle="SuperHero2, taille par défaut, avec sous-titre" />
+
+<Section bg="vertFonce" marginTop>
+  <HeroWithImage
+    Image={Bibliothecaire}
+    imageWidth={613}
+    imageHeight={658}
+    align="right"
+    footer={<Button href="/nous-joindre/notre-equipe/" primary>Contacter votre bibliothécaire disciplinaire</Button>}
+  >
+    <Typography component="h2" variant="h2">Section vert foncé et HeroWithImage à droite</Typography>
+
+    Sur fond foncé, le texte, les liens et le focus passent au blanc : <Link to="/recherche/">un lien</Link> reste lisible.
+
+  </HeroWithImage>
+</Section>
+
+<Section>
+  <Carousel1
+    title={<Typography component="h2" variant="h2">Carousel1 qui déborde</Typography>}
+    description="Titre en élément, description en chaîne. Les boutons défilent d’une page de cartes et se désactivent aux extrémités."
+    moreLink="/recherche/"
+    moreText="Bouton « voir plus »"
+  >
+    <div style={carte}><strong>Déposer facilement son article en libre accès</strong><a href="/recherche/">Utiliser le formulaire rapide</a></div>
+    <div style={carte}><strong>Qu’est-ce que le libre accès?</strong><a href="/recherche/">Comprendre le concept</a></div>
+    <div style={carte}><strong>Déposer sa thèse ou son mémoire dans Papyrus</strong><a href="/recherche/">Voir les étapes</a></div>
+    <div style={carte}><strong>Comprendre la politique UdeM sur le libre accès</strong><a href="/recherche/">En savoir plus</a></div>
+    <div style={carte}><strong>Cinquième carte</strong><a href="/recherche/">Lien</a></div>
+  </Carousel1>
+</Section>
+
+<Section bg="rose300">
+  <Carousel1 title="Carousel1 qui tient dans la largeur" description={<Typography>Titre en chaîne (h2), description en élément. Deux cartes seulement : pas de boutons, comme dans la source.</Typography>}>
+    <div style={carte}><strong>Publier un article</strong><a href="/recherche/diffuser/">Lien</a></div>
+    <div style={carte}><strong>Diffuser en libre accès</strong><a href="/recherche/diffuser/">Lien</a></div>
+  </Carousel1>
+</Section>
+
+<Section bg="bleu200">
+  <HeroWithText2
+    leftColl={
+      <>
+        <Typography component="h2" variant="h2">HeroWithText2</Typography>
+        <Typography>Deux colonnes égales, centrées. Le pied de gauche passe sous les deux colonnes sur mobile.</Typography>
+      </>
+    }
+    leftFooter={<Button primary href="/recherche/">Pied de gauche</Button>}
+    rightColl={
+      <>
+        <Typography component="h3" variant="h5">Colonne de droite</Typography>
+        <Typography>Texte de la colonne de droite, plus long que celui de gauche pour vérifier l’alignement vertical.</Typography>
+        <Typography>Second paragraphe de la colonne de droite.</Typography>
+      </>
+    }
+  />
+</Section>
+
+<Section bg="vertFonce">
+  <Typography component="h2" variant="h2">RichList sur vert foncé</Typography>
+
+  <RichList>
+    <RichListItemWithLink title="Consultation" color="vertFonce" href="/nous-joindre/notre-equipe/" description="Service-conseil pour l’élaboration d’une synthèse de connaissance. Toute la ligne est un seul lien." />
+    <RichListItemWithLink title="Collaboration" color="vertFonce" href="https://umontreal.libwizard.com/" description="Lien externe : la flèche monte vers la droite." />
+  </RichList>
+</Section>
+
+<Section bg="vertPale">
+  <HeroWithImage
+    Image={PorteeScientifique}
+    imageWidth={949}
+    imageHeight={1068}
+    align="left"
+    footer={<Button primary href="/recherche/">Explorer les guides</Button>}
+  >
+    <Typography component="h2" variant="h2">Vert pâle et image à gauche</Typography>
+
+    Fond moyen : texte et liens en bleu foncé (<Link to="/recherche/">un lien souligné</Link>), focus bleu foncé.
+
+  </HeroWithImage>
+</Section>
+
+<Section bg="bleu200" id="orcid">
+  <HeroWithText
+    leftColl={<Nombre number="1 250" label="leftColl : un Nombre" />}
+    rightColl={
+      <>
+        <Typography component="h2" variant="h2">HeroWithText</Typography>
+        <Typography>Colonnes 3/12 et 8/12, alignées en haut. Cette section porte l’id « orcid ».</Typography>
+      </>
+    }
+    rightFooter={<Button primary href="mailto:orcid@bib.umontreal.ca">Pied de droite</Button>}
+  />
+</Section>
+
+<Section>
+  <Typography component="h2" variant="h2">RichList par défaut, avec linkText</Typography>
+
+  <RichList>
+    <RichListItemWithLink title="Matinées de rédaction" href="/recherche/" description="Séances de rédaction en groupe." linkText="S’inscrire" />
+    <RichListItemWithLink title="Cours PLU6058" href="/recherche/" description="Pastille fléchée bleu foncé, filet bleu." />
+  </RichList>
+</Section>
+
+<Section image={imageEngagement}>
+  <Grid container spacing={2}>
+    <Grid size={{ xs: 12, md: 6 }} offset={{ md: 6 }}>
+      <Typography component="h2" variant="h2">Section avec image</Typography>
+      <Typography>Photo en fond sous un voile de 40 %, texte blanc. <Link to="/engagements/">Lien blanc</Link>.</Typography>
+    </Grid>
+  </Grid>
+</Section>
+
+<Section bg="violetFonce" fixedWidth>
+  <Typography component="h2" variant="h2">Violet foncé, largeur fixe</Typography>
+  <Typography>Le blanc n’atteint que 3,46:1 sur ce violet : texte bleu foncé (5,25:1). <Link to="/">Lien</Link>.</Typography>
+</Section>
+
+<Section bg="rose500" style={{ marginTop: '1rem', borderRadius: 'var(--rayon-tres-petit)' }}>
+  <Typography component="h2" variant="h2">Nombre et TimelineDefault</Typography>
+
+  <Grid container spacing={2}>
+    <Grid size={{ xs: 12, md: 4 }}><Nombre number="[Nombre]" label="formations liées à la science ouverte" /></Grid>
+    <Grid size={{ xs: 12, md: 4 }}><Nombre number="42" label="dépôts dans Papyrus" /></Grid>
+    <Grid size={{ xs: 12, md: 4 }}><Nombre number="7" label="revues soutenues" /></Grid>
+  </Grid>
+
+  <TimelineDefault
+    title="Historique de l'engagement des bibliothèques pour la science ouverte"
+    subtitle="Chronologie"
+    showFooter={false}
+    data={[
+      { date: '1990', title: 'Lancement du SDAESH', subtitle: '🏢 SDAESH', description: 'Lancement du SDAESH, actuel Service Accessibilité', tags: [], side: 'left', color: '#2c7da0', gradient: 'linear-gradient(135deg, #2c7da0, #1e5a77)' },
+      { date: '2005', title: 'Lancement de Papyrus', subtitle: '🚀 Papyrus', description: 'Lancement de Papyrus', tags: ['Dépôt'], side: 'right', color: '#e76f51', gradient: 'linear-gradient(135deg, #e76f51, #c95a3a)' },
+      { date: '2020', title: 'Feuille de route fédérale pour la science ouverte', subtitle: '🏅 Feuille de route', description: 'Feuille de route fédérale pour la science ouverte.', tags: [], side: 'left', color: '#e9c46a', gradient: 'linear-gradient(135deg, #e9c46a, #d4b03a)' },
+    ]}
+  />
+</Section>
+
+<Section>
+  <Typography component="h2" variant="h2">SuperHero et SuperHero2 réduit</Typography>
+
+  Ces deux bannières se placent normalement en tête de page (elles se glissent sous l’en-tête dès 1200 px) ; ici, `style` annule ce décalage pour les montrer plus bas. Elles ajoutent chacune un h1 : sur cette page de démonstration seulement.
+</Section>
+
+<SuperHero
+  title="Curiosité illimitée"
+  imageName="accueil"
+  style={{ marginTop: 0 }}
+  subTitle={
+    <>
+      <Typography component="div" variant="subtitle1">Emir Chouchane</Typography>
+      <Typography component="div" variant="subtitle1">Conseiller en médiation technologique</Typography>
+    </>
+  }
+>
+  <div class="conteneur"><p>Enfants : la recherche de l’accueil se place ici.</p></div>
+</SuperHero>
+
+<Section />
+
+<SuperHero2 title="Accessibilité web" imageName="default" size="small" style={{ marginTop: 0 }} />
+
+<Section>
+  Contenu après un SuperHero2 réduit.
+</Section>

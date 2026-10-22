@@ -1,0 +1,184 @@
+---
+/*
+ * Grande bannière de l'accueil (SuperHero de coquille-web) : photo sous un
+ * voile noir de 40 %, titre <h1> (variante display1), sous-titre, puis les
+ * enfants en bas (la recherche de l'accueil).
+ *
+ * Hauteur de la source : 85vh sous 600 px, 95vh au-delà, avec un espaceur de
+ * hauteur - 5rem (sous 600 px) ou - 8rem. Comme SuperHero2, elle est ici dans
+ * le flux : glissée de 5rem sous l'en-tête transparent dès 1200 px, et une
+ * marge basse règle l'écart avec le contenu suivant (2rem sous 600 px,
+ * puis -3rem de chevauchement).
+ * Dès 1200 px, elle prend toute la fenêtre (100svh, sans chevauchement) :
+ * le contenu suivant commence sous le pli.
+ */
+import { Picture } from 'astro:assets'
+import RenduJsx from '@/components/partage/RenduJsx.astro'
+import Typography from '@/components/mdx/primitives/Typography.astro'
+import { imageBanniere, largeursPour } from '@/lib/bannieres'
+import { classes, fusionnerStyles, type Style } from '@/lib/styles'
+
+interface Props {
+  title: string
+  /** Texte ou élément sous le titre (aussi possible en slot « subTitle ») */
+  subTitle?: unknown
+  imageName: string
+  alt?: string
+  /** Inutilisé, comme dans la source */
+  lvl?: number
+  class?: string
+  className?: string
+  style?: Style
+  [attribut: string]: unknown
+}
+
+const { title, subTitle, imageName, alt = '', lvl: _lvl, class: classe, className, style, ...reste } = Astro.props
+const image = imageBanniere(imageName)
+const aSousTitre = subTitle !== undefined || Astro.slots.has('subTitle')
+const aEnfants = Astro.slots.has('default')
+---
+
+<div class:list={['super-hero', { 'avec-enfants': aEnfants }, classes(classe, className)]} style={fusionnerStyles(style)} {...reste}>
+  <Picture
+    src={image}
+    formats={['avif', 'webp']} fallbackFormat="webp"
+    widths={largeursPour(image)}
+    sizes="100vw"
+    alt={alt}
+    loading="eager"
+    fetchpriority="high"
+    class="super-hero-image"
+  />
+  <div class="texte">
+    <div class="colonne">
+      <Typography component="h1" variant="display1" class="titre">{title}</Typography>
+      {
+        aSousTitre && (
+          <div class="sous-titre">
+            <slot name="subTitle"><RenduJsx valeur={subTitle} /></slot>
+          </div>
+        )
+      }
+    </div>
+  </div>
+  {
+    aEnfants && (
+      <div class="enfants">
+        <slot />
+      </div>
+    )
+  }
+</div>
+
+<style>
+  .super-hero {
+    --hauteur: 85vh;
+    /* Sous 600 px : 2rem sous la bannière, en plus de la marge de la bande
+       suivante (48 px) ; le Quoi de neuf paraissait collé à la photo */
+    --retrait: 3rem;
+
+    display: flex;
+    position: relative;
+    isolation: isolate;
+    flex-direction: column;
+    justify-content: flex-end;
+    width: 100%;
+    /* Hauteur minimale (voir SuperHero2) : le titre n'est plus rogné par le
+       haut avec le texte agrandi à 200 % */
+    min-height: calc(var(--hauteur) - 5rem);
+    margin-bottom: calc(5rem - var(--retrait));
+    overflow: hidden;
+    color: var(--couleur-surface);
+    --couleur-lien: var(--couleur-surface);
+    --couleur-lien-survol: var(--couleur-surface);
+    --couleur-focus: var(--couleur-surface);
+  }
+
+  @media (min-width: 600px) {
+    .super-hero {
+      --hauteur: 95vh;
+      --retrait: 8rem;
+    }
+  }
+
+  @media (min-width: 1200px) {
+    .super-hero {
+      --hauteur: 100svh;
+      --retrait: 5rem;
+
+      min-height: var(--hauteur);
+      margin-top: -5rem;
+      padding-top: 5rem;
+    }
+  }
+
+  .super-hero::before {
+    content: '';
+    position: absolute;
+    z-index: -1;
+    inset: 0;
+    background-color: color-mix(in srgb, var(--couleur-voile) 40%, transparent);
+  }
+
+  .super-hero :global(.super-hero-image) {
+    position: absolute;
+    z-index: -2;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+  }
+
+  .texte {
+    width: 100%;
+    max-width: var(--largeur-max);
+    margin-inline: auto;
+    padding: 0 16px 1.5rem;
+  }
+
+  .avec-enfants .texte {
+    padding-bottom: 1rem;
+  }
+
+  .super-hero :global(.titre) {
+    margin: 0;
+    overflow-wrap: break-word;
+  }
+
+  /* Le h1 (interligne 1) touchait le sous-titre par ses jambages */
+  .sous-titre {
+    margin-top: var(--espace-1);
+  }
+
+  .enfants {
+    width: 100%;
+  }
+
+  @media (min-width: 600px) {
+    .texte {
+      padding: 0 20px 4.25rem;
+    }
+  }
+
+  @media (min-width: 900px) {
+    .texte {
+      padding-inline: 40px;
+    }
+
+    .colonne {
+      width: calc(100% * 8 / 12);
+    }
+  }
+
+  @media (min-width: 1200px) {
+    .texte {
+      padding-inline: 64px;
+    }
+  }
+
+  @media (min-width: 600px) {
+    .avec-enfants .texte {
+      padding-bottom: 1rem;
+    }
+  }
+</style>

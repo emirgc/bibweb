@@ -1,0 +1,42 @@
+---
+/* Élément de liste MUI : <li> en flex, rembourrage de 8 × 16 px */
+import { classes, fusionnerStyles } from '@/lib/styles'
+
+interface Props {
+  component?: string
+  disablePadding?: boolean
+  alignItems?: 'center' | 'flex-start'
+  class?: string
+  className?: string
+  style?: string | Record<string, string | number>
+  [attribut: string]: unknown
+}
+
+const { component = 'li', disablePadding = false, alignItems = 'center', class: classe, className, style, secondaryAction: _action, ...reste } = Astro.props
+const Balise = component
+---
+
+<Balise class:list={['element-liste', { 'sans-marges': disablePadding, 'aligne-haut': alignItems === 'flex-start' }, classes(classe, className)]} style={fusionnerStyles(style)} {...reste}
+  ><slot /></Balise
+>
+
+<style>
+  .element-liste {
+    position: relative;
+    display: flex;
+    align-items: center;
+    justify-content: flex-start;
+    box-sizing: border-box;
+    width: 100%;
+    padding: 8px 16px;
+    text-align: left;
+  }
+
+  .sans-marges {
+    padding: 0;
+  }
+
+  .aligne-haut {
+    align-items: flex-start;
+  }
+</style>

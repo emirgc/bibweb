@@ -1,0 +1,66 @@
+---
+/*
+ * Bloc « icone-texte » : grande icône dans un carré de couleur à gauche,
+ * titre, texte et boutons à droite (HeroWithText et IconInSquare).
+ *
+ * Les boutons vont dans le pied de la colonne, sur une rangée qui passe à la
+ * ligne : la source les mettait tantôt dans le texte, avec une marge à gauche
+ * qui décalait le second bouton une fois passé à la ligne, tantôt dans le pied.
+ *
+ * `accordeons` s'affichent sous le bloc, dans la même bande et dans la
+ * colonne de texte, --espace-bloc plus bas (engagements : principes de l'IA).
+ */
+import GridOffset from '@/components/mdx/primitives/GridOffset.astro'
+import HeroWithText from '@/components/mdx/mise-en-page/HeroWithText.astro'
+import IconInSquare from '@/components/mdx/cartes/IconInSquare.astro'
+import Button from '@/components/mdx/primitives/Button.astro'
+import Titre from './Titre.astro'
+import Volets from './Volets.astro'
+import TexteMarkdown from './TexteMarkdown.astro'
+import { composantIcone } from '@/lib/icones'
+import type { BlocDe } from './types'
+
+type Props = { bloc: BlocDe<'icone-texte'> }
+
+const { bloc } = Astro.props
+const Icone = await composantIcone(bloc.icone)
+const couleur = bloc.couleurIcone === 'blanc' ? 'var(--couleur-surface)' : bloc.couleurIcone
+---
+
+<HeroWithText>
+  <IconInSquare slot="leftColl" color={couleur}><Icone /></IconInSquare>
+  <Fragment slot="rightColl">
+    <Titre texte={bloc.titre} id={bloc.id} />
+    <TexteMarkdown texte={bloc.texte} espacerParagraphes />
+  </Fragment>
+  {
+    bloc.boutons && (
+      <div slot="rightFooter" class="boutons">
+        {bloc.boutons.map((bouton) => (
+          <Button href={bouton.lien} primary={!bouton.secondaire} secondary={bouton.secondaire}>
+            {bouton.texte}
+          </Button>
+        ))}
+      </div>
+    )
+  }
+</HeroWithText>
+{
+  bloc.accordeons && (
+    <GridOffset offset={0.5} class="volets">
+      <Volets volets={bloc.accordeons} couleur={bloc.couleurAccordeons} />
+    </GridOffset>
+  )
+}
+
+<style>
+  .volets {
+    margin-top: var(--espace-bloc);
+  }
+
+  .boutons {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--espace-element);
+  }
+</style>

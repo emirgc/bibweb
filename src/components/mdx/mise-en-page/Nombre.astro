@@ -1,0 +1,43 @@
+---
+/*
+ * Chiffre clé et son libellé, centrés (Nombre de coquille-web, page science
+ * ouverte).
+ */
+import { classes, fusionnerStyles, type Style } from '@/lib/styles'
+
+interface Props {
+  number?: string | number
+  label?: string
+  class?: string
+  className?: string
+  style?: Style
+  [attribut: string]: unknown
+}
+
+const { number, label, class: classe, className, style, sx: _sx, ...reste } = Astro.props
+---
+
+<div class:list={['nombre', classes(classe, className)]} style={fusionnerStyles(style)} {...reste}>
+  <div class="valeur">{number}</div>
+  {label && <div class="libelle">{label}</div>}
+</div>
+
+<style>
+  .nombre {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 0.5rem;
+    text-align: center;
+  }
+
+  .valeur {
+    font-size: 1.5rem;
+    font-weight: 700;
+  }
+
+  .libelle {
+    font-size: smaller;
+  }
+</style>

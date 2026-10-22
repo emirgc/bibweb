@@ -1,0 +1,348 @@
+---
+/*
+ * Frise chronologique (TimelineDefault de coquille-web, page science
+ * ouverte) : axe central, badge de date, cartes alternées à gauche et à
+ * droite reliées à l'axe par une flèche ; une seule colonne, axe à gauche,
+ * sous 900 px.
+ *
+ * Corrigés par rapport à la source :
+ * - une liste ordonnée (<ol>) plutôt qu'une suite de <div> ;
+ * - le titre n'est plus un <h1> en plein contenu : h3 par défaut
+ *   (`niveauTitre`), et les cartes un niveau en dessous ;
+ * - plus de police « Inter » ni d'une trentaine de couleurs en dur : jetons
+ *   du thème, et seules les couleurs de `data` (contenu) colorent la
+ *   bordure, le badge, la pastille et l'axe, qui reprend leur suite ;
+ * - le texte n'est plus écrit dans la couleur de la carte (2:1 pour un jaune
+ *   sur blanc) et ne descend plus à 0.6rem ;
+ * - la pastille montre le premier graphème du sous-titre (un émoji entier,
+ *   et non sa moitié) ; elle est décorative ;
+ * - le pied de démonstration « ✦ Compact Timeline… » disparaît (`showFooter`
+ *   est accepté sans effet), comme `data = {}` qui faisait planter `.map`.
+ */
+import { classes, fusionnerStyles, type Style } from '@/lib/styles'
+
+interface Element {
+  date: string
+  title: string
+  subtitle?: string
+  description?: string
+  tags?: string[]
+  side?: 'left' | 'right'
+  color?: string
+  gradient?: string
+}
+
+interface Props {
+  data?: Element[]
+  title?: string
+  subtitle?: string
+  showFooter?: boolean
+  compact?: boolean
+  customStyles?: { container?: Style }
+  niveauTitre?: 2 | 3 | 4 | 5
+  class?: string
+  className?: string
+  style?: Style
+  [attribut: string]: unknown
+}
+
+const { data = [], title, subtitle, showFooter: _pied, compact: _compact, customStyles, niveauTitre = 3, class: classe, className, style, ...reste } = Astro.props
+const elements = Array.isArray(data) ? data : []
+const TitreFrise = `h${niveauTitre}`
+const TitreCarte = `h${Math.min(title ? niveauTitre + 1 : niveauTitre, 6)}`
+const segmenteur = new Intl.Segmenter('fr', { granularity: 'grapheme' })
+const initiale = (texte = '') => segmenteur.segment(texte.trim()).containing(0)?.segment ?? ''
+const couleurs = elements.map((e) => e.color).filter(Boolean)
+const axe = couleurs.length > 1 ? `linear-gradient(180deg, ${couleurs.join(', ')})` : (couleurs[0] ?? undefined)
+---
+
+<div class:list={['frise', classes(classe, className)]} style={fusionnerStyles(customStyles?.container, style)} {...reste}>
+  {
+    (title || subtitle) && (
+      <div class="entete">
+        {title && <TitreFrise class="titre-frise">{title}</TitreFrise>}
+        {subtitle && <p class="sous-titre-frise">{subtitle}</p>}
+      </div>
+    )
+  }
+  <ol class="liste" style={fusionnerStyles({ '--axe': axe })}>
+    {
+      elements.map((e) => (
+        <li class:list={['rangee', e.side === 'right' ? 'cote-droit' : 'cote-gauche']} style={fusionnerStyles({ '--carte': e.color, '--degrade': e.gradient ?? e.color })}>
+          <div class="date">
+            <span class="badge">{e.date}</span>
+          </div>
+          <div class="carte-bloc">
+            <svg class="fleche" viewBox="0 0 36 20" width="36" height="20" aria-hidden="true" focusable="false">
+              <path d="M0 10H33M33 10L27 3M33 10L27 17" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" />
+            </svg>
+            <div class="carte">
+              <div class="carte-entete">
+                {e.subtitle && (
+                  <span class="pastille" aria-hidden="true">
+                    {initiale(e.subtitle)}
+                  </span>
+                )}
+                <div class="carte-textes">
+                  {e.subtitle && <p class="carte-sous-titre">{e.subtitle}</p>}
+                  <TitreCarte class="carte-titre">{e.title}</TitreCarte>
+                </div>
+              </div>
+              {e.description && <p class="carte-description">{e.description}</p>}
+              {e.tags && e.tags.length > 0 && (
+                <ul class="etiquettes">
+                  {e.tags.map((t) => (
+                    <li>{t}</li>
+                  ))}
+                </ul>
+              )}
+            </div>
+          </div>
+        </li>
+      ))
+    }
+  </ol>
+</div>
+
+<style>
+  .frise {
+    position: relative;
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 1rem;
+    border-radius: var(--rayon-moyen);
+    background: linear-gradient(145deg, var(--couleur-fond) 0%, var(--bleu-100) 100%);
+    color: var(--couleur-texte);
+  }
+
+  .entete {
+    margin-bottom: 2rem;
+    text-align: center;
+  }
+
+  .titre-frise {
+    margin: 0 0 0.25rem;
+    font-size: 1.4rem;
+    font-weight: 700;
+    line-height: 1.2;
+  }
+
+  .sous-titre-frise {
+    margin: 0;
+    color: var(--couleur-texte-secondaire);
+    font-size: 0.9rem;
+    font-weight: var(--graisse-normale);
+  }
+
+  .liste {
+    position: relative;
+    margin: 0;
+    padding: 0;
+    list-style: none;
+  }
+
+  /* Axe : la suite des couleurs des cartes */
+  .liste::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    bottom: 0;
+    left: 24px;
+    width: 3px;
+    border-radius: 3px;
+    background: var(--axe, var(--bleu-principal));
+    transform: translateX(-50%);
+  }
+
+  .rangee {
+    display: flex;
+    position: relative;
+    flex-direction: column;
+    gap: 0.75rem;
+    margin: 0 0 1.25rem 1.5rem;
+    padding-top: 1.25rem;
+  }
+
+  .date {
+    position: absolute;
+    top: 0;
+    left: 0;
+    z-index: 1;
+    transform: translateX(-50%);
+  }
+
+  .badge {
+    display: inline-flex;
+    padding: 0.3rem 0.75rem;
+    border: 1px solid var(--couleur-surface);
+    border-radius: var(--rayon-plein);
+    background: var(--couleur-surface);
+    box-shadow: 0 0 0 3px var(--carte, var(--bleu-principal)), var(--ombre-1);
+    color: var(--couleur-texte);
+    font-size: 0.875rem;
+    font-weight: 700;
+    letter-spacing: 0.02em;
+    white-space: nowrap;
+  }
+
+  .carte-bloc {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    margin-left: 0.75rem;
+    color: var(--carte, var(--bleu-principal));
+  }
+
+  .fleche {
+    display: none;
+    flex: none;
+    opacity: 0.6;
+    transition:
+      transform var(--duree-courte-4) var(--courbe-standard),
+      opacity var(--duree-courte-4) var(--courbe-standard);
+  }
+
+  .carte {
+    flex: 1;
+    position: relative;
+    overflow: hidden;
+    /* Marge latérale plafonnée en vw : avec le texte à 200 % sur un
+       téléphone, 1rem de chaque côté prenait un tiers de la carte
+       (17,5 px au plus à 390 px : inchangé au texte par défaut). */
+    padding: 0.875rem min(1rem, 4.5vw);
+    border-left: 4px solid var(--carte, var(--bleu-principal));
+    border-radius: var(--rayon-petit);
+    background: var(--couleur-surface);
+    box-shadow: var(--ombre-1);
+    color: var(--couleur-texte);
+  }
+
+  .carte-entete {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 0.5rem;
+    margin-bottom: 0.5rem;
+  }
+
+  .pastille {
+    display: flex;
+    flex: none;
+    align-items: center;
+    justify-content: center;
+    width: 32px;
+    height: 32px;
+    border-radius: var(--rayon-tres-petit);
+    background: var(--degrade, var(--bleu-principal));
+    font-size: 1rem;
+  }
+
+  /* Élément flexible : sans min-width: 0, il ne descend pas sous la largeur
+     de son plus long mot, et le sous-titre en capitales sortait de la carte
+     avec le texte agrandi. La base en em fait passer les textes sous la
+     pastille quand la carte devient trop étroite (texte à 200 % sur un
+     téléphone) ; au texte par défaut, ils restent à côté. */
+  .carte-textes {
+    flex: 1 1 6em;
+    min-width: 0;
+  }
+
+  .carte-sous-titre {
+    margin: 0 0 0.1rem;
+    color: var(--couleur-texte-secondaire);
+    font-size: 0.8125rem;
+    font-weight: var(--graisse-forte);
+    letter-spacing: 0.04em;
+    text-transform: uppercase;
+  }
+
+  .carte-titre {
+    margin: 0;
+    font-family: var(--police-sans);
+    font-size: 1rem;
+    font-weight: 700;
+    line-height: 1.25;
+  }
+
+  .carte-description {
+    margin: 0.4rem 0 0.5rem;
+    color: var(--couleur-texte-secondaire);
+    font-size: 0.875rem;
+    line-height: 1.4;
+  }
+
+  .etiquettes {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.4rem;
+    margin: 0;
+    padding: 0;
+    list-style: none;
+  }
+
+  .etiquettes li {
+    padding: 0.15rem 0.5rem;
+    border-radius: var(--rayon-plein);
+    background: var(--bleu-100);
+    font-size: 0.8125rem;
+  }
+
+  @media (min-width: 900px) {
+    .frise {
+      padding: 1.5rem 1.5rem 2rem;
+    }
+
+    .titre-frise {
+      font-size: 1.8rem;
+    }
+
+    .liste::before {
+      left: 50%;
+    }
+
+    /* Deux moitiés égales autour d'une colonne de date de 100 px */
+    .rangee {
+      display: grid;
+      grid-template-columns: 1fr 100px 1fr;
+      align-items: center;
+      gap: 1rem;
+      margin: 0 0 1.75rem;
+      padding-top: 0;
+    }
+
+    .date {
+      position: static;
+      grid-column: 2;
+      grid-row: 1;
+      justify-self: center;
+      transform: none;
+    }
+
+    .carte-bloc {
+      margin-left: 0;
+      grid-row: 1;
+    }
+
+    .cote-gauche .carte-bloc {
+      grid-column: 1;
+      flex-direction: row-reverse;
+    }
+
+    .cote-droit .carte-bloc {
+      grid-column: 3;
+    }
+
+    .fleche {
+      display: block;
+    }
+
+    /* Flèche vers l'axe : à droite de la carte de gauche, et inversement */
+    .cote-droit .fleche {
+      transform: scaleX(-1);
+    }
+
+    .carte-bloc:hover .fleche {
+      opacity: 1;
+    }
+  }
+</style>

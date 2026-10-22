@@ -1,0 +1,39 @@
+---
+/*
+ * Rendu des blocs de texte d'une fiche (src/data/horaires/lieux.ts) :
+ * paragraphes, listes à puces et encadrés, avec les liens du contenu.
+ * Interne à la famille : il n'est pas exporté dans le MDX.
+ */
+import Alert from '@/components/mdx/primitives/Alert.astro'
+import Link from '@/components/mdx/primitives/Link.astro'
+import type { Bloc, Ligne } from '@/data/horaires/lieux'
+
+interface Props {
+  blocs: Bloc[]
+  /** Classe des listes (marge de 1em des contacts dans la source) */
+  classeListe?: string
+}
+
+const { blocs, classeListe } = Astro.props
+const segments = (ligne: Ligne) => (typeof ligne === 'string' ? [ligne] : ligne)
+---
+
+{
+  blocs.map((bloc) =>
+    'p' in bloc ? (
+      <p>
+        {segments(bloc.p).map((s) => (typeof s === 'string' ? s : 'gras' in s ? <b>{s.gras}</b> : <Link to={s.lien}>{s.texte}</Link>))}
+      </p>
+    ) : 'ul' in bloc ? (
+      <ul class={classeListe}>
+        {bloc.ul.map((ligne) => (
+          <li>{segments(ligne).map((s) => (typeof s === 'string' ? s : 'gras' in s ? <b>{s.gras}</b> : <Link to={s.lien}>{s.texte}</Link>))}</li>
+        ))}
+      </ul>
+    ) : (
+      <Alert>
+        <Astro.self blocs={bloc.alerte} />
+      </Alert>
+    )
+  )
+}

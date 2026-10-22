@@ -1,0 +1,74 @@
+---
+/*
+ * Page 404 (src/pages/404.jsx de coquille-web), dans la coquille complète :
+ * en-tête, liens rapides et pied de page aux mêmes seuils que les autres
+ * pages (la source basculait l'en-tête à 900 px au lieu de 1200 px).
+ * Le titre est un h1 (la source n'avait qu'un h2) ; l'image dit « 404 ».
+ */
+import { Image } from 'astro:assets'
+import Base from '@/layouts/Base.astro'
+import Button from '@/components/mdx/primitives/Button.astro'
+import image404 from '@/components/coquille/pied/im-um-404.webp'
+---
+
+<Base titre="Page non trouvée" noindex>
+  <main id="contenu-principal" class="page-404" tabindex="-1">
+    <Image src={image404} alt="Erreur 404" widths={[600, 900, 1080]} sizes="(min-width: 900px) 50vw, 80vw" class="illustration" loading="eager" />
+    <h1>Désolés... nous n'avons pas trouvé ce que vous demandez.</h1>
+    <p>Cette page n'existe plus ou a été déplacée</p>
+    <Button href="/">Retour à la page d'accueil</Button>
+  </main>
+</Base>
+
+<style>
+  .page-404 {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    min-height: calc(100vh - var(--hauteur-entete));
+    padding: 32px;
+    text-align: center;
+  }
+
+  .page-404:focus {
+    outline: none;
+  }
+
+  .illustration {
+    width: 100%;
+    max-width: 80vw;
+    height: auto;
+    margin-bottom: 32px;
+  }
+
+  /* Taille et marges du h2 de la source */
+  h1 {
+    margin: 0 0 24px;
+    color: var(--bleu-fonce);
+    font-size: 2.5rem;
+  }
+
+  p {
+    max-width: 600px;
+    margin-bottom: 48px;
+  }
+
+  @media (min-width: 900px) {
+    .page-404 {
+      padding: 96px;
+    }
+
+    .illustration {
+      max-width: 50vw;
+    }
+
+    h1 {
+      font-size: 3.5rem;
+    }
+
+    p {
+      font-size: 1.125rem;
+    }
+  }
+</style>

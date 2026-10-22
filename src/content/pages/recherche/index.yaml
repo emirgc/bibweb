@@ -1,0 +1,220 @@
+# Page vitrine /recherche/ : voir docs/REDACTION.md, section « Vitrines »
+title: Recherche
+crumbLabel: Recherche
+
+banniere:
+  titre: Amplifier l’impact de vos recherches
+  image: recherche
+
+sections:
+  - type: image-texte
+    fond: vertFonce
+    titre: Premier arrêt, votre bibliothécaire disciplinaire
+    texte: De l’idéation à la communication de vos résultats, nous pouvons vous accompagner tout au long du cycle de la recherche. Trouvez votre bibliothécaire disciplinaire.
+    image: ../images/bibliothecaire-montage.webp
+    positionImage: gauche
+    bouton:
+      texte: Contacter votre bibliothécaire disciplinaire
+      lien: /nous-joindre/notre-equipe/
+
+  - type: grille-elargissable
+    titre: Vers une science ouverte et libre
+    texte: Participez à la science ouverte, nous sommes là pour vous conseiller et vous accompagner.
+    couleurCartes: vertFonce
+    cartes:
+      - titre: Déposer facilement son article en libre accès
+        icone: download-simple
+        appel: Utiliser le formulaire rapide
+        lien: https://depot-libre-acces.bib.umontreal.ca/connexion
+      - titre: Qu'est-ce que le libre accès?
+        icone: laptop
+        appel: Comprendre le concept
+        lien: https://boite-outils.bib.umontreal.ca/c.php?g=743086&p=5370698&preview=0d537bea1efc45a7fcce09e9e30e2f90
+      - titre: Déposer sa thèse ou son mémoire dans Papyrus
+        icone: download-simple
+        appel: Voir les étapes
+        lien: https://boite-outils.bib.umontreal.ca/recherche/deposer-these-memoire
+      - titre: Comprendre la politique UdeM sur le libre accès
+        icone: plugs
+        appel: En savoir plus sur la politique
+        lien: https://boite-outils.bib.umontreal.ca/c.php?g=743086&p=5390226&preview=0d537bea1efc45a7fcce09e9e30e2f90
+
+  - type: grille-elargissable
+    fond: bleu100
+    titre: Faites rayonner vos connaissances scientifiques
+    texte: Faire rayonner votre recherche dans un monde de surabondance d’information et de mésinformation, c’est une tâche pour laquelle nous pouvons vous aider!
+    cartes:
+      - titre: Publier un article
+        icone: hand-deposit
+        lien: /recherche/diffuser/#publier-un-article
+      - titre: Diffuser en libre accès
+        icone: lock-simple-open
+        lien: /recherche/diffuser/#diffuser-en-libre-acces
+      - titre: Soutien à l'édition savante
+        icone: compass-rose
+        lien: /recherche/diffuser/#explorer-les-formats-de-diffusion
+      - titre: Explorer les formats de diffusion
+        icone: arrows-out
+        lien: /recherche/diffuser/#explorer-les-formats-de-diffusion
+      - titre: Soutien aux ressources éducatives libres (REL)
+        icone: graduation-cap
+        lien: /recherche/diffuser/#soutien-aux-ressources-educatives-libres-rel
+
+  - type: texte-icones
+    fond: bleu200
+    id: enrichissez-votre-recherche
+    titre: De la recherche à la communication savante
+    texte: Nos bibliothécaires peuvent vous accompagner, de la constitution ou la mise à jour de votre corpus documentaire à la rédaction et à la diffusion de votre article.
+    bouton:
+      texte: Consultez la page sur la diffusion des savoirs
+      lien: /recherche/diffuser/
+    couleurIcones: vertPale
+    icones:
+      - icone: eye
+        texte: Veille documentaire
+      - icone: share-network
+        texte: Gestion de bibliographies
+      - icone: toolbox
+        texte: Guides pratiques
+      - icone: panorama
+        texte: Cours PLU6058 - Rechercher et exploiter la documentation
+
+  - type: liste-liens
+    fond: vertFonce
+    id: produisez-syntheses-connaissance
+    titre: Produisez des synthèses de connaissances
+    texte: Nous offrons un service de soutien flexible pour la réalisation des synthèses de connaissances.
+    liens:
+      - titre: Consultation
+        description: Service-conseil pour l’élaboration d’une synthèse de connaissance, telle qu’une revue systématique, un examen de la portée ou une revue de littérature. Consultez notre répertoire pour trouver vos bibliothécaires disciplinaires.
+        lien: /nous-joindre/notre-equipe/
+      - titre: Collaboration
+        description: Service de soutien où votre bibliothécaire est responsable de la conception et de l’exécution des recherches bibliographiques.
+        lien: https://umontreal.libwizard.com/id/1263c5dd74d6a3183cd489d87cc0b04d
+
+  - type: image-texte
+    fond: vertPale
+    titre: Mesurez votre impact
+    texte: Nous pouvons vous conseiller et vous guider dans l’utilisation des méthodes bibliométriques responsables pour mieux documenter vos stratégies, trouver des partenaires de recherche, optimiser vos demandes de financement et comprendre l’impact de votre production scientifique.
+    image: ../images/portee-scientifique.webp
+    positionImage: droite
+    bouton:
+      texte: Explorer les guides sur l'impact de la recherche
+      lien: https://boite-outils.bib.umontreal.ca/recherche#s-lg-box-16938953
+
+  - type: icone-texte
+    fond: bleu200
+    id: orcid
+    icone: user-focus
+    couleurIcone: vertPale
+    titre: Gagnez en visibilité avec ORCID
+    texte: Améliorez la découvrabilité de vos travaux de recherche, et optimisez votre visibilité et votre crédibilité dans le monde numérique en utilisant ORCID.
+    boutons:
+      - texte: Écrivez à notre équipe ORCID en bibliothèque
+        lien: mailto:orcid@bib.umontreal.ca
+      - texte: Consultez le guide Découvrabilité de la recherche
+        lien: https://boite-outils.bib.umontreal.ca/recherche/profils-chercheurs?p=5403769
+
+  - type: grille-elargissable
+    titre: Explorez l’intelligence artificielle générative
+    texte: Pour utiliser l'IAg de façon efficace, éthique et responsable à l’Université, consultez nos ressources spécialisées.
+    couleurCartes: vertFonce
+    cartes:
+      - titre: Utilisation responsable
+        icone: plant
+        lien: https://boite-outils.bib.umontreal.ca/c.php?g=743753&p=5377616
+      - titre: Explorer les outils
+        icone: compass-rose
+        lien: https://boite-outils.bib.umontreal.ca/c.php?g=743753&p=5384062
+      - titre: Interroger l'IAg
+        icone: chat-teardrop-text
+        lien: https://boite-outils.bib.umontreal.ca/c.php?g=743753&p=5377612
+      - titre: Évaluer les contenus générés
+        icone: check-circle
+        lien: https://boite-outils.bib.umontreal.ca/c.php?g=743753&p=5377613
+      - titre: Citer, déclarer, documenter
+        icone: path
+        lien: https://boite-outils.bib.umontreal.ca/c.php?g=743753&p=5377614
+
+  - type: texte-icones
+    fond: rose300
+    id: droit-auteur
+    titre: Comprenez le droit d’auteur
+    texte: Protégez vos droits d’auteur tout en respectant ceux de vos collègues, que ce soit durant de vos travaux de recherche ou à leur publication.
+    bouton:
+      texte: Consulter le guide sur le droit d'auteur
+      lien: https://boite-outils.bib.umontreal.ca/recherche/droit-auteur
+    couleurIcones: rougeOrange
+    icones:
+      - icone: check-square-offset
+        texte: Choix des différentes licences disponibles
+      - icone: share-network
+        texte: Diffusion et partage
+      - icone: handshake
+        texte: Rôle de l’auteur ou de l’autrice et entente avec ses coauteurs ou coautrices
+      - icone: repeat
+        texte: Reproduction et réutilisation de contenu pour vos recherches
+
+  - type: grille-elargissable
+    titre: Gérez vos données de recherche
+    texte: De l’élaboration d’un plan de gestion de données jusqu’au partage dans un dépôt fiable et reconnu, nous vous aidons à y voir plus clair en gestion de données de recherche et à tirer profit des données ouvertes.
+    couleurCartes: vertFonce
+    cartes:
+      - titre: Rédiger un plan de gestion de données
+        icone: pencil-simple
+        lien: https://boite-outils.bib.umontreal.ca/recherche/gestion-donnees-recherche?p=5243845
+      - titre: Normaliser et documenter les données avec des métadonnées
+        icone: text-align-justify
+        lien: https://boite-outils.bib.umontreal.ca/recherche/gestion-donnees-recherche?p=5343034
+      - titre: Partager et trouver des données dans un dépôt
+        icone: magnifying-glass
+        lien: https://boite-outils.bib.umontreal.ca/recherche/gestion-donnees-recherche?p=5243849
+      - titre: Accéder au dépôt institutionnel Borealis.ca
+        icone: hand-deposit
+        lien: https://borealisdata.ca/dataverse/montreal
+
+  - type: icone-texte
+    fond: bleu200
+    icone: cube-transparent
+    couleurIcone: blanc
+    titre: Exploitez toutes les facettes de vos données
+    texte: |
+      Nous vous offrons l’accès à une panoplie d’outils numériques et de l’aide pour les utiliser afin d’explorer, d’exploiter, d’enrichir et d’analyser vos données de recherche.
+
+      - Analyse et visualisation de données
+      - Analyse sémantique et fouille de textes
+      - Soutien à la recherche-création et aux humanités numériques
+      - Gestion et analyse de références bibliographiques
+      - Enrichissement de métadonnées
+
+      Écrire à notre équipe de soutien: [Hugo Bernier](mailto:hugo.bernier@umontreal.ca) ou [Samuel Desnoyers](mailto:samuel.desnoyers@umontreal.ca)
+    boutons:
+      - texte: Voir nos espaces de créations numériques
+        lien: https://studio.bib.umontreal.ca/espaces/
+
+  - type: liste-liens
+    fond: vertFonce
+    id: services-cycles-superieurs
+    titre: Nos services pour les cycles supérieurs
+    liens:
+      - titre: Matinées de rédaction
+        description: Séances de rédaction en groupe divisées en cycles de rédaction, suivis de pauses d’échanges informels.
+        lien: https://www.facebook.com/groups/655999033385375/
+      - titre: Aide à l'utilisation responsable de l'IAg
+        description: Outils de documentation et de déclaration de l’usage de l’IAg
+        lien: https://boite-outils.bib.umontreal.ca/c.php?g=743753&p=5377614
+      - titre: Aide à la rédaction de votre mémoire ou thèse
+        description: Aide pour l'utilisation du modèle Word répondant aux normes du Guide de présentation des mémoires et des thèses des Études supérieures et postdoctorales (ESP)
+        lien: https://boite-outils.bib.umontreal.ca/recherche/deposer-these-memoire?p=5412524
+      - titre: Aide au dépôt de votre mémoire ou thèse dans Papyrus
+        description: Soutien pour la réalisation de cette étape obligatoire pour l’obtention de votre grade.
+        lien: https://boite-outils.bib.umontreal.ca/recherche/deposer-these-memoire?p=5344092
+      - titre: Accompagnement personnalisé au doctorat
+        description: Série de rencontres individuelles avec votre bibliothécaire disciplinaire pour recevoir un soutien dans toutes les étapes de votre parcours aux cycles supérieurs.
+        lien: /nous-joindre/notre-equipe/
+      - titre: Espaces dédiés aux cycles supérieurs
+        description: "Salles individuelles réservables, salles communes équipées de casiers pour votre documentation : l’offre varie d’une bibliothèque à l’autre, consultez le répertoire!"
+        lien: /espaces/
+      - titre: Cours PLU6058
+        description: Cours offrant un panorama de l’écosystème de l’information en contexte de recherche universitaire. Inscription gratuite, cours donné sur 5 après-midis.
+        lien: https://admission.umontreal.ca/cours-et-horaires/cours/plu-6058/

@@ -1,0 +1,35 @@
+---
+/*
+ * Liste des fiches des bibliothèques et points de service
+ * (FichesBibliotheques.jsx + content/bibliotheques/bibliotheques.mdx), dans
+ * l'ordre de la source. Les fiches viennent de src/data/horaires/lieux.ts,
+ * comme les lieux de /horaires/ : plus de copie à tenir à jour.
+ *
+ * Pas de marges latérales propres : le bloc qui les emploie les place dans
+ * la colonne de texte avec son titre (la source les décalait d'une colonne
+ * dès 900 px, d'un quart en dessous, en retrait du titre).
+ * Abandonnés : `title` et `expanded`, jamais utilisés.
+ */
+import FicheBibliotheque from './FicheBibliotheque.astro'
+import { lieuxAvecFiche } from '@/data/horaires/lieux'
+
+interface Props {
+  /** Niveau du nom de chaque fiche (3 : sous un titre ##) */
+  niveauTitre?: 2 | 3 | 4
+  class?: string
+  id?: string
+}
+
+const { niveauTitre = 3, class: classe, id } = Astro.props
+---
+
+<div class:list={['fiches', classe]} id={id}>
+  {lieuxAvecFiche.map((lieu) => <FicheBibliotheque id={lieu.fiche!.id} niveauTitre={niveauTitre} />)}
+</div>
+
+<style>
+  .fiches {
+    display: flex;
+    flex-direction: column;
+  }
+</style>

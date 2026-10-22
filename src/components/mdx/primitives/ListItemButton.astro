@@ -1,0 +1,75 @@
+---
+/*
+ * Élément de liste cliquable MUI : un <a> si `href`, sinon un <button>
+ * (MUI rendait un <div role="button">, sans clavier sans JS).
+ */
+import { classes, fusionnerStyles } from '@/lib/styles'
+
+interface Props {
+  href?: string
+  selected?: boolean
+  disabled?: boolean
+  class?: string
+  className?: string
+  style?: string | Record<string, string | number>
+  [attribut: string]: unknown
+}
+
+const { href, selected = false, disabled = false, class: classe, className, style, component: _c, ...reste } = Astro.props
+const listeClasses = ['bouton-liste', { selectionne: selected }, classes(classe, className)]
+---
+
+{
+  href ? (
+    <a href={href} class:list={listeClasses} style={fusionnerStyles(style)} aria-current={selected ? 'page' : undefined} {...reste}>
+      <slot />
+    </a>
+  ) : (
+    <button type="button" class:list={listeClasses} style={fusionnerStyles(style)} disabled={disabled} aria-pressed={selected ? 'true' : undefined} {...reste}>
+      <slot />
+    </button>
+  )
+}
+
+<style>
+  .bouton-liste {
+    position: relative;
+    display: flex;
+    flex-grow: 1;
+    align-items: center;
+    justify-content: flex-start;
+    box-sizing: border-box;
+    width: 100%;
+    min-height: 48px;
+    margin: 0;
+    padding: 8px 16px;
+    border: 0;
+    background: transparent;
+    color: inherit;
+    font: inherit;
+    text-align: left;
+    text-decoration: none;
+    cursor: pointer;
+    transition: background-color var(--duree-courte-3) var(--courbe-standard);
+  }
+
+  .bouton-liste:hover {
+    background-color: color-mix(in srgb, var(--bleu-fonce) 4%, transparent);
+  }
+
+  .selectionne {
+    background-color: color-mix(in srgb, var(--bleu-principal) 8%, transparent);
+  }
+
+  .bouton-liste:disabled {
+    cursor: default;
+    opacity: 0.38;
+  }
+
+  @media (forced-colors: active) {
+    .selectionne {
+      outline: 2px solid SelectedItem;
+      outline-offset: -2px;
+    }
+  }
+</style>

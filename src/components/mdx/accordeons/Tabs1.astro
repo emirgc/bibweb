@@ -1,0 +1,348 @@
+---
+/*
+ * Onglets verticaux (Tabs1 de coquille-web) : liste à gauche dès 900 px, en
+ * rangées au-dessus du contenu sur petit écran. Chaque enfant de premier
+ * niveau du MDX est un panneau, dans l'ordre de `tabs`.
+ *
+ * Corrections par rapport à la source : liaison onglet-panneau réelle (ids
+ * uniques, la source pointait vers des ids absents et dupliqués), motif APG
+ * complet, rangées qui passent à la ligne au lieu d'une bande à défilement
+ * horizontal (illisible à 200 % de texte), et rendu sans JS où tous les
+ * panneaux restent lisibles, chacun sous son titre.
+ *
+ * `horizontal` : la rangée d'onglets reste au-dessus du contenu à toutes
+ * les largeurs (bloc « onglets » d'Espaces).
+ *
+ * Les couleurs d'onglet suivent --onglets-texte et --onglets-accent : une page
+ * qui pose les onglets sur un fond foncé ou coloré les redéfinit dans `style`
+ * pour garder 4,5:1 (le bleu principal ne passe pas sur violet foncé).
+ */
+import { classes, fusionnerStyles, type Style } from '@/lib/styles'
+import { panneauxDuSlot } from '@/lib/decoupage'
+import { idUnique } from '@/lib/ids'
+
+interface Props {
+  /** Libellés des onglets, dans l'ordre des panneaux */
+  tabs?: string[]
+  /** Onglet ouvert au départ, compté à partir de 1 comme dans la source */
+  defaultTab?: number
+  ariaLabel?: string
+  /** Niveau du titre de chaque panneau dans le rendu sans JS (h3 : les
+   * onglets suivent d'ordinaire le h2 de leur section) */
+  niveauTitre?: 2 | 3 | 4 | 5 | 6
+  /** Onglets en rangée au-dessus du contenu à toutes les largeurs */
+  horizontal?: boolean
+  /** Accepté pour la compatibilité du contenu ; inutilisé dans la source aussi */
+  bg?: string
+  id?: string
+  class?: string
+  className?: string
+  style?: Style
+  [attribut: string]: unknown
+}
+
+const { tabs = [], defaultTab = 1, ariaLabel, niveauTitre = 3, horizontal = false, bg: _bg, sx: _sx, class: classe, className, style, ...reste } = Astro.props
+const prefixe = idUnique('onglets')
+const { panneaux, annexes } = panneauxDuSlot(Astro.slots.has('default') ? await Astro.slots.render('default') : '')
+// Un libellé sans panneau ne donnerait qu'un onglet vide : on s'en tient aux paires
+const nombre = Math.min(tabs.length, panneaux.length)
+const actif = Math.min(Math.max(Number(defaultTab) - 1 || 0, 0), Math.max(nombre - 1, 0))
+const Titre = `h${niveauTitre}`
+---
+
+<div class:list={['onglets1', { horizontal }, classes(classe, className)]} style={fusionnerStyles(style)} data-onglets data-orientation-large={horizontal ? 'horizontal' : 'vertical'} {...reste}>
+  <div class="liste" data-onglets-liste data-aria-label={ariaLabel || undefined}>
+    {
+      tabs.slice(0, nombre).map((libelle, i) => (
+        <button
+          type="button"
+          class="onglet"
+          data-onglet
+          id={`${prefixe}-onglet-${i + 1}`}
+          aria-controls={`${prefixe}-panneau-${i + 1}`}
+          data-selectionne={String(i === actif)}
+        >
+          {libelle}
+        </button>
+      ))
+    }
+  </div>
+  <div class="panneaux">
+    {
+      panneaux.slice(0, nombre).map((contenu, i) => (
+        <div class="panneau" id={`${prefixe}-panneau-${i + 1}`} data-selectionne={String(i === actif)}>
+          <Titre class="titre-panneau" data-titre-panneau>
+            {tabs[i]}
+          </Titre>
+          <Fragment set:html={contenu} />
+        </div>
+      ))
+    }
+  </div>
+  <Fragment set:html={annexes} />
+</div>
+
+<script>
+  import './onglets'
+</script>
+
+<style>
+  .onglets1 {
+    width: 100%;
+  }
+
+  /* ---- Liste d'onglets : absente sans JS, puisqu'elle ne ferait rien ---- */
+  .liste {
+    display: none;
+    flex-wrap: wrap;
+    border-bottom: 1px solid var(--couleur-bordure);
+  }
+
+  @media (scripting: enabled) {
+    .liste {
+      display: flex;
+    }
+  }
+
+  .onglets1[data-onglets-pret] > .liste {
+    display: flex;
+  }
+
+  .onglet {
+    position: relative;
+    appearance: none;
+    margin: 0 0 -1px;
+    padding: 12px 16px;
+    min-height: 48px;
+    border: 0;
+    border-bottom: 2px solid transparent;
+    background: none;
+    color: var(--onglets-texte, var(--couleur-texte-secondaire));
+    font: inherit;
+    font-size: 0.875rem;
+    font-weight: var(--graisse-moyenne);
+    line-height: 1.25;
+    text-align: left;
+    overflow-wrap: break-word;
+    cursor: pointer;
+  }
+
+  .onglet:hover {
+    color: var(--onglets-accent, var(--bleu-principal));
+  }
+
+  .onglet[data-selectionne='true'] {
+    color: var(--onglets-accent, var(--bleu-principal));
+    font-weight: var(--graisse-forte);
+  }
+
+  /* Repère de l'onglet actif : un trait posé sur la bordure, qui se déploie
+     depuis son centre (transform seulement) au lieu d'apparaître d'un coup */
+  .onglet::after {
+    content: '';
+    position: absolute;
+    right: 0;
+    bottom: -2px;
+    left: 0;
+    height: 2px;
+    background-color: currentColor;
+    transform: scaleX(0);
+    transition: transform var(--duree-courte-4) var(--courbe-emphase-deceleree);
+  }
+
+  .onglet[data-selectionne='true']::after {
+    transform: none;
+  }
+
+  /* ---- Panneaux ---- */
+  /* 24 px autour, comme le p: 3 de la source, sauf en bas : la bande ou le
+     bloc qui suit donne l'espace */
+  .panneau {
+    /* Marge latérale plafonnée en vw : avec le texte à 200 % sur un
+       téléphone, 2 × 1,5rem laissaient moins de place que les cartes à photo
+       (330 px fixes) et la page défilait de côté. 25,7 px au plus à 390 px :
+       inchangé au texte par défaut. */
+    padding: var(--espace-3) min(var(--espace-3), 6.6vw) 0;
+  }
+
+  .titre-panneau {
+    margin: 0 0 var(--espace-2);
+    font-family: var(--police-sans);
+    font-size: 1.2222rem;
+    font-weight: var(--graisse-forte);
+    line-height: 1.2;
+  }
+
+  /* Apparence finale dès le premier affichage quand le JS s'exécutera */
+  @media (scripting: enabled) {
+    .panneau[data-selectionne='false'] {
+      display: none;
+    }
+
+    .titre-panneau {
+      display: none;
+    }
+  }
+
+  @media (min-width: 600px) {
+    .onglet {
+      font-size: 1rem;
+    }
+  }
+
+  @media (min-width: 900px) {
+    /* Flex plutôt que grille : sans JS la liste est absente et les panneaux
+       reprennent toute la largeur. */
+    .onglets1:not(.horizontal) {
+      display: flex;
+      align-items: stretch;
+    }
+
+    .onglets1:not(.horizontal) .liste {
+      flex: 0 0 auto;
+      flex-direction: column;
+      flex-wrap: nowrap;
+      /* 200 px dans la source, en rem pour suivre le texte agrandi */
+      width: 11.1111rem;
+      border-bottom: 0;
+      border-right: 1px solid var(--couleur-bordure);
+    }
+
+    .onglets1:not(.horizontal) .onglet {
+      margin: 0 -1px 0 0;
+      font-size: 1.125rem;
+      border-bottom: 0;
+      border-right: 2px solid transparent;
+    }
+
+    .onglets1:not(.horizontal) .onglet::after {
+      top: 0;
+      right: -2px;
+      bottom: 0;
+      left: auto;
+      width: 2px;
+      height: auto;
+      transform: scaleY(0);
+    }
+
+    .onglets1:not(.horizontal) .onglet[data-selectionne='true']::after {
+      transform: none;
+    }
+
+    .onglets1:not(.horizontal) .panneaux {
+      flex: 1 1 0;
+      min-width: 0;
+      min-height: 400px;
+    }
+  }
+
+  /* Horizontal : capsule blanche centrée, l'onglet choisi en bleu foncé
+     (comme les onglets du Quoi de neuf sur mobile). Contrastes : bleu foncé
+     sur blanc et blanc sur bleu foncé, 18:1 ; la capsule se détache du fond
+     de la bande par son ombre. */
+  .horizontal .liste {
+    gap: 0.25rem;
+    width: fit-content;
+    max-width: 100%;
+    margin-inline: auto;
+    padding: 0.3125rem;
+    border: 0;
+    /* Coins arrondis sous 600 px : si le texte agrandi fait passer les
+       onglets sur deux lignes, la capsule reste propre */
+    border-radius: var(--rayon-grand);
+    background-color: var(--couleur-surface);
+    box-shadow: var(--ombre-1);
+  }
+
+  /* Sous 600 px, chaque onglet prend sa part de la largeur ; un libellé
+     long passe sur deux lignes dans son onglet */
+  .horizontal .liste {
+    flex-wrap: nowrap;
+  }
+
+  .horizontal .onglet {
+    flex: 1 1 0;
+    min-width: 0;
+    margin: 0;
+    padding: 0.5rem 0.75rem;
+    border: 0;
+    border-radius: var(--rayon-moyen);
+    color: var(--couleur-texte);
+    text-align: center;
+    transition:
+      background-color var(--duree-courte-4) var(--courbe-standard),
+      color var(--duree-courte-4) var(--courbe-standard);
+  }
+
+  .horizontal .onglet::after {
+    display: none;
+  }
+
+  .horizontal .onglet:hover {
+    background-color: var(--bleu-100);
+    color: var(--couleur-texte);
+  }
+
+  .horizontal .onglet[data-selectionne='true'] {
+    background-color: var(--bleu-fonce);
+    color: var(--couleur-surface);
+  }
+
+  .horizontal .onglet:focus-visible {
+    outline: 3px solid var(--couleur-focus);
+    outline-offset: 2px;
+  }
+
+  .horizontal .panneau {
+    padding-top: var(--espace-5);
+  }
+
+  @media (min-width: 600px) {
+    .horizontal .liste,
+    .horizontal .onglet {
+      border-radius: var(--rayon-plein);
+    }
+
+    .horizontal .onglet {
+      flex: 0 1 auto;
+      padding: 0.625rem 1.25rem;
+    }
+  }
+
+  @media (min-width: 900px) {
+    .horizontal .onglet {
+      padding-inline: 1.75rem;
+      font-size: 1.125rem;
+    }
+  }
+
+  /* L'onglet actif garde un repère visible quand les couleurs sont forcées */
+  @media (forced-colors: active) {
+    .onglet {
+      border-color: Canvas;
+    }
+
+    /* Filet épaissi et souligné : un filet de 2 px seul se voit mal */
+    .onglet::after {
+      display: none;
+    }
+
+    .horizontal .onglet[data-selectionne='true'] {
+      outline: 2px solid Highlight;
+    }
+
+    .onglet[data-selectionne='true'] {
+      border-color: Highlight;
+      border-bottom-width: 4px;
+      text-decoration: underline 2px;
+      text-underline-offset: 0.2em;
+    }
+
+    @media (min-width: 900px) {
+      .onglets1:not(.horizontal) .onglet[data-selectionne='true'] {
+        border-bottom-width: 0;
+        border-right-width: 4px;
+      }
+    }
+  }
+</style>

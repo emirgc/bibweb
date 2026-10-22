@@ -1,0 +1,90 @@
+---
+/*
+ * Bloc d'une fiche de bibliothèque (FicheBibliotheque/Bloc.jsx) : titre bleu
+ * précédé d'une icône (masquée sous 900 px, comme dans la source), puis le
+ * contenu en 16 px. Interne à la famille.
+ *
+ * Corrigé : le titre était un <div> ; c'est maintenant un titre, un niveau
+ * sous le nom de la fiche, pour qu'on navigue d'un bloc à l'autre.
+ */
+interface Props {
+  titre?: string
+  Icon?: any
+  niveauTitre?: number
+  /** Contenu en colonne espacée (bloc Aujourd'hui) */
+  flex?: boolean
+  class?: string
+}
+
+const { titre, Icon, niveauTitre = 4, flex = false, class: classe } = Astro.props
+const Titre = `h${niveauTitre}`
+---
+
+<div class:list={['bloc', classe]}>
+  {
+    titre && (
+      <Titre class="titre-bloc">
+        {Icon && <Icon className="icone-bloc" size="1.5rem" color="currentColor" aria-hidden="true" focusable="false" />}
+        {titre}
+      </Titre>
+    )
+  }
+  <div class:list={['contenu-bloc', { flex }]}><slot /></div>
+</div>
+
+<style>
+  .bloc {
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+    line-height: 1.5;
+  }
+
+  .titre-bloc {
+    display: flex;
+    gap: 0.5rem;
+    margin: 0;
+    color: var(--bleu-principal);
+    font-family: var(--police-sans);
+    font-size: 1.3125rem;
+    font-weight: var(--graisse-moyenne);
+    line-height: 1.3;
+  }
+
+  .titre-bloc :global(.icone-bloc) {
+    display: none;
+    flex: 0 0 auto;
+  }
+
+  .contenu-bloc {
+    font-size: 16px;
+  }
+
+  .contenu-bloc.flex {
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+  }
+
+  .contenu-bloc :global(:is(p, dd, ol, ul)) {
+    margin: 0;
+  }
+
+  .contenu-bloc :global(:is(ul, ol)) {
+    padding-left: 1em;
+  }
+
+  .contenu-bloc :global(:is(p, li)) {
+    margin-bottom: 0.3333em;
+  }
+
+  @media (min-width: 900px) {
+    .bloc {
+      gap: 1rem;
+    }
+
+    .titre-bloc :global(.icone-bloc) {
+      display: block;
+    }
+  }
+</style>

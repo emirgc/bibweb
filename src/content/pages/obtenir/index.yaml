@@ -1,0 +1,27 @@
+# Page vitrine /obtenir/ : voir docs/REDACTION.md, section « Vitrines »
+title: Obtenir
+crumbLabel: Obtenir
+
+banniere:
+  titre: Obtenir un document
+  image: obtenir
+
+sections:
+  - type: liste-liens
+    texte: Sur les tablettes ou en ligne, notre collection a été créée pour soutenir la recherche et l'apprentissage. Découvrez ici toutes les manières d'y accéder, que vous soyez ou non membre de la communauté UdeM.
+    liens:
+      - titre: Prêt, renouvellement, retour
+        description: Combien de livres, pour combien de temps, et avec quelle carte? Consultez nos modalités de prêt pour le savoir.
+        lien: /obtenir/pret-renouvellement-retour/
+      - titre: Demande de numérisation
+        description: Même si le livre qui vous intéresse est en format imprimé, nous pouvons en numériser gratuitement une partie pour vous. Consultez les conditions de numérisation d'article ou de chapitre de livre pour en savoir plus.
+        lien: /obtenir/numerisation/
+      - titre: Prêt entre bibliothèques
+        description: Si le document dont vous avez besoin se trouve dans les collections d’une autre bibliothèque, nous pouvons le faire venir pour vous ou obtenir une copie numérique d’un chapitre ou d’un article grâce à nos ententes de prêt entre bibliothèques. Découvrez les procédures pour faire une demande.
+        lien: /obtenir/peb/
+      - titre: Reproduction des thèses et mémoires
+        description: La plupart des thèses et mémoires de l'UdeM sont disponibles en ligne - mais pour les documents déposés avant 2008, vous pourriez avoir à faire une demande de reproduction. Voyez les conditions et frais du service de reproduction de thèse et mémoire.
+        lien: /obtenir/reproduction-theses-memoires/
+      - titre: Frais et avis de retard
+        description: Les bibliothèques envoient des avis lorsque vous devez rendre un document emprunté, et des frais s'appliquent lorsque les dates de retour ne sont pas respectées. Consultez la procédure d'avis et les frais de retard pour en savoir plus.
+        lien: /obtenir/frais-avis/

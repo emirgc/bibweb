@@ -1,0 +1,235 @@
+---
+/*
+ * Bande pleine largeur (Section de coquille-web).
+ *
+ * - Espacement vertical : --espace-bande (48 px, 64 px dès 900 px, 96 px
+ *   dès 1200 px, comme la source). La marge haute du premier enfant et la
+ *   marge basse du dernier sont annulées : la bande seule fait l'espace, que
+ *   le bloc commence par un titre, une image ou une carte. Marges latérales
+ *   internes 16 / 20 / 40 / 64 px, contenu limité à 1536 px.
+ * - `bg` : clé de couleur du thème. La couleur du texte est choisie par
+ *   contraste calculé (comme contrastText de la source, seuil 4,5:1), et on
+ *   corrige ce que la source laissait passer : liens bleus, focus bleu et
+ *   texte orange illisibles sur les fonds foncés ou moyens (1,6:1 pour un
+ *   lien sur vert foncé, 2:1 sur violet).
+ * - `image` : photo en fond (cover) sous un voile noir de 40 %, texte blanc.
+ *   Rendue avec <Picture> plutôt qu'en background CSS, pour profiter des
+ *   formats et des tailles d'astro:assets.
+ * - `marginTop` : 3rem dès 900 px (rattrape le chevauchement de SuperHero2).
+ * - `suite` (vitrines) : la bande prolonge la précédente, de même fond ; elle
+ *   n'a pas de marge haute, pour que deux blocs voisins de même fond soient
+ *   séparés par une seule marge de bande, et non par deux.
+ * - Corrigé : tous les styles étaient posés par useEffect, donc absents au
+ *   SSR (section transparente au premier affichage).
+ * - `revelation` (vitrines) : chaque bloc de la bande apparaît au défilement
+ *   (src/lib/animations.ts). Absent des pages de texte : on n'anime pas ce
+ *   qu'on lit.
+ * - Abandonnés, jamais utilisés dans le contenu : parallax, overlay,
+ *   overlayOpacity.
+ */
+import type { ImageMetadata } from 'astro'
+import { Picture } from 'astro:assets'
+import { classes, fusionnerStyles, type Style } from '@/lib/styles'
+import { FONDS } from '@/lib/fonds'
+
+interface Props {
+  bg?: string
+  image?: ImageMetadata | string
+  /** Texte de remplacement de l'image ; décorative par défaut */
+  imageAlt?: string
+  marginTop?: boolean | string
+  suite?: boolean
+  revelation?: boolean
+  fixedWidth?: boolean
+  minHeight?: string
+  textAlign?: 'left' | 'center' | 'right'
+  id?: string
+  class?: string
+  className?: string
+  style?: Style
+  [attribut: string]: unknown
+}
+
+const { bg, image, imageAlt = '', marginTop, suite = false, revelation = false, fixedWidth = false, minHeight, textAlign, id, class: classe, className, style, sx: _sx, ...reste } = Astro.props
+
+if (bg && image) throw new Error('Section : les propriétés `image` et `bg` sont mutuellement exclusives.')
+const fond = bg ? FONDS[bg as keyof typeof FONDS] : undefined
+if (bg && !fond) throw new Error(`Section : la couleur « ${bg} » n'existe pas dans le thème (${Object.keys(FONDS).join(', ')}).`)
+
+const ton = image ? 'fonce' : fond?.ton
+const margeHaut = marginTop !== undefined && marginTop !== false && marginTop !== 'false'
+---
+
+<section
+  id={id}
+  class:list={['section', ton && `ton-${ton}`, { 'avec-image': image, 'marge-haut': margeHaut, suite, 'largeur-fixe': fixedWidth }, classes(classe, className)]}
+  style={fusionnerStyles({ '--section-fond': fond?.couleur, minHeight: minHeight !== 'auto' ? minHeight : undefined, textAlign }, style)}
+  {...reste}
+>
+  {
+    image &&
+      (typeof image === 'string' ? (
+        <img class="section-image" src={image} alt={imageAlt} loading="lazy" decoding="async" />
+      ) : (
+        <Picture
+          class="section-image"
+          src={image}
+          formats={['avif', 'webp']} fallbackFormat="webp"
+          widths={[640, 960, 1280, 1920, 2400].filter((l) => l <= image.width)}
+          sizes="100vw"
+          alt={imageAlt}
+          loading="lazy"
+        />
+      ))
+  }
+  <div class="interieur" data-revelation={revelation ? 'zone' : undefined}><slot /></div>
+</section>
+
+<style>
+  .section {
+    position: relative;
+    padding-block: var(--espace-bande);
+    background-color: var(--section-fond, transparent);
+  }
+
+  .suite {
+    padding-block-start: 0;
+  }
+
+  .interieur {
+    position: relative;
+    max-width: var(--largeur-max);
+    margin-inline: auto;
+    padding-inline: 16px;
+  }
+
+  /* Un <script> ou un <style> rendu dans la bande ne compte pas */
+  .interieur > :global(:nth-child(1 of :not(script, style))) {
+    margin-block-start: 0;
+  }
+
+  .interieur > :global(:nth-last-child(1 of :not(script, style))) {
+    margin-block-end: 0;
+  }
+
+  @media (min-width: 600px) {
+    .interieur {
+      padding-inline: 20px;
+    }
+  }
+
+  @media (min-width: 900px) {
+    .marge-haut {
+      margin-top: var(--espace-6);
+    }
+
+    .interieur {
+      padding-inline: 40px;
+    }
+  }
+
+  @media (min-width: 1200px) {
+    .interieur {
+      padding-inline: 64px;
+    }
+  }
+
+  /* fixedWidth : Container « fixed » de MUI, largeur du palier atteint, sans
+     marges latérales internes */
+  .largeur-fixe {
+    margin-inline: auto;
+  }
+
+  .largeur-fixe > .interieur {
+    max-width: none;
+    padding-inline: 0;
+  }
+
+  @media (min-width: 600px) {
+    .largeur-fixe {
+      max-width: 600px;
+    }
+  }
+
+  @media (min-width: 900px) {
+    .largeur-fixe {
+      max-width: 900px;
+    }
+  }
+
+  @media (min-width: 1200px) {
+    .largeur-fixe {
+      max-width: 1200px;
+    }
+  }
+
+  @media (min-width: 1536px) {
+    .largeur-fixe {
+      max-width: 1536px;
+    }
+  }
+
+  /* ---- Tons (voir src/lib/fonds.ts) ---- */
+  .ton-fonce {
+    --couleur-lien: var(--couleur-surface);
+    --couleur-lien-survol: var(--couleur-surface);
+    --couleur-focus: var(--couleur-surface);
+    /* Le jaune garde l'accent : 4,66:1 sur bleu principal, 7,4:1 sur vert foncé */
+    --rouge-orange-texte: var(--jaune);
+    color: var(--couleur-surface);
+  }
+
+  .ton-moyen {
+    --couleur-lien: var(--couleur-texte);
+    --couleur-lien-survol: var(--couleur-texte);
+    --couleur-focus: var(--bleu-fonce);
+    --rouge-orange-texte: var(--couleur-texte);
+    color: var(--couleur-texte);
+  }
+
+  .ton-clair {
+    color: var(--couleur-texte);
+  }
+
+  /* ---- Image de fond ---- */
+  .avec-image {
+    isolation: isolate;
+    overflow: hidden;
+  }
+
+  .avec-image::before {
+    content: '';
+    position: absolute;
+    z-index: -1;
+    inset: 0;
+    background-color: color-mix(in srgb, var(--couleur-voile) 40%, transparent);
+  }
+
+  .section :global(.section-image) {
+    position: absolute;
+    z-index: -2;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+  }
+
+  /* Le fond seul ne délimite pas la bande en couleurs forcées */
+  @media (forced-colors: active) {
+    .ton-fonce,
+    .ton-moyen,
+    .ton-clair {
+      border-block: 1px solid CanvasText;
+    }
+
+    /* La suite d'une bande de même fond : pas de filet entre les deux, il
+       couperait le titre (la bande n'a pas de marge haute) */
+    .suite {
+      border-block-start: 0;
+    }
+
+    .section:has(+ .suite) {
+      border-block-end: 0;
+    }
+  }
+</style>

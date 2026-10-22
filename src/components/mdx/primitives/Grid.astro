@@ -1,0 +1,243 @@
+---
+/*
+ * Grille (MUI Grid2) sans JavaScript.
+ *
+ * Un conteneur est une boîte flex qui passe à la ligne ; son espacement
+ * (spacing × 8 px, ou chaîne CSS) devient l'écart flex et les variables
+ * --grille-lig / --grille-col. Un élément prend size/12 de la largeur, moins
+ * sa part des écarts, à chaque seuil donné (xs, sm 600, md 900, lg 1200,
+ * xl 1536), comme Grid2 : calc(100% × n / 12 − (12 − n) × écart / 12).
+ * 'grow' remplit la place restante, 'auto' prend la largeur du contenu.
+ *
+ * Limite connue : un élément à la fois conteneur et dimensionné (size)
+ * calcule sa largeur avec son propre écart, pas celui de son parent. Le
+ * contenu actuel n'a pas ce cas.
+ */
+import { classes, espacement, fusionnerStyles, parPoint, type Responsive, type Style } from '@/lib/styles'
+
+type Taille = number | string | boolean
+type Decalage = number | string
+
+interface Props {
+  container?: boolean
+  size?: Responsive<Taille>
+  offset?: Responsive<Decalage>
+  spacing?: Responsive<number | string>
+  rowSpacing?: Responsive<number | string>
+  columnSpacing?: Responsive<number | string>
+  direction?: 'row' | 'row-reverse' | 'column' | 'column-reverse'
+  wrap?: 'wrap' | 'nowrap' | 'wrap-reverse'
+  alignItems?: string
+  justifyContent?: string
+  /** Écart CSS direct ; ne change pas le calcul des largeurs, comme dans MUI */
+  gap?: number | string
+  component?: string
+  class?: string
+  className?: string
+  style?: Style
+  [attribut: string]: unknown
+}
+
+const {
+  container = false,
+  size,
+  offset,
+  spacing,
+  rowSpacing,
+  columnSpacing,
+  direction,
+  wrap,
+  alignItems,
+  justifyContent,
+  gap,
+  component = 'div',
+  class: classe,
+  className,
+  style,
+  // Ancienne API Grid v1 : déjà ignorée par Grid2 dans la source
+  item: _item,
+  ...reste
+} = Astro.props
+
+const Balise = component
+const attributs: Record<string, string> = {}
+const variables: Record<string, string> = {}
+
+const nombre = (v: unknown) => (typeof v === 'number' ? v : typeof v === 'string' && /^\d*\.?\d+$/.test(v.trim()) ? Number(v) : NaN)
+
+for (const [point, valeur] of Object.entries(parPoint(size))) {
+  if (valeur === 'grow' || valeur === true) attributs[`data-taille-${point}`] = 'grow'
+  else if (valeur === 'auto') attributs[`data-taille-${point}`] = 'auto'
+  else if (!Number.isNaN(nombre(valeur))) {
+    attributs[`data-taille-${point}`] = 'n'
+    // Une valeur hors bornes (md:14 dans le contenu) ne déborde pas de la rangée
+    variables[`--taille-${point}`] = String(Math.min(Math.max(nombre(valeur), 0), 12))
+  }
+}
+
+for (const [point, valeur] of Object.entries(parPoint(offset))) {
+  if (valeur === 'auto') attributs[`data-decalage-${point}`] = 'auto'
+  else if (!Number.isNaN(nombre(valeur))) {
+    attributs[`data-decalage-${point}`] = 'n'
+    variables[`--decalage-${point}`] = String(nombre(valeur))
+  }
+}
+
+// L'espacement responsive n'est pas employé par le contenu : on garde la valeur xs
+const premier = (v: Responsive<number | string> | undefined) => (v !== null && typeof v === 'object' ? (parPoint(v).xs ?? Object.values(v)[0]) : v)
+if (container) {
+  variables['--grille-lig'] = espacement(premier(rowSpacing ?? spacing)) ?? '0px'
+  variables['--grille-col'] = espacement(premier(columnSpacing ?? spacing)) ?? '0px'
+}
+
+const styleFinal = fusionnerStyles(
+  variables,
+  {
+    flexDirection: direction,
+    flexWrap: wrap,
+    alignItems,
+    justifyContent,
+    gap: espacement(gap as number | string | undefined),
+  },
+  style,
+)
+---
+
+<Balise class:list={['grille', { 'conteneur-grille': container }, classes(classe, className)]} style={styleFinal} {...attributs} {...reste}><slot /></Balise>
+
+<style>
+  .grille {
+    box-sizing: border-box;
+    min-width: 0;
+  }
+
+  .conteneur-grille {
+    display: flex;
+    flex-flow: row wrap;
+    gap: var(--grille-lig) var(--grille-col);
+  }
+
+  /* Les colonnes voisines commencent à la même hauteur : la marge haute d'un
+     titre en tête de colonne (« Horaire » de /nous-joindre/clavarder/, 40 px)
+     la décalait sous sa voisine. L'écart vient du conteneur (gap). */
+  .conteneur-grille > .grille > :global(:first-child) {
+    margin-block-start: 0;
+  }
+
+  /*
+   * Une règle par mode et par seuil : les seuils plus larges l'emportent,
+   * mobile d'abord. L'écart vient du conteneur parent par héritage.
+   */
+  [data-taille-xs='n'] {
+    flex: 0 0 auto;
+    width: calc(100% * var(--taille-xs) / 12 - (12 - var(--taille-xs)) * var(--grille-col, 0px) / 12);
+  }
+  [data-taille-xs='grow'] {
+    flex: 1 1 0;
+    width: auto;
+    max-width: 100%;
+  }
+  [data-taille-xs='auto'] {
+    flex: 0 0 auto;
+    width: auto;
+    max-width: none;
+  }
+  [data-decalage-xs='n'] {
+    margin-left: calc(100% * var(--decalage-xs) / 12 + var(--grille-col, 0px) * var(--decalage-xs) / 12);
+  }
+  [data-decalage-xs='auto'] {
+    margin-left: auto;
+  }
+
+  @media (min-width: 600px) {
+    [data-taille-sm='n'] {
+      flex: 0 0 auto;
+      width: calc(100% * var(--taille-sm) / 12 - (12 - var(--taille-sm)) * var(--grille-col, 0px) / 12);
+    }
+    [data-taille-sm='grow'] {
+      flex: 1 1 0;
+      width: auto;
+      max-width: 100%;
+    }
+    [data-taille-sm='auto'] {
+      flex: 0 0 auto;
+      width: auto;
+      max-width: none;
+    }
+    [data-decalage-sm='n'] {
+      margin-left: calc(100% * var(--decalage-sm) / 12 + var(--grille-col, 0px) * var(--decalage-sm) / 12);
+    }
+    [data-decalage-sm='auto'] {
+      margin-left: auto;
+    }
+  }
+
+  @media (min-width: 900px) {
+    [data-taille-md='n'] {
+      flex: 0 0 auto;
+      width: calc(100% * var(--taille-md) / 12 - (12 - var(--taille-md)) * var(--grille-col, 0px) / 12);
+    }
+    [data-taille-md='grow'] {
+      flex: 1 1 0;
+      width: auto;
+      max-width: 100%;
+    }
+    [data-taille-md='auto'] {
+      flex: 0 0 auto;
+      width: auto;
+      max-width: none;
+    }
+    [data-decalage-md='n'] {
+      margin-left: calc(100% * var(--decalage-md) / 12 + var(--grille-col, 0px) * var(--decalage-md) / 12);
+    }
+    [data-decalage-md='auto'] {
+      margin-left: auto;
+    }
+  }
+
+  @media (min-width: 1200px) {
+    [data-taille-lg='n'] {
+      flex: 0 0 auto;
+      width: calc(100% * var(--taille-lg) / 12 - (12 - var(--taille-lg)) * var(--grille-col, 0px) / 12);
+    }
+    [data-taille-lg='grow'] {
+      flex: 1 1 0;
+      width: auto;
+      max-width: 100%;
+    }
+    [data-taille-lg='auto'] {
+      flex: 0 0 auto;
+      width: auto;
+      max-width: none;
+    }
+    [data-decalage-lg='n'] {
+      margin-left: calc(100% * var(--decalage-lg) / 12 + var(--grille-col, 0px) * var(--decalage-lg) / 12);
+    }
+    [data-decalage-lg='auto'] {
+      margin-left: auto;
+    }
+  }
+
+  @media (min-width: 1536px) {
+    [data-taille-xl='n'] {
+      flex: 0 0 auto;
+      width: calc(100% * var(--taille-xl) / 12 - (12 - var(--taille-xl)) * var(--grille-col, 0px) / 12);
+    }
+    [data-taille-xl='grow'] {
+      flex: 1 1 0;
+      width: auto;
+      max-width: 100%;
+    }
+    [data-taille-xl='auto'] {
+      flex: 0 0 auto;
+      width: auto;
+      max-width: none;
+    }
+    [data-decalage-xl='n'] {
+      margin-left: calc(100% * var(--decalage-xl) / 12 + var(--grille-col, 0px) * var(--decalage-xl) / 12);
+    }
+    [data-decalage-xl='auto'] {
+      margin-left: auto;
+    }
+  }
+</style>

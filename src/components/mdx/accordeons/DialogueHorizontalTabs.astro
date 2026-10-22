@@ -1,0 +1,248 @@
+---
+/*
+ * Onglets horizontaux de la page science ouverte (DialogueHorizontalTabs,
+ * export DialogueOuverteHorizontalTabs de coquille-web). `tabs` est une liste
+ * de { label, content } ; `content` est du JSX du MDX, rendu par RenduJsx.
+ *
+ * Apparence de la source : bloc arrondi de 12 px sur bleu 600, rangée
+ * d'onglets bleu 200, onglet actif sur blanc souligné de bleu 600, contenu
+ * empilé avec un séparateur entre ses enfants.
+ *
+ * Corrections : motif Onglets de l'APG (la source n'avait ni rôles, ni
+ * état, ni flèches ; voir onglets.ts), hex invalide (#00407) et « false »
+ * injecté dans la CSS supprimés, et rangée d'onglets qui passe à la ligne
+ * plutôt que de se tasser (texte à 200 %). Sans JS, chaque contenu est
+ * précédé de son titre. `maxHeight` est accepté mais ignoré : sans
+ * défilement, il ne faisait que couper un contenu trop long.
+ */
+import RenduJsx from '@/components/partage/RenduJsx.astro'
+import { classes, fusionnerStyles, type Style } from '@/lib/styles'
+import { idUnique } from '@/lib/ids'
+
+interface Onglet {
+  label: unknown
+  content?: unknown
+}
+
+interface Props {
+  tabs?: Onglet[]
+  verticalSpacing?: string
+  showDividers?: boolean
+  maxHeight?: string
+  ariaLabel?: string
+  /** Niveau du titre de chaque contenu dans le rendu sans JS */
+  niveauTitre?: 2 | 3 | 4 | 5 | 6
+  id?: string
+  class?: string
+  className?: string
+  style?: Style
+  [attribut: string]: unknown
+}
+
+const {
+  tabs = [],
+  verticalSpacing = '1.5rem',
+  showDividers = true,
+  maxHeight: _maxHeight,
+  ariaLabel,
+  niveauTitre = 3,
+  class: classe,
+  className,
+  style,
+  sx: _sx,
+  ...reste
+} = Astro.props
+
+const prefixe = idUnique('dialogue')
+const Titre = `h${niveauTitre}`
+const texte = (valeur: unknown) => typeof valeur === 'string' || typeof valeur === 'number'
+---
+
+<div
+  class:list={['dialogue-onglets', 'surface-claire', { separateurs: showDividers }, classes(classe, className)]}
+  style={fusionnerStyles({ '--dialogue-espacement': verticalSpacing }, style)}
+  data-onglets
+  {...reste}
+>
+  <div class="liste" data-onglets-liste data-aria-label={ariaLabel || undefined}>
+    {
+      tabs.map((onglet, i) => (
+        <button
+          type="button"
+          class="onglet"
+          data-onglet
+          id={`${prefixe}-onglet-${i + 1}`}
+          aria-controls={`${prefixe}-panneau-${i + 1}`}
+          data-selectionne={String(i === 0)}
+        >
+          {texte(onglet.label) ? onglet.label : <RenduJsx valeur={onglet.label} />}
+        </button>
+      ))
+    }
+  </div>
+  {
+    tabs.map((onglet, i) => (
+      <div class="panneau" id={`${prefixe}-panneau-${i + 1}`} data-selectionne={String(i === 0)}>
+        <Titre class="titre-panneau" data-titre-panneau>
+          {texte(onglet.label) ? onglet.label : <RenduJsx valeur={onglet.label} />}
+        </Titre>
+        <div class="contenu">{texte(onglet.content) ? onglet.content : <RenduJsx valeur={onglet.content} />}</div>
+      </div>
+    ))
+  }
+</div>
+
+<script>
+  import './onglets'
+</script>
+
+<style>
+  .dialogue-onglets {
+    overflow: hidden;
+    border-radius: var(--rayon-petit);
+    background: var(--bleu-600);
+  }
+
+  /* ---- Rangée d'onglets : absente sans JS ---- */
+  .liste {
+    display: none;
+    flex-direction: column;
+    background: var(--bleu-200);
+  }
+
+  @media (scripting: enabled) {
+    .liste {
+      display: flex;
+    }
+  }
+
+  .dialogue-onglets[data-onglets-pret] > .liste {
+    display: flex;
+  }
+
+  .onglet {
+    position: relative;
+    appearance: none;
+    margin: 0;
+    padding: 12px 16px;
+    min-height: 48px;
+    border: 0;
+    border-bottom: 2px solid var(--bleu-600);
+    background: none;
+    color: var(--couleur-texte);
+    font: inherit;
+    font-size: 0.875rem;
+    font-weight: var(--graisse-forte);
+    line-height: 1.25;
+    text-align: center;
+    overflow-wrap: break-word;
+    cursor: pointer;
+    transition: background-color var(--duree-moyenne-2) var(--courbe-standard);
+  }
+
+  .onglet:hover {
+    background: var(--bleu-100);
+  }
+
+  .onglet[data-selectionne='true'] {
+    background: var(--couleur-surface);
+  }
+
+  /* Filet de l'onglet actif : à gauche quand les onglets sont empilés,
+     dessous quand ils sont en rangée (comme la source, aux seuils du thème
+     plutôt qu'à ses 480 et 768 px) */
+  .onglet[data-selectionne='true']::after {
+    content: '';
+    position: absolute;
+    inset: 0 auto 0 0;
+    width: 3px;
+    background: var(--bleu-600);
+  }
+
+  .onglet:focus-visible {
+    outline-offset: -4px;
+  }
+
+  /* ---- Contenu ---- */
+  .panneau {
+    padding: 16px;
+  }
+
+  .titre-panneau {
+    margin: 0 0 var(--espace-2);
+    padding: var(--espace-2);
+    border-radius: var(--rayon-tres-petit);
+    background: var(--bleu-200);
+    font-family: var(--police-sans);
+    font-size: 1.2222rem;
+    font-weight: var(--graisse-forte);
+    line-height: 1.2;
+    text-align: center;
+  }
+
+  .contenu > :global(*) {
+    margin-bottom: var(--dialogue-espacement);
+  }
+
+  .contenu > :global(*:last-child) {
+    margin-bottom: 0;
+  }
+
+  .separateurs .contenu > :global(*:not(:last-child)) {
+    padding-bottom: var(--dialogue-espacement);
+    border-bottom: 1px solid var(--bleu-600);
+  }
+
+  @media (scripting: enabled) {
+    .panneau[data-selectionne='false'],
+    .titre-panneau {
+      display: none;
+    }
+  }
+
+  @media (min-width: 600px) {
+    /* En rangée, chaque onglet prend sa part ; ils passent à la ligne
+       quand le texte agrandi ne tient plus (base en em) */
+    .liste {
+      flex-direction: row;
+      flex-wrap: wrap;
+    }
+
+    .onglet {
+      flex: 1 1 8em;
+      min-width: 0;
+    }
+
+    .onglet[data-selectionne='true']::after {
+      inset: auto 0 -2px;
+      width: auto;
+      height: 2px;
+    }
+  }
+
+  @media (min-width: 900px) {
+    .onglet {
+      padding: 16px 24px;
+      font-size: 0.8889rem;
+    }
+
+    .panneau {
+      padding: 0.5px;
+    }
+  }
+
+  @media (forced-colors: active) {
+    .onglet {
+      border-bottom-color: CanvasText;
+    }
+
+    .onglet[data-selectionne='true'] {
+      outline: 3px solid Highlight;
+      outline-offset: -3px;
+    }
+
+    .onglet[data-selectionne='true']::after {
+      background: Highlight;
+    }
+  }
+</style>

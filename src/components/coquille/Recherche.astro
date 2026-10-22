@@ -1,0 +1,674 @@
+---
+/*
+ * Boîte de dialogue de la recherche interne (SearchOverlay.jsx de
+ * coquille-web), en <dialog> natif : piège du focus, Échap et retour du focus
+ * sont fournis par le navigateur. Elle s'ouvre au clic sur tout élément
+ * [data-ouvrir-recherche] (le bouton loupe de l'en-tête), ou directement si
+ * l'URL contient ?search=1 (lien profond, retour arrière).
+ *
+ * Le balisage est rendu au build ; seuls l'index et MiniSearch se chargent à
+ * l'ouverture (voir recherche/moteur.ts). Le comportement est dans
+ * recherche/boite.ts.
+ */
+import { HouseIcon } from '@phosphor-icons/react/dist/ssr/House'
+import { MagnifyingGlassIcon } from '@phosphor-icons/react/dist/ssr/MagnifyingGlass'
+import { XIcon } from '@phosphor-icons/react/dist/ssr/X'
+import { PORTEES, consigne } from './recherche/portees'
+
+const [site] = PORTEES
+---
+
+<dialog id="recherche" class="recherche" aria-labelledby="recherche-titre" data-recherche>
+  {/* Un vrai h2 (masqué) plutôt qu'un aria-label : les h3 des sections de
+      résultats en deviennent les enfants, sans niveau sauté. */}
+  <h2 id="recherche-titre" class="visuellement-masque">Recherche dans le site</h2>
+
+  <div class="haut">
+    <div class="ligne-titre">
+      <p id="recherche-portee-libelle" class="surtitre">Rechercher dans</p>
+      <button type="button" class="bouton-icone fermer" aria-label="Fermer la recherche" data-fermer>
+        <XIcon size={26} aria-hidden="true" />
+      </button>
+    </div>
+
+    {/* Des boutons radio natifs plutôt que des boutons bascule : un seul choix
+        possible, flèches et Tab gérés par le navigateur. */}
+    <div class="portees" role="radiogroup" aria-labelledby="recherche-portee-libelle" aria-describedby="recherche-portee-description">
+      {
+        PORTEES.map((portee) => (
+          <label class="portee">
+            <input type="radio" name="recherche-portee" value={portee.cle} checked={portee.cle === 'site'} />
+            {portee.cle === 'site' && <HouseIcon size={20} aria-hidden="true" />}
+            {portee.cle === 'sofia' && (
+              <svg class="icone-sofia" viewBox="0 0 24 24" width="20" height="20" fill="currentColor" aria-hidden="true">
+                <path d="M7.588 6.96h-.021l.016-1.177c.117 0 2.477-.005 3.906-2.031l.963.68C10.714 6.893 7.885 6.96 7.588 6.96zm-.312 3.048c-.384 0-.782-.02-1.193-.065l.125-1.171c5.817.623 8.456-3.987 8.482-4.034l1.029.574c-.028.05-2.69 4.696-8.443 4.696zm5.936 8.316h-2.71v-1.178h1.532v-3.674c.029-2.393 1.3-3.424 1.51-3.579 1.37-1.088 3.094-1.266 4.987-.513l-.435 1.095c-1.526-.607-2.777-.492-3.827.347l-.039.029c-.034.025-.995.733-1.019 2.629v4.845l.001-.001z" />
+                <path d="M18.096 14.399c-.14-.137-1.404-1.3-2.703-.003l-.833-.832c1.727-1.727 3.612-.755 4.367 0l-.83.835h-.001zm-8.676 0c-.139-.137-1.404-1.3-2.703-.003l-.832-.832c1.727-1.727 3.612-.755 4.367 0l-.831.835z" />
+                <path d="M12.296 23.19c-5.687 0-9.508-4.495-9.508-11.185S6.61.82 12.296.82c5.687 0 9.498 4.495 9.498 11.185S17.977 23.19 12.296 23.19zm0-21.191c-4.983 0-8.33 4.021-8.33 10.007s3.347 10.007 8.33 10.007c4.983 0 8.32-4.021 8.32-10.007 0-5.985-3.343-10.007-8.32-10.007z" />
+              </svg>
+            )}
+            {portee.cle !== 'site' && portee.cle !== 'sofia' && <span class="pastille" style={`--accent: var(${portee.couleur})`} aria-hidden="true" />}
+            <span class="libelle">{portee.libelle}</span>
+          </label>
+        ))
+      }
+    </div>
+
+    <div class="carte" style={`--accent: var(${site.couleur})`} data-carte>
+      <p id="recherche-portee-description" class="description" data-description>{site.description}</p>
+      <button type="button" class="lire-suite" aria-expanded="false" aria-controls="recherche-portee-description" data-lire-suite>Lire la suite…</button>
+    </div>
+  </div>
+
+  <form class="formulaire" role="search" data-formulaire>
+    <button type="submit" class="bouton-icone loupe" aria-label="Lancer la recherche">
+      <MagnifyingGlassIcon size={22} aria-hidden="true" />
+    </button>
+    {/* type="text" et non "search" : dans Chrome, Échap viderait d'abord le
+        champ au lieu de fermer la boîte, comme dans la source. */}
+    <input
+      type="text"
+      name="sq"
+      class="champ"
+      aria-label="Rechercher"
+      aria-describedby="recherche-consigne"
+      placeholder={consigne(site)}
+      autocomplete="off"
+      enterkeyhint="search"
+      data-champ
+    />
+    {/* Le placeholder disparaît à la frappe et n'est pas une consigne fiable :
+        on le reprend en description du champ (l'invite à appuyer sur Entrée
+        des portées externes est essentielle). */}
+    <span id="recherche-consigne" class="visuellement-masque" data-consigne>{consigne(site)}</span>
+    <button type="button" class="bouton-icone effacer" aria-label="Effacer la recherche" data-effacer data-masque>
+      <XIcon size={16} aria-hidden="true" />
+    </button>
+  </form>
+
+  {/* Seule l'annonce est vivante : la liste elle-même serait relue à chaque frappe */}
+  <p role="status" class="visuellement-masque" data-statut></p>
+
+  <div class="resultats" data-resultats>
+    <p class="etat etat-chargement" data-etat="chargement" hidden>
+      <span class="tourniquet" aria-hidden="true"></span>
+      Chargement de l'index de recherche…
+    </p>
+    <p class="etat" data-etat="vide">Commencez à taper pour voir apparaître des résultats.</p>
+    <p class="etat" data-etat="aucun" hidden>Aucun résultat pour « <span data-requete></span> »</p>
+    <p class="etat" data-etat="erreur" hidden>L'index de recherche n'a pas pu être chargé. Fermez la recherche et réessayez dans un moment.</p>
+    <div data-groupes></div>
+  </div>
+
+  <template data-modele-groupe>
+    <section class="groupe">
+      <h3 class="surtitre"></h3>
+      {/* role="list" : Safari retire la sémantique de liste avec list-style: none */}
+      <ul class="liste" role="list"></ul>
+    </section>
+  </template>
+
+  <template data-modele-resultat>
+    <li>
+      <a class="resultat">
+        <span class="texte">
+          <span class="titre"></span>
+          <span class="extrait"></span>
+        </span>
+        <svg class="fleche" viewBox="0 0 50 51" fill="currentColor" aria-hidden="true">
+          <rect width="50" height="50" x="50" y="50.5" opacity=".1" rx="25" transform="rotate(180 50 50.5)"></rect>
+          <path d="m34.508 25.415-7.031 7.031a.586.586 0 0 1-.828-.828l6.03-6.031H16.907a.586.586 0 1 1 0-1.172h15.772l-6.03-6.031a.586.586 0 0 1 .828-.828l7.031 7.03a.586.586 0 0 1 0 .829z"></path>
+        </svg>
+      </a>
+    </li>
+  </template>
+</dialog>
+
+<script>
+  import { initialiserRecherche } from './recherche/boite'
+
+  const boite = document.querySelector<HTMLDialogElement>('dialog[data-recherche]')
+  if (boite) initialiserRecherche(boite)
+</script>
+
+<style>
+  .recherche {
+    /* Largeur « lg » de MUI ; 16 px de marge sur mobile (32 px ensuite) pour
+       garder de la place au contenu à 320 px. */
+    width: calc(100% - 32px);
+    max-width: 1200px;
+    min-height: 75vh;
+    max-height: 90vh;
+    max-height: 90dvh;
+    margin: auto;
+    padding: var(--espace-3);
+    border: 0;
+    border-radius: var(--rayon-grand);
+    background: var(--couleur-fond);
+    color: var(--couleur-texte);
+    box-shadow:
+      0 11px 15px -7px color-mix(in srgb, var(--couleur-neutre-700) 20%, transparent),
+      0 24px 38px 3px color-mix(in srgb, var(--couleur-neutre-700) 14%, transparent),
+      0 9px 46px 8px color-mix(in srgb, var(--couleur-neutre-700) 12%, transparent);
+    /* D'ordinaire, seule la zone de résultats défile (elle prend la place
+       laissée par le haut de la boîte). Quand le haut ne laisse plus assez de
+       place (texte agrandi à 200 %, écran bas, zoom), c'est la boîte entière
+       qui défile : rien n'est rogné ni hors d'atteinte. */
+    overflow-x: hidden;
+    overflow-y: auto;
+    overscroll-behavior: contain;
+  }
+
+  /* Ouverture : fondu et légère montée de la boîte (modale centrée : pas
+     d'origine à un déclencheur). Fermeture plus brève, par le même chemin :
+     overlay et display en allow-discrete gardent la boîte dans la couche
+     supérieure le temps du fondu. Le focus et Échap restent ceux du
+     <dialog> : l'animation ne retarde aucune interaction. */
+  .recherche {
+    opacity: 0;
+    transform: translateY(0.5rem) scale(0.98);
+    transition:
+      opacity var(--duree-courte-4) var(--courbe-standard),
+      transform var(--duree-courte-4) var(--courbe-standard),
+      overlay var(--duree-courte-4) allow-discrete,
+      display var(--duree-courte-4) allow-discrete;
+  }
+
+  .recherche[open] {
+    display: flex;
+    flex-direction: column;
+    opacity: 1;
+    transform: none;
+    transition-duration: var(--duree-moyenne-1);
+    transition-timing-function: var(--courbe-emphase-deceleree);
+  }
+
+  @starting-style {
+    .recherche[open] {
+      opacity: 0;
+      transform: translateY(0.5rem) scale(0.98);
+    }
+  }
+
+  .recherche::backdrop {
+    background: color-mix(in srgb, var(--couleur-neutre-700) 80%, transparent);
+    backdrop-filter: blur(6px);
+    opacity: 0;
+    transition:
+      opacity var(--duree-courte-4) var(--courbe-standard),
+      overlay var(--duree-courte-4) allow-discrete,
+      display var(--duree-courte-4) allow-discrete;
+  }
+
+  .recherche[open]::backdrop {
+    opacity: 1;
+    transition-duration: var(--duree-moyenne-1);
+    transition-timing-function: var(--courbe-emphase-deceleree);
+  }
+
+  @starting-style {
+    .recherche[open]::backdrop {
+      opacity: 0;
+    }
+  }
+
+  /* La règle globale de global.css (*, ::before, ::after) n'atteint pas
+     ::backdrop : on coupe son fondu ici. */
+  @media (prefers-reduced-motion: reduce) {
+    .recherche::backdrop,
+    .recherche[open]::backdrop {
+      transition-duration: 0.01ms;
+    }
+  }
+
+  /* La page derrière la boîte ne défile plus (comme la modale MUI) ;
+     scrollbar-gutter évite le saut de mise en page. */
+  :global(html:has(dialog[data-recherche][open])) {
+    overflow: hidden;
+  }
+
+  @media (min-width: 600px) {
+    .recherche {
+      width: calc(100% - 64px);
+    }
+  }
+
+  .haut,
+  .formulaire {
+    flex-shrink: 0;
+  }
+
+  .surtitre {
+    margin: 0;
+    color: var(--couleur-texte-secondaire);
+    font-family: var(--police-sans);
+    font-size: 0.75rem;
+    font-weight: var(--graisse-moyenne);
+    line-height: 1.5;
+    text-transform: uppercase;
+    text-wrap: wrap;
+  }
+
+  .ligne-titre {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: var(--espace-1);
+    margin-block-end: var(--espace-1);
+  }
+
+  .bouton-icone {
+    display: inline-grid;
+    place-items: center;
+    flex-shrink: 0;
+    min-width: 24px;
+    min-height: 24px;
+    padding: 5px;
+    border: 0;
+    border-radius: var(--rayon-plein);
+    background: transparent;
+    color: var(--couleur-texte-secondaire);
+    cursor: pointer;
+    transition: background-color var(--duree-courte-4) var(--courbe-standard);
+  }
+
+  .bouton-icone:hover {
+    background: color-mix(in srgb, var(--couleur-texte) 4%, transparent);
+  }
+
+  .fermer {
+    min-width: 44px;
+    min-height: 44px;
+    padding: 8px;
+  }
+
+  /* ---- Portées : contrôle segmenté ---- */
+  .portees {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px;
+    width: 100%;
+    margin-block-end: 0.75rem;
+    padding: 6px;
+    border-radius: var(--rayon-moyen);
+    background: color-mix(in srgb, var(--couleur-texte) 4%, var(--couleur-fond));
+  }
+
+  /* Sous 600 px, grille de deux colonnes ; les libellés peuvent passer à la
+     ligne (texte agrandi) au lieu de déborder. */
+  .portee {
+    position: relative;
+    display: inline-flex;
+    flex: 1 1 calc(50% - 3px);
+    align-items: center;
+    justify-content: center;
+    gap: 0.375rem;
+    min-height: 44px;
+    padding: 0.625rem 0.5rem;
+    border-radius: var(--rayon-plein);
+    color: var(--couleur-texte-secondaire);
+    font-size: 0.75rem;
+    font-weight: var(--graisse-forte);
+    line-height: 1.5;
+    text-align: center;
+    cursor: pointer;
+    transition:
+      background-color var(--duree-courte-4) var(--courbe-standard),
+      color var(--duree-courte-4) var(--courbe-standard);
+  }
+
+  /* Le bouton radio reste dans l'arbre d'accessibilité et au clavier ; il
+     couvre toute la pilule, qui sert ainsi de cible au pointeur. */
+  .portee input {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    margin: 0;
+    opacity: 0;
+    cursor: pointer;
+  }
+
+  .portee:hover {
+    background: color-mix(in srgb, var(--couleur-texte) 4%, transparent);
+  }
+
+  .portee:has(input:checked) {
+    background: var(--bleu-fonce);
+    color: var(--couleur-surface);
+  }
+
+  .portee:has(input:focus-visible) {
+    outline: 3px solid var(--couleur-focus);
+    outline-offset: 2px;
+  }
+
+  .portee svg {
+    flex-shrink: 0;
+  }
+
+  .pastille {
+    flex-shrink: 0;
+    width: 13px;
+    height: 13px;
+    border-radius: 50%;
+    background: var(--accent);
+    /* Purement décorative : elle garde sa couleur en couleurs forcées */
+    forced-color-adjust: none;
+  }
+
+  @media (min-width: 600px) {
+    .portee {
+      flex: 0 1 auto;
+      gap: 0.5rem;
+      padding: 0.75rem 1.375rem;
+      font-size: 0.9375rem;
+    }
+  }
+
+  /* ---- Carte de description de la portée ---- */
+  .carte {
+    margin-block-end: 0.75rem;
+    padding: var(--espace-1);
+    border-inline-start: 4px solid var(--accent);
+    border-radius: var(--rayon-petit);
+    background: color-mix(in srgb, var(--accent) 8%, transparent);
+  }
+
+  .description {
+    margin: 0;
+    color: var(--couleur-texte);
+  }
+
+  /* Sur mobile, la description (plusieurs phrases) tient sur une ligne pour
+     ne pas pousser le champ hors de l'écran ; « Lire la suite » la déplie.
+     Le texte entier reste lu avec le groupe de portées (aria-describedby). */
+  .carte:not([data-deplie]) .description {
+    display: -webkit-box;
+    -webkit-box-orient: vertical;
+    -webkit-line-clamp: 1;
+    line-clamp: 1;
+    overflow: hidden;
+  }
+
+  .lire-suite {
+    display: block;
+    min-height: 24px;
+    margin-inline-start: auto;
+    padding: 0 var(--rayon-minuscule);
+    border: 0;
+    background: none;
+    color: var(--bleu-principal);
+    font: inherit;
+    font-size: 0.75rem;
+    font-weight: var(--graisse-forte);
+    line-height: 1.4;
+    cursor: pointer;
+  }
+
+  .lire-suite:hover {
+    text-decoration: underline;
+  }
+
+  @media (min-width: 600px) {
+    .carte {
+      margin-block-end: var(--espace-3);
+      padding: 20px;
+    }
+
+    .carte:not([data-deplie]) .description {
+      display: block;
+      overflow: visible;
+    }
+
+    .lire-suite {
+      display: none;
+    }
+  }
+
+  /* ---- Champ ---- */
+  .formulaire {
+    display: flex;
+    align-items: stretch;
+    margin: 0;
+    /* Bordure à 3,6:1 sur le fond (contour d'un contrôle, WCAG 1.4.11) ; le
+       diviseur MUI de la source n'atteignait pas 1,3:1. */
+    border: 1px solid color-mix(in srgb, var(--couleur-texte-secondaire) 70%, var(--couleur-fond));
+    border-radius: var(--rayon-plein);
+    background: var(--couleur-fond);
+    box-shadow:
+      0 2px 1px -1px color-mix(in srgb, var(--couleur-neutre-700) 20%, transparent),
+      0 1px 1px 0 color-mix(in srgb, var(--couleur-neutre-700) 14%, transparent),
+      0 1px 3px 0 color-mix(in srgb, var(--couleur-neutre-700) 12%, transparent);
+  }
+
+  .formulaire:focus-within {
+    border-color: var(--bleu-principal);
+  }
+
+  /* Le contour de focus du champ est porté par la pilule entière */
+  .formulaire:has(.champ:focus-visible) {
+    outline: 3px solid var(--couleur-focus);
+    outline-offset: 2px;
+  }
+
+  .loupe {
+    align-self: center;
+    margin-inline-start: 4px;
+  }
+
+  .loupe:hover {
+    background: transparent;
+  }
+
+  .champ {
+    flex: 1;
+    min-width: 0;
+    padding: 12px 16px 13px;
+    border: 0;
+    border-radius: 0;
+    background: transparent;
+    color: var(--couleur-texte);
+    font: inherit;
+    line-height: 1.4375;
+    text-overflow: ellipsis;
+    appearance: none;
+  }
+
+  .champ:focus {
+    outline: none;
+  }
+
+  .champ::placeholder {
+    color: var(--couleur-texte-secondaire);
+    opacity: 1;
+  }
+
+  .effacer {
+    align-self: center;
+    margin-inline-end: 6px;
+    transition:
+      opacity var(--duree-courte-4) var(--courbe-standard),
+      visibility var(--duree-courte-4);
+  }
+
+  .effacer:hover {
+    color: var(--couleur-texte);
+  }
+
+  /* Toujours en place (le champ ne bouge pas) mais hors du focus et de
+     l'arbre d'accessibilité quand le champ est vide */
+  .effacer[data-masque] {
+    visibility: hidden;
+    opacity: 0;
+  }
+
+  /* ---- Résultats ---- */
+  .resultats {
+    flex: 1 1 auto;
+    /* Au moins deux ou trois résultats visibles ; au-delà, la boîte défile */
+    min-height: 9rem;
+    /* Marges internes compensées par des marges négatives : le contour de
+       focus d'un résultat (3 px, décalé de 2 px) n'est pas rogné par la zone
+       défilante, et la barre de défilement garde son retrait à droite. */
+    margin-block-start: calc(var(--espace-3) - 6px);
+    margin-inline: calc(-1 * var(--espace-1));
+    padding: 6px var(--espace-1);
+    overflow-y: auto;
+    scroll-padding-block: 6px;
+    overscroll-behavior: contain;
+  }
+
+  .resultats[hidden],
+  .etat[hidden] {
+    display: none;
+  }
+
+  .etat {
+    margin: 0;
+    color: var(--couleur-texte-secondaire);
+  }
+
+  .etat-chargement:not([hidden]) {
+    display: flex;
+    align-items: center;
+    gap: var(--espace-2);
+  }
+
+  .tourniquet {
+    flex-shrink: 0;
+    width: 20px;
+    height: 20px;
+    border: 2.5px solid color-mix(in srgb, var(--bleu-principal) 20%, transparent);
+    border-block-start-color: var(--bleu-principal);
+    border-radius: 50%;
+    animation: tourner 0.8s linear infinite;
+  }
+
+  @keyframes tourner {
+    to {
+      transform: rotate(1turn);
+    }
+  }
+
+  /* Les groupes sont clonés depuis les <template> par le script : ils ne
+     portent pas l'attribut de portée d'Astro, d'où :global sous .resultats. */
+  .resultats :global(.groupe) {
+    margin-block-end: var(--espace-3);
+  }
+
+  .resultats :global(.surtitre) {
+    margin: 0;
+    color: var(--couleur-texte-secondaire);
+    font-family: var(--police-sans);
+    font-size: 0.75rem;
+    font-weight: var(--graisse-moyenne);
+    line-height: 1.5;
+    text-transform: uppercase;
+  }
+
+  .resultats :global(.liste) {
+    margin: var(--espace-1) 0 0;
+    padding: 0;
+    list-style: none;
+  }
+
+  .resultats :global(.liste > li + li) {
+    margin-block-start: 4px;
+    padding-block-start: 4px;
+    border-block-start: 1px solid var(--couleur-bordure);
+  }
+
+  .resultats :global(.resultat) {
+    display: flex;
+    align-items: center;
+    gap: var(--espace-1);
+    padding-block: 10px;
+    color: var(--bleu-principal);
+    text-decoration: none;
+  }
+
+  .resultats :global(.texte) {
+    flex: 1;
+    min-width: 0;
+  }
+
+  .resultats :global(.titre) {
+    display: block;
+    font-weight: var(--graisse-forte);
+  }
+
+  .resultats :global(.resultat:hover .titre) {
+    text-decoration: underline;
+  }
+
+  .resultats :global(.extrait) {
+    display: block;
+    overflow: hidden;
+    margin-block-start: 2px;
+    color: var(--couleur-texte-secondaire);
+    font-size: 0.875rem;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+
+  .resultats :global(.fleche) {
+    flex-shrink: 0;
+    width: 28px;
+    height: 28px;
+    color: var(--bleu-principal);
+    transition: translate var(--duree-courte-4) var(--courbe-standard);
+  }
+
+  /* Au toucher, le survol resterait après le tapotement */
+  @media (hover: hover) and (pointer: fine) {
+    .resultats :global(.resultat:hover .fleche) {
+      translate: 3px 0;
+    }
+  }
+
+  .resultats :global(.resultat:focus-visible .fleche) {
+    translate: 3px 0;
+  }
+
+  @media (min-width: 600px) {
+    .resultats :global(.resultat) {
+      gap: 0.75rem;
+    }
+
+    .resultats :global(.fleche) {
+      width: 32px;
+      height: 32px;
+    }
+  }
+
+  /* ---- Couleurs forcées : la portée choisie ne tient pas qu'au fond ---- */
+  @media (forced-colors: active) {
+    .recherche {
+      border: 1px solid CanvasText;
+    }
+
+    /* La sélection passe par la bordure (réservée sur chaque pilule, couleur
+       du fond tant qu'elle n'est pas choisie) : l'outline reste au contour
+       de focus, qui doit se distinguer de la sélection. */
+    .portee {
+      border: 2px solid Canvas;
+    }
+
+    .portee:has(input:checked) {
+      border-color: SelectedItem;
+    }
+
+    .portee:has(input:checked) .libelle {
+      text-decoration: underline;
+    }
+
+    .tourniquet {
+      border-color: CanvasText;
+      border-block-start-color: Highlight;
+    }
+
+    .resultats :global(.fleche) {
+      color: LinkText;
+    }
+  }
+</style>

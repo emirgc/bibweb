@@ -1,0 +1,597 @@
+---
+/*
+ * Rendu d'une page Markdown (.md) : remplace les marqueurs posés par
+ * src/plugins/directives.mjs par les composants du MDX, pour que les pages de
+ * texte aient le même balisage et les mêmes styles que les pages MDX.
+ *
+ * Usage : <RenduDirectives><Content /></RenduDirectives>. Le contenu est
+ * d'abord rendu en HTML, puis découpé en arbre (lireMarqueurs). Chaque
+ * directive est rendue par son composant, et ses enfants par ce même
+ * composant (Astro.self).
+ *
+ * Les images locales du Markdown arrivent aussi en marqueurs : on les rend
+ * avec <Picture> (avif et webp, plusieurs largeurs), comme le MDX, au lieu de
+ * l'unique taille qu'Astro produit pour une image Markdown.
+ */
+import type { ImageMetadata } from 'astro'
+import { Picture } from 'astro:assets'
+import Modalites from '@/components/mdx/modalites/Modalites.astro'
+import Modalite from '@/components/mdx/modalites/Modalite.astro'
+import Alert from '@/components/mdx/primitives/Alert.astro'
+import AlertTitle from '@/components/mdx/primitives/AlertTitle.astro'
+import Blockquote from '@/components/mdx/primitives/Blockquote.astro'
+import Button from '@/components/mdx/primitives/Button.astro'
+import Link from '@/components/mdx/primitives/Link.astro'
+import Grid from '@/components/mdx/primitives/Grid.astro'
+import Divider from '@/components/mdx/primitives/Divider.astro'
+import Typography from '@/components/mdx/primitives/Typography.astro'
+import IconInSquare from '@/components/mdx/cartes/IconInSquare.astro'
+import Paper from '@/components/mdx/primitives/Paper.astro'
+import TableContainer from '@/components/mdx/primitives/TableContainer.astro'
+import Table from '@/components/mdx/primitives/Table.astro'
+import TableHead from '@/components/mdx/primitives/TableHead.astro'
+import TableBody from '@/components/mdx/primitives/TableBody.astro'
+import TableRow from '@/components/mdx/primitives/TableRow.astro'
+import TableCell from '@/components/mdx/primitives/TableCell.astro'
+import Section from '@/components/mdx/mise-en-page/Section.astro'
+import HeroWithImage from '@/components/mdx/mise-en-page/HeroWithImage.astro'
+import RichList from '@/components/mdx/mise-en-page/RichList.astro'
+import RichListItemWithLink from '@/components/mdx/mise-en-page/RichListItemWithLink.astro'
+import Card2 from '@/components/mdx/cartes/Card2.astro'
+import CardWithIcon from '@/components/mdx/cartes/CardWithIcon.astro'
+import CardWithImage from '@/components/mdx/cartes/CardWithImage.astro'
+import AccordionGroup from '@/components/mdx/accordeons/AccordionGroup.astro'
+import Accordion from '@/components/mdx/accordeons/Accordion.astro'
+import AccordionSummary from '@/components/mdx/accordeons/AccordionSummary.astro'
+import AccordionDetails from '@/components/mdx/accordeons/AccordionDetails.astro'
+import { composantIcone } from '@/lib/icones'
+import { couleurPalette } from '@/lib/couleurs'
+import { contientMarqueurs, lireMarqueurs } from '@/plugins/marqueurs-directives.mjs'
+
+type Attributs = Record<string, any>
+type Directive = { nom: string; attributs: Attributs; enfants: Noeud[] }
+type Noeud = string | Directive
+
+interface Props {
+  /** Usage interne (récursion) ; sinon, le contenu vient du slot */
+  noeuds?: Noeud[]
+}
+
+let noeuds = Astro.props.noeuds
+let html = ''
+if (!noeuds) {
+  html = Astro.slots.has('default') ? await Astro.slots.render('default') : ''
+  noeuds = contientMarqueurs(html) ? (lireMarqueurs(html) as Noeud[]) : undefined
+}
+
+const estDirective = (noeud: Noeud): noeud is Directive => typeof noeud !== 'string'
+const directives = (liste: Noeud[]) => liste.filter(estDirective)
+
+// Les boutons qui se suivent forment un groupe : côte à côte, avec un espace
+// sous le groupe avant le paragraphe suivant ; centré si l'un d'eux le demande
+function grouperBoutons(liste: Noeud[]) {
+  const resultat: Noeud[] = []
+  for (const noeud of liste) {
+    const groupe = [...resultat].reverse().find((n) => typeof n !== 'string' || n.trim())
+    if (estDirective(noeud) && noeud.nom === 'bouton') {
+      if (groupe && estDirective(groupe) && groupe.nom === 'boutons') {
+        while (resultat.at(-1) !== groupe) resultat.pop()
+        groupe.enfants.push(noeud)
+        if (noeud.attributs.alignement === 'centre') groupe.attributs.centre = true
+      } else {
+        resultat.push({ nom: 'boutons', attributs: { centre: noeud.attributs.alignement === 'centre' }, enfants: [noeud] })
+      }
+    } else {
+      resultat.push(noeud)
+    }
+  }
+  return resultat
+}
+if (noeuds) noeuds = grouperBoutons(noeuds)
+
+// Images du contenu, chargées à la demande. Le plugin a déjà vérifié que le
+// fichier existe et donne son chemin depuis la racine du projet.
+const IMAGES = import.meta.glob<{ default: ImageMetadata }>('/src/content/**/*.{jpg,jpeg,png,webp,avif,gif,svg,JPG,JPEG,PNG,WEBP}')
+
+async function chargerImage(src: string) {
+  const charger = IMAGES[src]
+  if (!charger) throw new Error(`RenduDirectives : image introuvable (${src}).`)
+  return (await charger()).default
+}
+
+// Icônes et images de ce niveau (et des cartes, rendues ici), chargées avant le rendu
+const ressources = new Map<Noeud, any>()
+for (const noeud of directives(noeuds ?? [])) {
+  const a = noeud.attributs
+  if (noeud.nom === 'modalite') ressources.set(noeud, await composantIcone(a.icone))
+  else if (noeud.nom === 'image') ressources.set(noeud, await chargerImage(a.src))
+  else if (noeud.nom === 'image-texte') ressources.set(noeud, await chargerImage(a.image))
+  else if (noeud.nom === 'figure' || noeud.nom === 'logo') ressources.set(noeud, await chargerImage(a.src))
+  else if (noeud.nom === 'icone-texte' || (noeud.nom === 'encadre' && a.icone)) ressources.set(noeud, await composantIcone(a.icone))
+  else if (noeud.nom === 'cartes') {
+    for (const carte of directives(noeud.enfants)) {
+      ressources.set(carte, carte.attributs.image ? await chargerImage(carte.attributs.image) : await composantIcone(carte.attributs.icone))
+    }
+  }
+}
+
+// Les boutons qui terminent un bloc image-texte vont dans son pied : sous
+// l'image sur un téléphone, comme le footer de HeroWithImage dans le MDX
+function separerBoutons(enfants: Noeud[]) {
+  const contenu = [...enfants]
+  const boutons: Noeud[] = []
+  while (contenu.length) {
+    const dernier = contenu.at(-1)!
+    if (typeof dernier === 'string' && !dernier.trim()) contenu.pop()
+    else if (estDirective(dernier) && dernier.nom === 'bouton') boutons.unshift(contenu.pop()!)
+    else break
+  }
+  return { contenu, boutons }
+}
+
+// Une image du texte s'affiche au plus à sa taille réelle, et au plus sur la
+// largeur d'une Section (1536 px moins ses marges de 64 px)
+const LARGEUR_MAX = 1408
+function largeurs(image: ImageMetadata) {
+  const largeur = Math.min(image.width, LARGEUR_MAX)
+  return { widths: [600, 900, 1200].filter((l) => l < largeur).concat(largeur), sizes: `(min-width: ${largeur}px) ${largeur}px, 100vw` }
+}
+// Une image vectorielle ou animée se sert telle quelle
+const sansConversion = (image: ImageMetadata) => image.format === 'svg' || image.format === 'gif'
+
+// Petite image d'image-texte et logos : affichées sur une hauteur fixe, en 1x et 2x
+function largeursHauteur(image: ImageMetadata, hauteur: number) {
+  const largeur = Math.round((image.width / image.height) * hauteur)
+  const widths = [largeur, largeur * 2].filter((l) => l <= image.width)
+  return { widths: widths.length ? widths : [image.width], sizes: `${largeur}px` }
+}
+const SEVERITES: Record<string, string> = { info: 'info', succes: 'success', attention: 'warning', erreur: 'error' }
+// Largeur minimale des tableaux de la source (minWidth 650 dans les 11 pages à
+// tableau) : sur un téléphone, le tableau défile au lieu de s'écraser.
+const STYLE_TABLEAU = { minWidth: '650px' }
+// Grille des cartes à icône de la source (a-propos/carriere) : 1, 2 puis 3 colonnes
+const TAILLE_CARTE = { xs: 12, sm: 6, md: 4 }
+---
+
+{/* Une seule expression : un blanc entre deux s'ajouterait au rendu (dans un lien) */}{
+  !noeuds ? <Fragment set:html={html} /> : noeuds.map((noeud) => {
+    if (typeof noeud === 'string') return <Fragment set:html={noeud} />
+    const { nom, attributs: a, enfants } = noeud
+    switch (nom) {
+      case 'modalites':
+        return (
+          <Modalites>
+            <Astro.self noeuds={enfants} />
+          </Modalites>
+        )
+      case 'modalite':
+        return (
+          <Modalite Icon={ressources.get(noeud)} taille={a.taille} couleur={a.couleur}>
+            <Astro.self noeuds={enfants} />
+          </Modalite>
+        )
+      case 'alerte':
+        return (
+          <Alert severity={SEVERITES[a.type ?? 'info'] as 'info'}>
+            {a.titre && <AlertTitle>{a.titre}</AlertTitle>}
+            <Astro.self noeuds={enfants} />
+          </Alert>
+        )
+      case 'boutons':
+        return (
+          <div class:list={['boutons', { centre: a.centre }]}>
+            {directives(noeud.enfants).map((bouton) => (
+              <Button href={bouton.attributs.lien} primary={bouton.attributs.type !== 'secondaire'} secondary={bouton.attributs.type === 'secondaire'}>
+                <Astro.self noeuds={bouton.enfants} />
+              </Button>
+            ))}
+          </div>
+        )
+      case 'a':
+        // Sur une ligne : un blanc autour du slot s'afficherait dans le lien
+        return <Link to={a.href} title={a.title} target={a.target} rel={a.rel}><Astro.self noeuds={enfants} /></Link>
+      case 'section':
+        return (
+          <Section bg={a.fond} id={a.id}>
+            <Astro.self noeuds={enfants} />
+          </Section>
+        )
+      case 'image': {
+        const image = ressources.get(noeud) as ImageMetadata
+        return sansConversion(image) ? (
+          <img src={image.src} width={image.width} height={image.height} alt={a.alt} loading="lazy" decoding="async" />
+        ) : (
+          <Picture src={image} alt={a.alt} formats={['avif', 'webp']} fallbackFormat="webp" {...largeurs(image)} loading="lazy" decoding="async" />
+        )
+      }
+      case 'cartes': {
+        const cartes = directives(enfants)
+        if (a.forme === 'image') {
+          return (
+            <div class="cartes-images">
+              {cartes.map((carte) => (
+                <CardWithImage title={carte.attributs.titre} Image={ressources.get(carte)} href={carte.attributs.lien} moreText={carte.attributs.appel} niveauTitre={a.niveau} />
+              ))}
+            </div>
+          )
+        }
+        return (
+          <div class="cartes-icones">
+            <Grid container spacing="var(--espace-grille)" alignItems="stretch">
+              {cartes.map((carte) => (
+                <Grid size={TAILLE_CARTE}>
+                  {a.forme === 'icone-appel' ? (
+                    <CardWithIcon title={carte.attributs.titre} Icon={ressources.get(carte)} href={carte.attributs.lien} moreText={carte.attributs.appel} color={a.couleur} fullWidth />
+                  ) : (
+                    <Card2 title={carte.attributs.titre} Icon={ressources.get(carte)} href={carte.attributs.lien} />
+                  )}
+                </Grid>
+              ))}
+            </Grid>
+          </div>
+        )
+      }
+      case 'liens':
+        return (
+          <RichList>
+            {directives(enfants).map((lien) => (
+              <RichListItemWithLink title={lien.attributs.titre} description={lien.attributs.description} href={lien.attributs.lien} niveauTitre={a.niveau} />
+            ))}
+          </RichList>
+        )
+      case 'image-texte': {
+        if (a.taille === 'petite') {
+          const image = ressources.get(noeud) as ImageMetadata
+          return (
+            <div class:list={['image-texte-petite', a.position === 'gauche' ? 'image-gauche' : 'image-droite']}>
+              <div class="petite-texte">
+                <Astro.self noeuds={enfants} />
+              </div>
+              <div class="petite-image">
+                {sansConversion(image) ? (
+                  <img src={image.src} width={image.width} height={image.height} alt={a.alt} loading="lazy" decoding="async" />
+                ) : (
+                  <Picture src={image} alt={a.alt} formats={['avif', 'webp']} fallbackFormat="webp" {...largeursHauteur(image, 200)} loading="lazy" decoding="async" />
+                )}
+              </div>
+            </div>
+          )
+        }
+        const { contenu, boutons } = separerBoutons(enfants)
+        return (
+          <HeroWithImage Image={ressources.get(noeud)} align={a.position === 'gauche' ? 'right' : 'left'} class="image-texte" compact>
+            <Astro.self noeuds={contenu} />
+            {boutons.length > 0 && (
+              <Fragment slot="footer">
+                <Astro.self noeuds={boutons} />
+              </Fragment>
+            )}
+          </HeroWithImage>
+        )
+      }
+      case 'galerie':
+        return (
+          <div class="galerie">
+            <Astro.self noeuds={enfants} />
+          </div>
+        )
+      case 'figure': {
+        const image = ressources.get(noeud) as ImageMetadata
+        return (
+          <figure class="galerie-figure">
+            <Picture src={image} alt={a.alt} formats={['avif', 'webp']} fallbackFormat="webp" widths={[400, 800].filter((l) => l < image.width).concat(Math.min(image.width, 800))} sizes="(min-width: 900px) 30vw, 100vw" loading="lazy" decoding="async" />
+            <Typography variant="body2" component="figcaption" class="galerie-legende">
+              <Astro.self noeuds={enfants} />
+            </Typography>
+          </figure>
+        )
+      }
+      case 'logos':
+        return (
+          <div class="logos">
+            <Astro.self noeuds={enfants} />
+          </div>
+        )
+      case 'logo': {
+        const image = ressources.get(noeud) as ImageMetadata
+        const visuel = <Picture src={image} alt={a.alt} formats={['avif', 'webp']} fallbackFormat="webp" {...largeursHauteur(image, 200)} loading="lazy" decoding="async" />
+        return <div class="logo">{a.lien ? <Link to={a.lien}>{visuel}</Link> : visuel}</div>
+      }
+      case 'icone-texte': {
+        const Icone = ressources.get(noeud)
+        return (
+          <div class="icone-texte">
+            <div class="icone-texte-texte">
+              <Astro.self noeuds={enfants} />
+            </div>
+            <IconInSquare color={a.fond} style={{ maxWidth: '100%' }}>
+              <Icone aria-hidden="true" focusable="false" />
+            </IconInSquare>
+          </div>
+        )
+      }
+      case 'encadres':
+        return (
+          <div class="encadres" style={{ '--_fond-encadre': couleurPalette(a.fond) }}>
+            <Astro.self noeuds={enfants} />
+          </div>
+        )
+      case 'encadre': {
+        const Icone = ressources.get(noeud)
+        return (
+          <div class="encadre surface-claire">
+            {Icone && (
+              <span class="encadre-icone" aria-hidden="true">
+                <Icone size={a.taille ?? 50} color={a.couleur ?? 'var(--rouge-orange)'} aria-hidden="true" focusable="false" />
+              </span>
+            )}
+            <Astro.self noeuds={enfants} />
+          </div>
+        )
+      }
+      case 'separateur':
+        return <Divider />
+      case 'citation':
+        return (
+          <Blockquote source={a.source}>
+            <Astro.self noeuds={enfants} />
+          </Blockquote>
+        )
+      case 'accordeon':
+        return (
+          <AccordionGroup>
+            <Astro.self noeuds={enfants} />
+          </AccordionGroup>
+        )
+      case 'volet':
+        return (
+          <Accordion id={a.id}>
+            <AccordionSummary niveauTitre={a.niveau}>{a.titre}</AccordionSummary>
+            <AccordionDetails>
+              <Astro.self noeuds={enfants} />
+            </AccordionDetails>
+          </Accordion>
+        )
+      case 'tableau':
+        return (
+          <TableContainer component={Paper}>
+            <Table style={STYLE_TABLEAU} aria-label={a.titre}>
+              <Astro.self noeuds={enfants} />
+            </Table>
+          </TableContainer>
+        )
+      case 'tete':
+        return (
+          <TableHead>
+            <Astro.self noeuds={enfants} />
+          </TableHead>
+        )
+      case 'corps':
+        return (
+          <TableBody>
+            <Astro.self noeuds={enfants} />
+          </TableBody>
+        )
+      case 'rangee':
+        return (
+          <TableRow>
+            <Astro.self noeuds={enfants} />
+          </TableRow>
+        )
+      case 'cellule':
+        return (
+          <TableCell align={a.align as 'left'}>
+            <Astro.self noeuds={enfants} />
+          </TableCell>
+        )
+      default:
+        throw new Error(`RenduDirectives : directive « ${nom} » sans composant.`)
+    }
+  })
+}
+
+<style>
+  /* Groupe de ::bouton : la marge du haut vient de Button (1rem) */
+  .boutons {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0 var(--espace-element);
+    margin-block-end: var(--espace-element);
+  }
+
+  .boutons.centre {
+    justify-content: center;
+  }
+
+  /* Grilles de cartes : mêmes écarts que les blocs de vitrine (la source
+     donnait 4rem autour des cartes à icône, 2rem autour des cartes à photo) */
+  .cartes-icones {
+    margin-block: var(--espace-bloc);
+  }
+
+  /* Image et texte (taille normale) : un bloc de la page, --espace-bloc
+     au-dessus et au-dessous ; sur un téléphone, l'image est une vignette
+     (HeroWithImage compact) */
+  .image-texte {
+    margin-block: var(--espace-bloc);
+  }
+
+  /* Petite image à côté du texte (taille=petite) : l'image garde sa petite
+     taille (11rem de haut, comme les 160 à 216 px de la source), et le texte
+     prend le reste. Empilés sous 900 px. */
+  .image-texte-petite {
+    display: flex;
+    flex-direction: column;
+    gap: var(--espace-grille);
+    margin-block: var(--espace-bloc);
+  }
+
+  .image-texte-petite.image-gauche .petite-image {
+    order: -1;
+  }
+
+  .petite-texte > :global(:first-child) {
+    margin-top: 0;
+  }
+
+  .petite-texte > :global(:last-child) {
+    margin-bottom: 0;
+  }
+
+  .petite-image :global(img) {
+    display: block;
+    width: auto;
+    max-width: 100%;
+    height: 11rem;
+    object-fit: contain;
+    object-position: left top;
+    border-radius: var(--rayon-petit);
+  }
+
+  @media (min-width: 900px) {
+    .image-texte-petite {
+      display: grid;
+      align-items: start;
+      gap: var(--espace-grille);
+    }
+
+    .image-texte-petite.image-droite {
+      grid-template-columns: minmax(0, 1fr) auto;
+    }
+
+    .image-texte-petite.image-gauche {
+      grid-template-columns: auto minmax(0, 1fr);
+    }
+  }
+
+  /* Galerie : figures de 170 px au moins, côte à côte (fonds-livres-rares) */
+  .galerie {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: space-between;
+    gap: var(--espace-grille);
+    margin-block: var(--espace-bloc);
+  }
+
+  .galerie-figure {
+    flex: 1 1 170px;
+    min-width: min(170px, 100%);
+    margin: 0;
+  }
+
+  .galerie-figure :global(img) {
+    display: block;
+    width: 100%;
+    height: 200px;
+    object-fit: cover;
+    border-radius: var(--rayon-petit);
+  }
+
+  .galerie :global(.galerie-legende) {
+    margin-top: 8px;
+  }
+
+  /* Logos : 1, 2 puis 4 par rangée, centrés, 200 px de haut au plus */
+  .logos {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr);
+    gap: var(--espace-grille);
+    margin-block: var(--espace-bloc);
+  }
+
+  .logo {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+  }
+
+  .logo :global(img) {
+    display: block;
+    width: auto;
+    max-width: 100%;
+    height: auto;
+    max-height: 200px;
+    object-fit: contain;
+  }
+
+  @media (min-width: 600px) {
+    .logos {
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+  }
+
+  @media (min-width: 1200px) {
+    .logos {
+      grid-template-columns: repeat(4, minmax(0, 1fr));
+    }
+  }
+
+  /* Texte et grande icône dans un carré (8/12 et 4/12, comme la source) */
+  .icone-texte {
+    display: grid;
+    grid-template-columns: minmax(0, 2fr) minmax(0, 1fr);
+    align-items: center;
+    margin-block: var(--espace-bloc);
+  }
+
+  /* Encadrés de couleur : un par rangée, deux dès 900 px, même hauteur */
+  .encadres {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr);
+    gap: var(--espace-grille);
+    margin-block: var(--espace-bloc);
+  }
+
+  @media (min-width: 900px) {
+    .encadres {
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+  }
+
+  .encadre {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) auto;
+    align-content: start;
+    column-gap: var(--espace-element);
+    padding: var(--espace-carte);
+    border-radius: var(--rayon-carte);
+    background-color: var(--_fond-encadre);
+  }
+
+  .encadre > :global(*) {
+    grid-column: 1 / -1;
+  }
+
+  /* Le titre et l'icône partagent la première rangée */
+  .encadre > .encadre-icone {
+    display: flex;
+    grid-column: 2;
+    grid-row: 1;
+    align-self: center;
+  }
+
+  .encadre > .encadre-icone + :global(*) {
+    grid-column: 1;
+    grid-row: 1;
+  }
+
+  /* Le titre colle au haut de l'encadré, comme la source */
+  .encadre > .encadre-icone + :global(*),
+  .encadre > :global(:first-child) {
+    margin-top: 0;
+  }
+
+  @media (forced-colors: active) {
+    .encadre {
+      border: 1px solid CanvasText;
+    }
+  }
+
+  /* CardWithImage a une largeur fixe (330 px) : les cartes passent à la ligne */
+  .cartes-images {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--espace-grille);
+    margin-block: var(--espace-bloc);
+  }
+</style>

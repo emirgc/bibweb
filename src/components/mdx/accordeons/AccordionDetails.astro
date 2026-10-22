@@ -1,0 +1,51 @@
+---
+/*
+ * Contenu d'un volet (AccordionDetails de coquille-web) : fond de la couleur
+ * du groupe, marges de 1,5em (1,6667em 2em dès 900 px), coins du bas
+ * arrondis, comme dans le thème de la source. Bref fondu à l'ouverture
+ * (opacité seulement ; coupé par la réduction des animations).
+ */
+import { classes, fusionnerStyles, type Style } from '@/lib/styles'
+
+interface Props {
+  id?: string
+  class?: string
+  className?: string
+  style?: Style
+  [attribut: string]: unknown
+}
+
+const { class: classe, className, style, sx: _sx, ...reste } = Astro.props
+---
+
+<div class:list={['details-accordeon', 'surface-claire', classes(classe, className)]} style={fusionnerStyles(style)} {...reste}>
+  <slot />
+</div>
+
+<style>
+  .details-accordeon {
+    padding: 1.5em;
+    border-radius: 0 0 var(--rayon-petit) var(--rayon-petit);
+    background-color: var(--accordeon-fond, var(--bleu-100));
+  }
+
+  /* Repli des navigateurs sans ::details-content ou sans interpolate-size
+     (Accordion anime alors hauteur et opacité) : fondu à l'ouverture */
+  @supports not ((interpolate-size: allow-keywords) and selector(::details-content)) {
+    .details-accordeon {
+      animation: apparition var(--duree-moyenne-3) var(--courbe-emphase-deceleree);
+    }
+  }
+
+  @media (min-width: 900px) {
+    .details-accordeon {
+      padding: 1.6667em 2em;
+    }
+  }
+
+  @keyframes apparition {
+    from {
+      opacity: 0;
+    }
+  }
+</style>
