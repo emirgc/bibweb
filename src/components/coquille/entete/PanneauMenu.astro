@@ -1081,65 +1081,74 @@ const courante = (url: string) => (url === '/' ? chemin === '/' : estCourante(ch
       display: none;
     }
 
-    /* Deux étages : la recherche Sofia sur toute la largeur, puis les
-       services (3 colonnes) et l'accès rapide (1 colonne), dont les hauts
-       sont alignés. L'ordre du HTML (Sofia, services, accès rapide) suit
+    /* La recherche Sofia sur toute la largeur, puis les services (3
+       colonnes : onglets, aperçu) et l'accès rapide (1 colonne, à côté de
+       l'aperçu). L'ordre du HTML (Sofia, services, accès rapide) suit
        l'ordre visuel. */
     .sofia {
       grid-column: 1 / -1;
       grid-row: 1;
     }
 
-    /* Services en rangée, puis l'aperçu dessous, qui prend la hauteur
-       restante du rail */
+    /* Services en rangée, puis l'aperçu dessous */
     .catalogue {
       display: grid;
       grid-column: 1 / span 3;
-      grid-row: 2;
+      grid-row: 2 / span 2;
       grid-template-columns: minmax(0, 1fr);
-      grid-template-rows: auto 1fr;
-      gap: var(--espace-3);
-      align-self: stretch;
+      /* Rangées de la grille (onglets, aperçu) : l'accès rapide s'aligne
+         sur l'aperçu */
+      grid-template-rows: subgrid;
     }
 
-    /* Rail de droite, sous le bouton Menu : la colonne la plus utilisée se
-       détache par son fond, ses lignes sont blanches */
+    /* Liens de l'aperçu sur deux colonnes quand la place le permet : il est
+       moins haut */
+    .apercu-liens {
+      grid-template-columns: repeat(auto-fill, minmax(13rem, 1fr));
+      column-gap: var(--espace-4);
+    }
+
+    /* Accès rapide : quatre tuiles carrées (2 × 2) à droite de l'aperçu,
+       hauts alignés (même rangée de grille). Le surtitre n'est plus
+       affiché (les tuiles parlent d'elles-mêmes) mais nomme toujours la
+       liste pour les lecteurs d'écran. */
     .acces {
       --i: 2;
 
+      display: grid;
       grid-column: 4;
-      grid-row: 2;
-      /* Même bas que l'aperçu, dont la hauteur est fixe */
-      align-self: stretch;
-      padding: var(--espace-3) var(--espace-2) var(--espace-2);
-      border-radius: var(--rayon-tres-petit);
-      background-color: var(--bleu-100);
+      grid-row: 3;
     }
 
     .acces .surtitre {
-      padding-inline: 0.375rem;
+      position: absolute;
+      width: 1px;
+      height: 1px;
+      overflow: hidden;
+      clip-path: inset(50%);
+      white-space: nowrap;
     }
 
     .tuiles {
-      grid-template-columns: minmax(0, 1fr);
-      gap: 0.375rem;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: var(--espace-2);
+    }
+
+    .tuiles a {
+      /* Carré, qui grandit si le libellé (ou le texte agrandi) l'exige */
+      aspect-ratio: 1;
+      min-height: auto;
+      padding: var(--espace-3) 0.75rem 0.75rem;
+    }
+
+    /* Icône en haut, libellé en bas, coupé entre les mots seulement */
+    .tuile-libelle {
+      margin-top: auto;
+      overflow-wrap: break-word;
     }
 
     .tuiles li:last-child:nth-child(odd) {
       grid-column: auto;
-    }
-
-    .tuiles a {
-      flex-direction: row;
-      align-items: center;
-      min-height: 3rem;
-      padding: 0.625rem 2rem 0.625rem 0.875rem;
-      background-color: var(--couleur-surface);
-    }
-
-    .tuiles :global(.externe) {
-      top: 50%;
-      translate: 0 -50%;
     }
   }
 
