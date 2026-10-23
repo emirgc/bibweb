@@ -109,6 +109,12 @@ export function schemaVitrine<I extends z.ZodType, N extends z.ZodType, L extend
       positionImage: z.enum(['gauche', 'droite']).default('droite'),
       /** `encart` : carte bleu foncé ramassée, image fondue au bord (BlocImageTexte) */
       disposition: z.enum(['colonnes', 'encart']).default('colonnes'),
+      /** Colonnes : l'image remplit sa colonne à la hauteur du texte, recadrée (image en portrait) */
+      recadrerImage: z.boolean().optional(),
+      /** Colonnes : le titre se place dans la colonne du texte, à côté de l'image (`false` : au-dessus, pleine largeur) */
+      titreEnColonne: z.boolean().default(true),
+      /** Colonnes : l'image prend 88 % de sa colonne dès 900 px (`false` : toute la colonne) */
+      imageReduite: z.boolean().default(true),
       bouton: bouton.optional(),
       boutons: boutons.optional(),
     })

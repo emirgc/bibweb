@@ -2,10 +2,13 @@
 /*
  * Bloc « image-texte » : titre, texte et bouton (ou `boutons`, qui se
  * suivent dans le pied) à côté d'une image décorative (HeroWithImage).
- * `positionImage` dit de quel côté est l'image. Le titre passe au-dessus des
- * deux colonnes, sur toute la largeur (slot « titre » de HeroWithImage),
- * sans le décalage d'une demi-colonne de la source : le bloc s'aligne sur
- * les carrousels et les grilles de la vitrine.
+ * `positionImage` dit de quel côté est l'image. Le titre, le texte et les
+ * boutons sont dans l'autre colonne, centrés en hauteur à côté de l'image,
+ * qui prend 88 % de sa colonne (options `titreEnColonne` et `imageReduite`,
+ * vraies par défaut). Avec `titreEnColonne: false`, le titre passe au-dessus
+ * des deux colonnes, sur toute la largeur (slot « titre » de HeroWithImage).
+ * Pas de décalage d'une demi-colonne comme dans la source : le bloc s'aligne
+ * sur les carrousels et les grilles de la vitrine.
  * Sur un fond foncé, les boutons prennent la variante claire (`light`) : le
  * bouton bleu foncé ne s'y voyait pas.
  *
@@ -54,8 +57,9 @@ const largeurImage = bloc.image.width
       </div>
     </div>
   ) : (
-    <HeroWithImage Image={bloc.image} offset={0} align={bloc.positionImage === 'gauche' ? 'right' : 'left'}>
-      <Titre slot="titre" texte={bloc.titre} id={bloc.id} />
+    <HeroWithImage class:list={{ 'image-recadree': bloc.recadrerImage, 'image-reduite': bloc.imageReduite, 'titre-en-colonne': bloc.titreEnColonne }} Image={bloc.image} offset={0} align={bloc.positionImage === 'gauche' ? 'right' : 'left'}>
+      {!bloc.titreEnColonne && <Titre slot="titre" texte={bloc.titre} id={bloc.id} />}
+      {bloc.titreEnColonne && <Titre texte={bloc.titre} id={bloc.id} />}
       <TexteMarkdown texte={bloc.texte} brut />
       {boutons.length > 0 && (
         <Fragment slot="footer">
@@ -71,6 +75,33 @@ const largeurImage = bloc.image.width
 }
 
 <style>
+  /* Option `recadrerImage` (disposition en colonnes) : l'image est recadrée en
+     carré (cover), au lieu de garder les proportions d'une image en portrait
+     (portee-scientifique, 949 × 1068) qui étire le bloc. */
+  :global(.image-recadree .colonne-image img) {
+    width: 100%;
+    aspect-ratio: 1;
+    object-fit: cover;
+  }
+
+  /* Option `imageReduite` : l'image prend 88 % de sa colonne, centrée (dès
+     900 px ; en dessous elle garde toute la largeur) */
+  @media (min-width: 900px) {
+    :global(.image-reduite .colonne-image img) {
+      width: 88%;
+    }
+  }
+
+  /* Option `titreEnColonne` : titre, texte et bouton centrés en hauteur à
+     côté de l'image (HeroWithImage aligne en haut quand le slot « titre »
+     existe) */
+  @media (min-width: 900px) {
+    :global(.titre-en-colonne .titre-large + .rangee.rangee),
+    :global(.titre-en-colonne .rangee.rangee) {
+      align-items: center;
+    }
+  }
+
   .encart {
     /* Liens, focus et accent du ton foncé de Section */
     --couleur-lien: var(--couleur-surface);

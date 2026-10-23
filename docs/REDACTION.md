@@ -645,6 +645,9 @@ Quel bloc choisir ?
 | `titre`, `texte` | Titre et texte (Markdown : paragraphes, listes) | Oui |
 | `image` | Chemin de l'image (voir 4.1) ; l'image est décorative | Oui |
 | `positionImage` | `gauche` ou `droite` | Non (`droite`) |
+| `recadrerImage` | `true` : l'image est recadrée en carré (pour une image en portrait) | Non (image entière) |
+| `titreEnColonne` | `false` : le titre passe au-dessus des deux colonnes, sur toute la largeur, au lieu de se placer dans la colonne du texte, à côté de l'image (centré en hauteur avec le texte et le bouton) | Non (`true`) |
+| `imageReduite` | `false` : l'image prend toute sa colonne au lieu de 88 % (dès 900 px) | Non (`true`) |
 | `disposition` | `encart` : appel à l'action ramassé, dans une carte bleu foncé aux coins arrondis, l'image fondue jusqu'au bord, bouton blanc (Espaces, « Trouver un lieu ») ; ne mettez pas de `fond` | Non (`colonnes`) |
 | `bouton` | Bouton sous le texte (voir 3.3) ; blanc sur un fond foncé | Non |
 

@@ -105,6 +105,7 @@ sections:
     texte: Nous pouvons vous conseiller et vous guider dans l’utilisation des méthodes bibliométriques responsables pour mieux documenter vos stratégies, trouver des partenaires de recherche, optimiser vos demandes de financement et comprendre l’impact de votre production scientifique.
     image: ../images/portee-scientifique.webp
     positionImage: droite
+    recadrerImage: true
     bouton:
       texte: Explorer les guides sur l'impact de la recherche
       lien: https://boite-outils.bib.umontreal.ca/recherche#s-lg-box-16938953
