@@ -61,7 +61,7 @@ sections:
     positionImage: gauche
     bouton:
       texte: Découvrir nos espaces
-      lien: /espaces/
+      lien: https://studio.bib.umontreal.ca/espaces
 
   - type: liste-liens
     titre: Tout savoir sur le droit d'auteur
