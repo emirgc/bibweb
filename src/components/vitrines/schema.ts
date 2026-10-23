@@ -42,8 +42,10 @@ const couleur = z.enum(NOMS_FONDS)
 const ancre = z.string().regex(/^[a-z0-9]+(-[a-z0-9]+)*$/, 'Une ancre s’écrit en minuscules, sans accents ni espaces (ex. droit-auteur)')
 
 // `secondaire` : bouton texte (bleu, sans fond), pour une action moins
-// importante que sa voisine (enseignement : « Voir des sujets de formation »)
-const bouton = z.object({ texte: texteCourt, lien, secondaire: z.boolean().optional() }).strict()
+// importante que sa voisine (enseignement : « Voir des sujets de formation »).
+// `contour` : bouton à contour (pilule bordée, sans fond), entre le plein et
+// le texte (espaces : engagements en équité, diversité, inclusion)
+const bouton = z.object({ texte: texteCourt, lien, secondaire: z.boolean().optional(), contour: z.boolean().optional() }).strict()
 const boutons = z.array(bouton).min(1)
 
 // Lien « tout voir » sous un carrousel ou une liste

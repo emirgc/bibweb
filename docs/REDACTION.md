@@ -566,7 +566,7 @@ La première bande sous la bannière, si elle a un fond, est décalée automatiq
 
 Deux petits groupes de champs reviennent dans plusieurs blocs :
 
-- **Un bouton** : `texte` et `lien`. Ajoutez `secondaire: true` pour un bouton plus discret (texte bleu, sans fond), à réserver à l'action la moins importante quand il y en a deux.
+- **Un bouton** : `texte` et `lien`. Ajoutez `secondaire: true` pour un bouton plus discret (texte bleu, sans fond), à réserver à l'action la moins importante quand il y en a deux, ou `contour: true` pour un bouton à contour (pilule bordée, sans fond), entre les deux.
 
   ```yaml
   boutons:

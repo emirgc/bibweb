@@ -23,7 +23,7 @@ const { bloc } = Astro.props
     bloc.boutons && (
       <div class="boutons">
         {bloc.boutons.map((bouton) => (
-          <Button href={bouton.lien} primary={!bouton.secondaire} secondary={bouton.secondaire}>
+          <Button href={bouton.lien} primary={!bouton.secondaire} secondary={bouton.secondaire} variant={bouton.contour ? 'outlined' : undefined}>
             {bouton.texte}
           </Button>
         ))}

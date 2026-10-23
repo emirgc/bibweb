@@ -27,7 +27,7 @@ const icones = await Promise.all(bloc.cartes.map((carte) => composantIcone(carte
 {
   bloc.bouton && (
     <div class="pied-bloc">
-      <Button href={bloc.bouton.lien} primary={!bloc.bouton.secondaire} secondary={bloc.bouton.secondaire}>
+      <Button href={bloc.bouton.lien} primary={!bloc.bouton.secondaire} secondary={bloc.bouton.secondaire} variant={bloc.bouton.contour ? 'outlined' : undefined}>
         {bloc.bouton.texte}
       </Button>
     </div>

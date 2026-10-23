@@ -22,7 +22,7 @@ const { bloc } = Astro.props
     <TexteMarkdown texte={bloc.texte} brut />
     {
       bloc.bouton && (
-        <Button href={bloc.bouton.lien} primary={!bloc.bouton.secondaire} secondary={bloc.bouton.secondaire} style={{ marginTop: '2rem' }}>
+        <Button href={bloc.bouton.lien} primary={!bloc.bouton.secondaire} secondary={bloc.bouton.secondaire} variant={bloc.bouton.contour ? 'outlined' : undefined} style={{ marginTop: '2rem' }}>
           {bloc.bouton.texte}
         </Button>
       )

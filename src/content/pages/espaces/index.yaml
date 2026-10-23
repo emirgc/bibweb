@@ -122,4 +122,4 @@ sections:
         lien: /service-accessibilite/
       - texte: Consultez nos engagements en matière d’équité, de diversité, d’inclusion et d’accessibilité
         lien: /engagements/#lequite-la-diversite-linclusion-et-laccessibilite-au-cœur-de-nos-actions
-        secondaire: true
+        contour: true

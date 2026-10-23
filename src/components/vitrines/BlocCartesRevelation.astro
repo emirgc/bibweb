@@ -72,7 +72,7 @@ const styleBouton = { backgroundColor: 'var(--couleur-surface)', color: 'var(--c
         <FlipCardWithBg title={carte.titre} Icon={icones[i]} bg={bloc.couleurCartes}>
           {carte.texte && <TexteMarkdown texte={carte.texte} brut />}
           {carte.bouton && (
-            <Button href={carte.bouton.lien} primary={!carte.bouton.secondaire} secondary={carte.bouton.secondaire}>
+            <Button href={carte.bouton.lien} primary={!carte.bouton.secondaire} secondary={carte.bouton.secondaire} variant={carte.bouton.contour ? 'outlined' : undefined}>
               {carte.bouton.texte}
             </Button>
           )}

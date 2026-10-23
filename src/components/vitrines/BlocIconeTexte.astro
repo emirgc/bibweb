@@ -37,7 +37,7 @@ const couleur = bloc.couleurIcone === 'blanc' ? 'var(--couleur-surface)' : bloc.
     bloc.boutons && (
       <div slot="rightFooter" class="boutons">
         {bloc.boutons.map((bouton) => (
-          <Button href={bouton.lien} primary={!bouton.secondaire} secondary={bouton.secondaire}>
+          <Button href={bouton.lien} primary={!bouton.secondaire} secondary={bouton.secondaire} variant={bouton.contour ? 'outlined' : undefined}>
             {bouton.texte}
           </Button>
         ))}

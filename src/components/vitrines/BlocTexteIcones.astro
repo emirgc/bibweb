@@ -29,7 +29,7 @@ const styleIcone = { color: couleurPalette(bloc.couleurIcones) }
   </Fragment>
   {
     bloc.bouton && (
-      <Button slot="leftFooter" href={bloc.bouton.lien} primary={!bloc.bouton.secondaire} secondary={bloc.bouton.secondaire}>
+      <Button slot="leftFooter" href={bloc.bouton.lien} primary={!bloc.bouton.secondaire} secondary={bloc.bouton.secondaire} variant={bloc.bouton.contour ? 'outlined' : undefined}>
         {bloc.bouton.texte}
       </Button>
     )
@@ -38,7 +38,7 @@ const styleIcone = { color: couleurPalette(bloc.couleurIcones) }
     bloc.boutons && (
       <Fragment slot="leftFooter">
         {bloc.boutons.map((bouton) => (
-          <Button href={bouton.lien} primary={!bouton.secondaire} secondary={bouton.secondaire}>
+          <Button href={bouton.lien} primary={!bouton.secondaire} secondary={bouton.secondaire} variant={bouton.contour ? 'outlined' : undefined}>
             {bouton.texte}
           </Button>
         ))}

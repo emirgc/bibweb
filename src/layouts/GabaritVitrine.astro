@@ -99,7 +99,7 @@ function bande(bloc: Bloc) {
                 </Typography>
               ))}
               {banniere.bouton && (
-                <Button href={banniere.bouton.lien} light={!banniere.bouton.secondaire} secondary={banniere.bouton.secondaire}>
+                <Button href={banniere.bouton.lien} light={!banniere.bouton.secondaire} secondary={banniere.bouton.secondaire} variant={banniere.bouton.contour ? 'outlined' : undefined}>
                   {banniere.bouton.texte}
                 </Button>
               )}

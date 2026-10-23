@@ -42,7 +42,7 @@ const largeurImage = bloc.image.width
         {boutons.length > 0 && (
           <div class="encart-pied">
             {boutons.map((bouton) => (
-              <Button href={bouton.lien} primary={!bouton.secondaire} secondary={bouton.secondaire} light>
+              <Button href={bouton.lien} primary={!bouton.secondaire} secondary={bouton.secondaire} variant={bouton.contour ? 'outlined' : undefined} light>
                 {bouton.texte}
               </Button>
             ))}
@@ -60,7 +60,7 @@ const largeurImage = bloc.image.width
       {boutons.length > 0 && (
         <Fragment slot="footer">
           {boutons.map((bouton) => (
-            <Button href={bouton.lien} primary={!bouton.secondaire} secondary={bouton.secondaire} light={clair}>
+            <Button href={bouton.lien} primary={!bouton.secondaire} secondary={bouton.secondaire} variant={bouton.contour ? 'outlined' : undefined} light={clair}>
               {bouton.texte}
             </Button>
           ))}

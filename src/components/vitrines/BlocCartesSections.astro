@@ -36,7 +36,7 @@ const { bloc } = Astro.props
             <TexteMarkdown texte={carte.texte} brut />
             {carte.bouton && (
               <div class="pied">
-                <Button href={carte.bouton.lien} primary={!carte.bouton.secondaire} secondary={carte.bouton.secondaire} light={ton === 'fonce'}>
+                <Button href={carte.bouton.lien} primary={!carte.bouton.secondaire} secondary={carte.bouton.secondaire} variant={carte.bouton.contour ? 'outlined' : undefined} light={ton === 'fonce'}>
                   {carte.bouton.texte}
                 </Button>
               </div>
