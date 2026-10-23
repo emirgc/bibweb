@@ -166,7 +166,10 @@ h5,
 h6 {
   margin: 0;
   font-family: var(--police-sans);
-  text-wrap: balance;
+  /* Les titres prennent toute la largeur de leur colonne : « balance »
+     égalisait les lignes et les rétrécissait (jusqu'à 55 % de la place) ;
+     « pretty » évite seulement un mot seul sur la dernière ligne */
+  text-wrap: pretty;
   /* Avec le texte à 200 % (WCAG 1.4.4), un long mot des grands titres
      (« d'enseignement », « bibliothèques ») dépassait la largeur d'un
      téléphone et faisait défiler la page de côté : on le coupe plutôt. */
