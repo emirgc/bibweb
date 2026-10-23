@@ -2,21 +2,26 @@
 /*
  * Élément de liste riche (RichListItemWithLink de coquille-web) : titre,
  * description, et à droite un bouton (`linkText`) ou une pastille fléchée ;
- * toute la ligne est cliquable, avec un filet dessous.
+ * toute la carte est cliquable.
+
+ * Présentation en cartes séparées (plus de filets entre les éléments) : un
+ * fond légèrement teinté, sans bordure, et un espace entre les cartes.
+ * Au survol et au focus, le fond s'assombrit, la carte se soulève (ombre au
+ * survol) et la pastille se remplit. Les filets entraient en conflit avec le fond arrondi du
+ * survol, et les zones de deux éléments voisins se touchaient.
  *
  * Corrigé : la source imbriquait un lien (Button ou IconButton href) dans un
  * autre lien (ListItemButton), ce qui est invalide, et la pastille n'avait
  * pas de nom. Il n'y a plus qu'un lien, sur le titre ; son ::after couvre la
  * ligne pour la garder entièrement cliquable. Le bouton et la pastille
  * deviennent de simples repères visuels (aria-hidden), et le nom du lien
- * reste court (le titre). Le filet est une bordure, et non plus un <li>
- * vide masqué. Le niveau du titre (h3 en dur) devient réglable, sans changer
+ * reste court (le titre). Le niveau du titre (h3 en dur) devient réglable, sans changer
  * sa taille : propre au composant, elle ne suit plus celle des h2 et h3 du
  * thème (jusqu'à 3,5rem), trop grande pour un titre d'élément de liste.
  *
  * Couleurs : `color="vertFonce"` (sur une Section vert foncé) met une
  * pastille vert pâle avec une flèche bleu foncé (7,32:1 ; la flèche blanche
- * de la source n'atteignait que 2,48:1) et un filet de la couleur du texte.
+ * de la source n'atteignait que 2,48:1).
  */
 import { ArrowRightIcon } from '@phosphor-icons/react/dist/ssr/ArrowRight'
 import { ArrowUpRightIcon } from '@phosphor-icons/react/dist/ssr/ArrowUpRight'
@@ -65,23 +70,40 @@ const Titre = `h${niveauTitre}`
 <style>
   .element-riche {
     --pastille-fond: var(--bleu-fonce);
+    --pastille-fond-survol: var(--bleu-principal);
     --pastille-fleche: var(--couleur-surface);
-    --filet: var(--bleu-principal);
+    --carte-fond: color-mix(in srgb, currentColor 4%, transparent);
+    --carte-fond-survol: color-mix(in srgb, currentColor 8%, transparent);
 
     display: flex;
     position: relative;
     flex-direction: column;
     align-items: flex-start;
     gap: var(--espace-element);
-    /* ListItem (8 px) puis ListItemButton (8 px) de la source */
-    padding-block: var(--espace-element);
-    border-bottom: 1px solid var(--filet);
+    padding: var(--espace-element) 1.25rem;
+    border-radius: var(--rayon-moyen);
+    background-color: var(--carte-fond);
+    transition:
+      background-color var(--duree-courte-4) var(--courbe-standard),
+      box-shadow var(--duree-courte-4) var(--courbe-standard),
+      translate var(--duree-courte-4) var(--courbe-standard-deceleree);
+  }
+
+  /* Espace entre les cartes, et sous le texte d'introduction */
+  .element-riche + .element-riche {
+    margin-top: 0.75rem;
+  }
+
+  .element-riche:first-child {
+    margin-top: var(--espace-element);
   }
 
   .couleur-vertFonce {
     --pastille-fond: var(--vert-pale);
+    --pastille-fond-survol: var(--couleur-surface);
     --pastille-fleche: var(--bleu-fonce);
-    --filet: currentColor;
+    --carte-fond: color-mix(in srgb, currentColor 7%, transparent);
+    --carte-fond-survol: color-mix(in srgb, currentColor 14%, transparent);
   }
 
 
@@ -108,21 +130,13 @@ const Titre = `h${niveauTitre}`
     outline: none;
   }
 
-  /* Zone cliquable de la ligne, débordant de 1rem de chaque côté comme le
-     ListItemButton de la source ; elle porte aussi le survol et le focus.
-     Sous 600 px, la gouttière de Section ne fait que 16 px pour un rem de
-     17 px : -1rem débordait de 1 px et faisait défiler la page en largeur
-     (/engagements/ à 390 px). On plafonne donc le débord à la gouttière. */
+  /* Zone cliquable : la carte entière (le lien s'étire par ::after) ; elle
+     porte aussi l'anneau de focus */
   .lien-ligne::after {
     content: '';
     position: absolute;
-    inset: 0 max(-1rem, -16px);
-    border-radius: var(--rayon-minuscule);
-    transition: background-color var(--duree-courte-3) var(--courbe-standard);
-  }
-
-  .element-riche:hover .lien-ligne::after {
-    background-color: color-mix(in srgb, currentColor 4%, transparent);
+    inset: 0;
+    border-radius: var(--rayon-moyen);
   }
 
   .lien-ligne:focus-visible::after {
@@ -130,9 +144,17 @@ const Titre = `h${niveauTitre}`
     outline-offset: -3px;
   }
 
-  .element-riche:hover .lien-ligne {
-    text-decoration: underline;
-    text-decoration-thickness: from-font;
+  /* Survol et focus : la carte se soulève (titre non souligné) */
+  @media (hover: hover) and (pointer: fine) {
+    .element-riche:hover {
+      translate: 0 -2px;
+      background-color: var(--carte-fond-survol);
+      box-shadow: var(--ombre-2);
+    }
+  }
+
+  .element-riche:has(.lien-ligne:focus-visible) {
+    background-color: var(--carte-fond-survol);
   }
 
   .description {
@@ -187,7 +209,26 @@ const Titre = `h${niveauTitre}`
     transition: transform var(--duree-courte-4) var(--courbe-standard-deceleree);
   }
 
+  .pastille {
+    transition:
+      background-color var(--duree-courte-4) var(--courbe-standard),
+      scale var(--duree-courte-4) var(--courbe-standard-deceleree);
+  }
+
+  .bouton {
+    transition: background-color var(--duree-courte-4) var(--courbe-standard);
+  }
+
   @media (hover: hover) and (pointer: fine) {
+    .element-riche:hover .pastille {
+      background-color: var(--pastille-fond-survol);
+      scale: 1.1;
+    }
+
+    .element-riche:hover .bouton {
+      background-color: var(--bleu-principal);
+    }
+
     .element-riche:hover :is(.pastille, .bouton) > :global(svg) {
       transform: translateX(3px);
     }
@@ -195,6 +236,11 @@ const Titre = `h${niveauTitre}`
     .element-riche:hover .externe > :global(svg) {
       transform: translate(2px, -2px);
     }
+  }
+
+  .element-riche:has(.lien-ligne:focus-visible) .pastille {
+    background-color: var(--pastille-fond-survol);
+    scale: 1.1;
   }
 
   .element-riche:has(.lien-ligne:focus-visible) :is(.pastille, .bouton) > :global(svg) {
@@ -233,6 +279,10 @@ const Titre = `h${niveauTitre}`
   }
 
   @media (forced-colors: active) {
+    .element-riche {
+      border: 1px solid CanvasText;
+    }
+
     .pastille,
     .bouton {
       border: 1px solid CanvasText;
