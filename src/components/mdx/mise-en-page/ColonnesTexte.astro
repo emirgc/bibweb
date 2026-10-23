@@ -66,6 +66,13 @@ const { rapport, avecPiedGauche = false, avecPiedDroit = false, class: classe, s
     display: contents;
   }
 
+  /* Colonnes à minmax(0, …) : un mot long (texte agrandi à 200 %) ne les
+     élargit plus au-delà de la rangée ; il passe à la ligne au besoin
+     (WCAG 1.4.4 et 1.4.10) */
+  .contenu :global(:is(h2, h3, h4, p, li)) {
+    overflow-wrap: break-word;
+  }
+
   .contenu > :global(:first-child) {
     margin-top: 0;
   }
@@ -105,13 +112,13 @@ const { rapport, avecPiedGauche = false, avecPiedDroit = false, class: classe, s
     }
 
     .rapport-3-8 {
-      grid-template-columns: 3fr 8fr 1fr;
+      grid-template-columns: minmax(0, 3fr) minmax(0, 8fr) minmax(0, 1fr);
       align-items: start;
       gap: 0;
     }
 
     .rapport-6-6 {
-      grid-template-columns: 1fr 1fr;
+      grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
       align-items: center;
       gap: var(--espace-8);
     }
