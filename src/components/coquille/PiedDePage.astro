@@ -1,15 +1,31 @@
 ---
 /*
- * Pied de page (Footer, LocalFooter et FooterTail de coquille-web). Les liens
- * viennent de src/data/navigation.ts. Corrections par rapport à la source :
+ * Pied de page (Footer, LocalFooter et FooterTail de coquille-web), redessiné
+ * dans l'esprit de celui de studio·bib. Les liens viennent de
+ * src/data/navigation.ts.
+ *
+ * - Titre centré en Figtree, puis trois colonnes de liens séparées par un
+ *   filet (« Besoin d'aide? », « Liens rapides », « Nos services ») et le
+ *   sceau des bibliothèques à droite. Sous 900 px : tout est centré et
+ *   empilé, le sceau en dernier.
+ * - « Besoin d'aide? » : liens à pictogramme, puis l'urgence, puis YouTube et
+ *   Instagram (à gauche, sous les liens). « Nos services » : une pastille de
+ *   la couleur de chaque service devant son nom, comme dans studio·bib.
+ * - Barre du bas, bleue, centrée : droits, licence, puis les liens légaux et
+ *   « Paramètres des témoins ». Elle passe à la ligne sur petit écran.
+ *
+ * Corrections par rapport à la source :
  * - icônes YouTube et Instagram nommées (elles n'avaient aucun texte) ;
- * - le titre est un h2 (un h4 sautait des niveaux) ;
- * - les logos-liens vers l'accueil gardent un nom accessible par leur alt.
- * Les variantes mobile et bureau sont rendues en HTML et basculées en CSS.
+ * - le titre est un h2 et ceux des colonnes des h3 (un h4 sautait des niveaux) ;
+ * - le sceau, lien vers l'accueil, garde un nom accessible par son alt ;
+ * - les pastilles de couleur sont décoratives (aria-hidden) : le nom du
+ *   service porte le sens.
  */
 import { SirenIcon } from '@phosphor-icons/react/dist/ssr/Siren'
 import { COLONNES_PIED, LIENS_QUEUE_PIED, RESEAUX_PIED, URGENCE } from '@/data/navigation'
 import Licence from './pied/Licence.astro'
+
+const annee = new Date().getFullYear()
 ---
 
 <footer class="pied">
@@ -18,27 +34,43 @@ import Licence from './pied/Licence.astro'
       <h2 class="titre">Les bibliothèques de l'Université de Montréal</h2>
 
       <div class="colonnes">
-        <a class="logo-mobile" href="/">
-          <img src="/images/logo-bib/logo-bib-U-blanc.svg" alt="Les bibliothèques, Université de Montréal – Accueil" width="255" height="71" loading="lazy" decoding="async" />
-        </a>
-
         {
-          COLONNES_PIED.map((liens, i) => (
-            <Fragment>
-              {i > 0 && <span class="separateur" aria-hidden="true"></span>}
-              <div class="colonne"><ul class="liste">
-                {liens.map(({ libelle, href, rel, Icone }) => (
-                  <li><a href={href} rel={rel}>{Icone && <Icone size={18} aria-hidden="true" />}{libelle}</a></li>
-                ))}
-                {i === 0 && (
-                  <li class="reseaux">
-                    {RESEAUX_PIED.map(({ libelle, href, Icone }) => (
-                      <a href={href} aria-label={libelle}><Icone size={24} aria-hidden="true" /></a>
-                    ))}
+          COLONNES_PIED.map(({ titre, liens }, i) => (
+            <div class="colonne">
+              <h3 class="sous-titre">{titre}</h3>
+              <ul class="liste">
+                {liens.map(({ libelle, href, rel, Icone, point }) => (
+                  <li>
+                    <a href={href} rel={rel}>
+                      {Icone && <Icone size={18} aria-hidden="true" />}
+                      {point && <span class="point" style={`--point: ${point}`} aria-hidden="true" />}
+                      {libelle}
+                    </a>
                   </li>
-                )}
-              </ul></div>
-            </Fragment>
+                ))}
+              </ul>
+              {i === 0 && (
+                <Fragment>
+                  <p class="urgence">
+                    <a href={URGENCE.href}>
+                      <span class="sirene">
+                        <SirenIcon size={18} aria-hidden="true" />
+                      </span>
+                      {URGENCE.libelle}
+                    </a>
+                  </p>
+                  <ul class="reseaux">
+                    {RESEAUX_PIED.map(({ libelle, href, Icone }) => (
+                      <li>
+                        <a href={href} aria-label={libelle}>
+                          <Icone size={24} aria-hidden="true" />
+                        </a>
+                      </li>
+                    ))}
+                  </ul>
+                </Fragment>
+              )}
+            </div>
           ))
         }
 
@@ -48,27 +80,21 @@ import Licence from './pied/Licence.astro'
           </a>
         </div>
       </div>
-
-      <div class="urgence">
-        <a href={URGENCE.href}><span class="sirene"><SirenIcon size={24} aria-hidden="true" /></span>{URGENCE.libelle}</a>
-      </div>
     </div>
   </div>
 
   <div class="queue">
     <div class="interieur rangee-queue">
-      <Licence class="licence-bureau" />
+      <span>{annee} – Bibliothèques de l'Université de Montréal.</span>
+      <Licence />
       {
         LIENS_QUEUE_PIED.map(({ libelle, href }) => (
           <Fragment>
-            <span class="trait" aria-hidden="true"></span>
-            <a href={href}>{libelle}</a>
+                  <a href={href}>{libelle}</a>
           </Fragment>
         ))
       }
-      <span class="trait" aria-hidden="true"></span>
       <button type="button" class="parametres-temoins" data-parametres-temoins>Paramètres des témoins</button>
-      <Licence class="licence-mobile" />
     </div>
   </div>
 </footer>
@@ -107,6 +133,7 @@ import Licence from './pied/Licence.astro'
   button:hover {
     color: inherit;
     text-decoration: underline;
+    text-underline-offset: 0.2em;
   }
 
   /* Le bleu du focus global se perd sur les fonds bleus du pied de page */
@@ -116,107 +143,76 @@ import Licence from './pied/Licence.astro'
 
   /* ---- Partie locale ---- */
   .local {
-    padding-top: 32px;
+    padding: 40px 24px 32px;
     background-color: var(--bleu-fonce);
     color: var(--couleur-surface);
   }
 
   .titre {
-    display: none;
-    margin: 0.5em 0 32px;
-    padding: 8px 64px 0;
-    font-family: var(--police-serif);
-    /* Chiffres tabulaires désactivés : dans Lora, ils élargissent aussi
-       l'espace entre les mots (16,7 px au lieu de 10,5 px à 40 px). */
-    font-variant-numeric: lining-nums proportional-nums;
-    font-size: 1.5rem;
-    font-weight: var(--graisse-moyenne);
-    line-height: 1.2;
+    margin: 0 0 32px;
+    font-family: var(--police-sans);
+    font-size: 1.25rem;
+    font-weight: var(--graisse-forte);
+    line-height: 1.3;
+    text-align: center;
   }
 
   .colonnes {
     display: flex;
     flex-direction: column;
-    align-items: flex-start;
+    align-items: center;
     gap: 32px;
-    padding: 0 24px 32px;
   }
 
-  .logo-mobile {
-    display: block;
-    width: 100%;
-    margin-bottom: 24px;
-  }
-
-  .logo-mobile img {
-    width: 100%;
-    max-width: 250px;
-    height: auto;
-  }
-
-  /* La colonne prend sa part de la largeur ; la liste se resserre sur son
-     contenu, ce qui centre les icônes sociales sous les liens */
   .colonne {
     display: flex;
-    flex: 1;
     flex-direction: column;
-    align-items: flex-start;
+    align-items: center;
     min-width: 0;
+    text-align: center;
+  }
+
+  .sous-titre {
+    margin: 0 0 16px;
+    font-family: var(--police-sans);
+    font-size: 1rem;
+    font-weight: var(--graisse-forte);
+    line-height: 1.3;
   }
 
   .liste {
     display: flex;
     flex-direction: column;
-    gap: 8px;
-    font-size: 16px;
+    gap: 4px;
   }
 
   .colonne a {
     display: inline-flex;
     align-items: center;
-    gap: 8px;
-    font-size: 16px;
+    gap: 10px;
+    min-height: 2.25rem;
+    font-size: 0.875rem;
     font-weight: var(--graisse-normale);
-    line-height: 1.6;
-    text-decoration-skip-ink: none;
+    line-height: 1.4;
   }
 
   .colonne :global(svg) {
     flex-shrink: 0;
   }
 
-  .reseaux {
-    display: flex;
-    justify-content: center;
-    gap: 24px;
-    margin-top: 30px;
-  }
-
-  /* Cibles de 24 px au moins autour des icônes sociales (WCAG 2.5.8) */
-  .reseaux a {
-    min-width: 24px;
-    min-height: 24px;
-  }
-
-  .separateur,
-  .colonne-logo {
-    display: none;
+  /* Pastille de la couleur du service ; un liseré clair la garde visible sur
+     le bleu foncé, même pour les teintes sombres (Papyrus) */
+  .point {
+    flex-shrink: 0;
+    width: 0.75rem;
+    height: 0.75rem;
+    border-radius: 50%;
+    background-color: var(--point);
+    box-shadow: 0 0 0 1px color-mix(in srgb, var(--couleur-surface) 45%, transparent);
   }
 
   .urgence {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    padding: 16px 24px;
-  }
-
-  .urgence a {
-    display: inline-flex;
-    align-items: center;
-    gap: 8px;
-    font-size: 16px;
-    font-weight: var(--graisse-normale);
-    line-height: 1.6;
+    margin: 20px 0 0;
   }
 
   .sirene {
@@ -224,86 +220,127 @@ import Licence from './pied/Licence.astro'
     color: var(--rouge-orange);
   }
 
-  @media (min-width: 600px) {
-    .urgence {
-      flex-direction: row;
+  /* YouTube et Instagram, sous les liens de la première colonne */
+  .reseaux {
+    display: flex;
+    gap: 8px;
+    margin-top: 16px;
+  }
+
+  /* Cibles de 40 px autour des icônes sociales (WCAG 2.5.8 demande 24 px) */
+  .reseaux a {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-width: 40px;
+    min-height: 40px;
+    border-radius: 50%;
+    transition: background-color var(--duree-courte-4) var(--courbe-standard);
+  }
+
+  @media (hover: hover) and (pointer: fine) {
+    .reseaux a:hover {
+      background-color: color-mix(in srgb, var(--couleur-surface) 14%, transparent);
+      text-decoration: none;
     }
+  }
+
+  .colonne-logo {
+    order: 5;
+  }
+
+  .colonne-logo img {
+    display: block;
+    width: 240px;
+    max-width: 100%;
+    height: auto;
   }
 
   @media (min-width: 900px) {
-    .titre {
-      display: block;
+    .local {
+      padding-inline: 64px;
     }
 
     .colonnes {
-      flex-direction: row;
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr)) auto;
+      align-items: start;
       gap: 0;
-      padding-inline: 64px;
     }
 
-    .logo-mobile {
-      display: none;
+    .colonne {
+      align-items: flex-start;
+      padding-inline: 32px;
+      text-align: left;
     }
 
-    .separateur {
-      display: block;
+    .colonne:first-child {
+      padding-left: 0;
+    }
+
+    /* Filet entre les colonnes de liens (pas devant le sceau) */
+    .colonne + .colonne:not(.colonne-logo) {
       align-self: stretch;
-      width: 1px;
-      margin: 0 32px;
-      background-color: color-mix(in srgb, var(--couleur-surface) 20%, transparent);
+      border-left: 1px solid color-mix(in srgb, var(--couleur-surface) 20%, transparent);
     }
 
     .colonne-logo {
-      display: flex;
-      align-items: flex-end;
-      padding-left: 32px;
-    }
-
-    .colonne-logo img {
-      width: 200px;
-      max-width: 100%;
-      height: auto;
-    }
-
-    .urgence {
-      padding-inline: 64px;
+      order: 0;
+      align-items: center;
+      justify-content: center;
+      padding-right: 0;
+      padding-left: 16px;
     }
   }
 
-  /* ---- Queue ---- */
+  /* ---- Barre du bas ---- */
   .queue {
-    background-color: var(--bleu-fonce);
-    color: var(--bleu-200);
+    background-color: var(--bleu-principal);
+    color: var(--couleur-surface);
   }
 
+  /* Pas de traits entre les éléments : quand la barre passe à la ligne, un
+     trait se retrouverait seul en bout de ligne */
   .rangee-queue {
     display: flex;
-    flex-direction: column;
-    gap: var(--espace-1);
-    padding: 8px 24px 1em;
-    font-size: 14px;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: center;
+    gap: 4px 28px;
+    /* Marge de chaque côté : le bouton « Retour en haut », fixé en bas à
+       droite (4,5 rem du bord sur mobile, 7 rem dès 900 px, à gauche de la
+       languette des liens rapides), ne recouvre jamais le texte de la barre */
+    padding: 12px 4.5rem;
+    font-size: 13px;
     line-height: 1.2;
     letter-spacing: 0.14px;
   }
 
-  /* Cibles de 24 px de haut au moins (WCAG 2.5.8) : les liens de la queue
-     n'en faisaient que 17 */
+  /* Cibles de 24 px de haut au moins (WCAG 2.5.8) */
   .rangee-queue > a,
-  .rangee-queue > :global(a),
+  .rangee-queue > :global(.licence) a,
   .rangee-queue button {
     display: inline-flex;
     align-items: center;
     min-height: 24px;
   }
 
-  /* Sur mobile, « Paramètres des témoins » est une commande : cible de 44 px
-     de haut (--taille-cible) sans changer son apparence. La zone déborde de
-     10 px en haut et en bas ; l'écart de la colonne (--espace-1, 8,5 px) est
-     complété par une marge de 1,5 px pour qu'elle ne chevauche pas les liens
-     voisins. */
+  .rangee-queue > span {
+    padding-block: 4px;
+  }
+
+  /* Sur petit écran, « Paramètres des témoins » est une commande : cible de
+     44 px de haut (--taille-cible) sans changer son apparence. La zone déborde
+     de 10 px en haut et en bas. */
   .rangee-queue button {
     position: relative;
-    margin-block: max(0px, (var(--taille-cible) - 24px) / 2 - var(--espace-1));
+    padding: 0;
+    border: 0;
+    background: none;
+    font: inherit;
+    font-weight: var(--graisse-normale);
+    letter-spacing: inherit;
+    cursor: pointer;
   }
 
   .rangee-queue button::after {
@@ -312,56 +349,22 @@ import Licence from './pied/Licence.astro'
     inset: calc((24px - var(--taille-cible)) / 2) 0;
   }
 
+  /* Petit écran : une colonne centrée */
+  @media (width < 900px) {
+    .rangee-queue {
+      flex-direction: column;
+      gap: 4px;
+      padding-block: 16px;
+    }
+  }
+
   @media (min-width: 900px) {
-    .rangee-queue button {
-      margin-block: 0;
+    .rangee-queue {
+      padding-inline: 7.5rem;
     }
 
     .rangee-queue button::after {
       content: none;
-    }
-  }
-
-  .rangee-queue button {
-    padding: 0;
-    border: 0;
-    background: none;
-    font: inherit;
-    font-weight: var(--graisse-normale);
-    letter-spacing: inherit;
-    text-align: left;
-    cursor: pointer;
-  }
-
-  .trait,
-  .rangee-queue :global(.licence-bureau) {
-    display: none;
-  }
-
-  @media (min-width: 900px) {
-    .queue {
-      background-color: var(--bleu-principal);
-    }
-
-    .rangee-queue {
-      flex-direction: row;
-      align-items: center;
-      height: 50px;
-      padding-bottom: 8px;
-    }
-
-    .trait {
-      display: block;
-      height: 1lh;
-      border-right: 1px solid currentColor;
-    }
-
-    .rangee-queue :global(.licence-bureau) {
-      display: block;
-    }
-
-    .rangee-queue :global(.licence-mobile) {
-      display: none;
     }
   }
 </style>

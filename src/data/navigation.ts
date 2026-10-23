@@ -11,7 +11,10 @@ import { BooksIcon } from '@phosphor-icons/react/dist/ssr/Books'
 import { CalendarDotsIcon } from '@phosphor-icons/react/dist/ssr/CalendarDots'
 import { ClockCountdownIcon } from '@phosphor-icons/react/dist/ssr/ClockCountdown'
 import { DoorOpenIcon } from '@phosphor-icons/react/dist/ssr/DoorOpen'
+import { HouseIcon } from '@phosphor-icons/react/dist/ssr/House'
 import { InfoIcon } from '@phosphor-icons/react/dist/ssr/Info'
+import { ListMagnifyingGlassIcon } from '@phosphor-icons/react/dist/ssr/ListMagnifyingGlass'
+import { MagnifyingGlassIcon } from '@phosphor-icons/react/dist/ssr/MagnifyingGlass'
 import { CalendarBlankIcon } from '@phosphor-icons/react/dist/ssr/CalendarBlank'
 import { InstagramLogoIcon } from '@phosphor-icons/react/dist/ssr/InstagramLogo'
 import { PaperPlaneTiltIcon } from '@phosphor-icons/react/dist/ssr/PaperPlaneTilt'
@@ -121,30 +124,45 @@ export const CARTES: Carte[] = [
 
 /* ---------- Pied de page ---------- */
 
-type LienPied = { libelle: string; href: string; rel?: string; Icone?: typeof InfoIcon }
+/**
+ * `Icone` : pictogramme Phosphor devant le lien. `point` : pastille de la
+ * couleur du service (jeton de tokens.css), comme dans le pied de studio·bib ;
+ * un lien a l'un ou l'autre, jamais les deux.
+ */
+type LienPied = { libelle: string; href: string; rel?: string; Icone?: typeof InfoIcon; point?: string }
 
 /**
- * Trois colonnes de liens. Corrections par rapport à la source : paramètres
- * de suivi Google Analytics (_gl=…) retirés des liens A-Z et Calypso.
+ * Trois colonnes de liens, chacune avec son titre. Corrections par rapport à
+ * la source : paramètres de suivi Google Analytics (_gl=…) retirés des liens
+ * A-Z et Calypso.
  */
-export const COLONNES_PIED: LienPied[][] = [
-  [
-    { libelle: 'Nous joindre', href: '/nous-joindre/', Icone: PaperPlaneTiltIcon },
-    { libelle: 'Votre dossier', href: 'https://umontreal.account.worldcat.org/account', rel: 'noopener noreferrer', Icone: UserIcon },
-    { libelle: 'À propos', href: '/a-propos/', Icone: InfoIcon },
-  ],
-  [
-    { libelle: 'Site des bibliothèques', href: '/' },
-    { libelle: 'Catalogue Sofia', href: 'https://umontreal.on.worldcat.org/discovery?lang=fr', rel: 'noopener noreferrer' },
-    { libelle: 'Base de données A-Z', href: 'https://boite-outils.bib.umontreal.ca/az.php' },
-  ],
-  [
-    { libelle: 'Boite à outils', href: 'https://boite-outils.bib.umontreal.ca/' },
-    { libelle: 'Studio-bib', href: 'https://studio.bib.umontreal.ca/' },
-    { libelle: 'Papyrus', href: 'https://umontreal.scholaris.ca/' },
-    { libelle: 'GéoIndex', href: 'https://geoapp.bibl.ulaval.ca/', rel: 'noopener noreferrer' },
-    { libelle: 'Calypso', href: 'https://calypso.bib.umontreal.ca/' },
-  ],
+export const COLONNES_PIED: { titre: string; liens: LienPied[] }[] = [
+  {
+    titre: "Besoin d'aide?",
+    liens: [
+      { libelle: 'Nous joindre', href: '/nous-joindre/', Icone: PaperPlaneTiltIcon },
+      { libelle: 'Votre dossier', href: 'https://umontreal.account.worldcat.org/account', rel: 'noopener noreferrer', Icone: UserIcon },
+      { libelle: 'À propos', href: '/a-propos/', Icone: InfoIcon },
+    ],
+  },
+  {
+    titre: 'Liens rapides',
+    liens: [
+      { libelle: 'Site des bibliothèques', href: '/', Icone: HouseIcon },
+      { libelle: 'Catalogue Sofia', href: 'https://umontreal.on.worldcat.org/discovery?lang=fr', rel: 'noopener noreferrer', Icone: MagnifyingGlassIcon },
+      { libelle: 'Base de données A-Z', href: 'https://boite-outils.bib.umontreal.ca/az.php', Icone: ListMagnifyingGlassIcon },
+    ],
+  },
+  {
+    titre: 'Nos services',
+    liens: [
+      { libelle: 'Boîte à outils', href: 'https://boite-outils.bib.umontreal.ca/', point: 'var(--rouge-orange)' },
+      { libelle: 'Studio·bib', href: 'https://studio.bib.umontreal.ca/', point: 'var(--jaune)' },
+      { libelle: 'Papyrus', href: 'https://umontreal.scholaris.ca/', point: 'var(--vert-fonce)' },
+      { libelle: 'GéoIndex', href: 'https://geoapp.bibl.ulaval.ca/', rel: 'noopener noreferrer', point: 'var(--bleu-200)' },
+      { libelle: 'Calypso', href: 'https://calypso.bib.umontreal.ca/', point: 'var(--rose-300)' },
+    ],
+  },
 ]
 
 /** Icônes seules : le libellé devient leur nom accessible (la source n'en avait pas) */
