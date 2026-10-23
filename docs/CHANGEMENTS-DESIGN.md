@@ -55,7 +55,6 @@ La liste est une capsule à contour clair avec le chevron du site. Dès 1200 px,
 
 - **Accueil** : la photo remplit toute la fenêtre dès 1200 px. L'accroche « L'outil de recherche Sofia » reste visible, en petit, sur mobile et tablette (la source la masquait sous 600 px).
 - **Cadrage des photos** : sur un écran large, les photos étaient coupées au centre et les têtes passaient sous l'en-tête. Chaque photo garde maintenant la partie où sont les visages (réglage `cadrage`, dans le YAML des vitrines ou par photo pour les sous-pages).
-- **Recherche** : la photo de la bannière est remplacée par le couloir de Nous joindre ; les têtes de l'ancienne photo ne pouvaient pas être gardées.
 
 ### Rétroaction « Cette page vous a été utile? »
 
