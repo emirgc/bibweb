@@ -1,17 +1,26 @@
 import { useEffect, useMemo, useRef, useState } from 'react'
 import 'leaflet/dist/leaflet.css'
 import type { CircleMarker, Map as CarteL } from 'leaflet'
+import { ArrowRightIcon } from '@phosphor-icons/react/dist/ssr/ArrowRight'
 import { aStudio, haversine } from '@/data/horaires/horaires'
 import type { Lieu } from '@/data/horaires/lieux'
 
-// La vue par défaut reste centrée sur Montréal : Saint-Hyacinthe (~50 km)
-// garde son marqueur mais n'entre pas dans le cadrage automatique, pour ne
-// pas imposer un dézoom énorme.
+// Cadrage automatique, pour ne pas imposer un dézoom :
+// - « Tous les lieux » : Montréal et Laval seulement (île de Montréal et île
+//   Jésus) ; Brossard et Saint-Hyacinthe restent hors de la vue ;
+// - autre filtre : 30 km autour de la BLSH ; Brossard (Points de service)
+//   entre dans la vue, Saint-Hyacinthe (Bibliothèques) non.
+// Les lieux hors de la vue gardent marqueur et fiche, et un encadré sur la
+// carte les nomme et y mène. S'il ne reste qu'eux, le cadrage les prend.
+const ZONE_MTL_LAVAL = { sud: 45.46, nord: 45.62, ouest: -73.78, est: -73.5 }
 const REPERE_MTL = { lat: 45.5045407, lng: -73.6138466 } // BLSH
 const CADRAGE_MAX_KM = 30
 const RAYON = 8
 
-const dansCadrage = (l: { lat: number; lng: number }) => haversine(REPERE_MTL.lat, REPERE_MTL.lng, l.lat, l.lng) <= CADRAGE_MAX_KM
+const dansCadrage = (l: { lat: number; lng: number }, tous: boolean) =>
+  tous
+    ? l.lat >= ZONE_MTL_LAVAL.sud && l.lat <= ZONE_MTL_LAVAL.nord && l.lng >= ZONE_MTL_LAVAL.ouest && l.lng <= ZONE_MTL_LAVAL.est
+    : haversine(REPERE_MTL.lat, REPERE_MTL.lng, l.lat, l.lng) <= CADRAGE_MAX_KM
 
 type Groupe = { cle: string; pavillon?: string; lat: number; lng: number; lieux: Lieu[] }
 
@@ -28,8 +37,8 @@ function grouperParPavillon(lieux: Lieu[]): Groupe[] {
   return [...groupes.values()]
 }
 
-function cadrer(carte: CarteL, groupes: Groupe[], extra: [number, number][] = []) {
-  const proches = groupes.filter(dansCadrage)
+function cadrer(carte: CarteL, groupes: Groupe[], extra: [number, number][] = [], tous = true) {
+  const proches = groupes.filter((g) => dansCadrage(g, tous))
   const points = (proches.length ? proches : groupes).map((g) => [g.lat, g.lng] as [number, number]).concat(extra)
   if (points.length) carte.fitBounds(points, { padding: [24, 24], maxZoom: 16 })
 }
@@ -233,7 +242,7 @@ export default function CarteLeaflet({ lieux, idsVisibles, filtre, position, cib
       marqueur.getElement()?.setAttribute('aria-label', libelle(groupe, montres))
       visibles.push(groupe)
     }
-    cadrer(carte, visibles, position ? [[position.lat, position.lng]] : [])
+    cadrer(carte, visibles, position ? [[position.lat, position.lng]] : [], filtre === 'all')
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [prete, groupes, idsVisibles, filtre, position])
 
@@ -264,7 +273,47 @@ export default function CarteLeaflet({ lieux, idsVisibles, filtre, position, cib
     marqueur.openPopup()
   }, [prete, cible, groupeDe])
 
-  return <div ref={conteneurRef} className="ch-carte" role="region" aria-label="Carte des bibliothèques. La liste qui suit donne les mêmes renseignements." />
+  // Lieux retenus mais hors de la vue (voir plus haut) : nommés dans un
+  // encadré ; chacun y mène (la carte se recentre et ouvre sa bulle). Sans
+  // lieu dans la vue, le cadrage les prend tous : pas d'encadré.
+  const retenus = groupes.filter((g) => g.lieux.some((l) => idsVisibles.has(l.id)))
+  const horsVueTous = retenus.filter((g) => !dansCadrage(g, filtre === 'all'))
+  const horsVue = horsVueTous.length < retenus.length ? horsVueTous : []
+  const allerA = (groupe: Groupe) => {
+    const carte = carteRef.current
+    const marqueur = marqueursRef.current[groupe.cle]
+    if (!carte || !marqueur) return
+    carte.setView(marqueur.getLatLng(), 13)
+    marqueur.openPopup()
+  }
+
+  return (
+    <div className="ch-carte-cadre">
+      <div ref={conteneurRef} className="ch-carte" role="region" aria-label="Carte des bibliothèques. La liste qui suit donne les mêmes renseignements." />
+      {prete && horsVue.length > 0 && (
+        <div className="ch-hors-vue">
+          <p id="ch-hors-vue-titre">Aussi, hors de cette vue :</p>
+          <ul aria-labelledby="ch-hors-vue-titre">
+            {horsVue.map((groupe) => (
+              <li key={groupe.cle}>
+                <button type="button" onClick={() => allerA(groupe)}>
+                  <span>{groupe.lieux.map(nomAvecVille).join(', ')}</span>
+                  <ArrowRightIcon size={18} aria-hidden="true" />
+                </button>
+              </li>
+            ))}
+          </ul>
+        </div>
+      )}
+    </div>
+  )
+}
+
+// « Bibliothèque de médecine vétérinaire (Saint-Hyacinthe) » : la ville du
+// campus, quand le nom ne la dit pas
+const nomAvecVille = (lieu: Lieu) => {
+  const ville = lieu.pavillon?.startsWith('Campus de ') ? lieu.pavillon.slice('Campus de '.length) : undefined
+  return ville && !lieu.name.includes(ville) ? `${lieu.name} (${ville})` : lieu.name
 }
 
 // Les cercles SVG de Leaflet ne sont pas focalisables : on leur donne un rôle

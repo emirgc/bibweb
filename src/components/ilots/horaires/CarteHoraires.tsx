@@ -2,6 +2,7 @@ import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import { ArrowClockwiseIcon } from '@phosphor-icons/react/dist/ssr/ArrowClockwise'
 import { ClockIcon } from '@phosphor-icons/react/dist/ssr/Clock'
 import { CrosshairIcon } from '@phosphor-icons/react/dist/ssr/Crosshair'
+import { InfoIcon } from '@phosphor-icons/react/dist/ssr/Info'
 import CarteLeaflet from './CarteLeaflet'
 import FicheLieu, { type ImageLieu } from './FicheLieu'
 import { periodeSemaine, semaineRelative } from './HoraireSemaine'
@@ -239,11 +240,19 @@ export default function CarteHoraires({ lieux, images }: Props) {
           <CrosshairIcon size={24} aria-hidden="true" />
           {position ? 'Mettre à jour ma position' : 'Me localiser'}
         </button>
+        {/* Info-bulle native (popover) : ouverte au clic ou au clavier, fermée
+            par Échap ou un clic ailleurs ; elle reste affichée tant qu'on ne
+            la ferme pas (WCAG 1.4.13) */}
+        <button type="button" className="ch-info" popoverTarget="ch-confidentialite" aria-label="Confidentialité de votre position">
+          <InfoIcon size={22} aria-hidden="true" />
+        </button>
+        <p id="ch-confidentialite" popover="auto" className="ch-confidentialite">
+          Votre position sert uniquement à calculer les distances dans votre navigateur. Elle n’est ni enregistrée ni transmise.
+        </p>
         <RechercheLieu lieux={lieux} requete={requete} changerRequete={setRequete} choisir={choisirLieu} />
         <p role="status" className="ch-message">
           {localisation.message}
         </p>
-        <p className="ch-confidentialite">Votre position sert uniquement à calculer les distances dans votre navigateur. Elle n’est ni enregistrée ni transmise.</p>
       </div>
 
       <p role="status" className="visuellement-masque">
