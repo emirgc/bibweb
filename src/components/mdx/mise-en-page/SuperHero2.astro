@@ -98,6 +98,13 @@ const aEnfants = Astro.slots.has('default')
     --couleur-focus: var(--couleur-surface);
   }
 
+  /* Suivie d'une bande de couleur (vitrine dont la première section a un
+     fond) : la bannière la touche. Sous 600 px, la marge positive (1rem)
+     laissait voir le fond de la page entre la photo et la bande. */
+  .super-hero-2:has(+ :global(.section.marge-haut)) {
+    margin-bottom: min(0px, calc(5rem - var(--retrait)));
+  }
+
   .taille-small {
     --hauteur: 15rem;
   }
@@ -133,14 +140,31 @@ const aEnfants = Astro.slots.has('default')
     }
   }
 
-  /* Voile de 50 % : le titre blanc garde au moins 4,37:1 sur 95 % des pixels
-     de chaque image (mesuré), le sous-titre aussi */
+  /* Voile de 50 % (sous 900 px) : le titre blanc garde au moins 4,37:1 sur
+     95 % des pixels de chaque image (mesuré), le sous-titre aussi */
   .super-hero-2::before {
     content: '';
     position: absolute;
     z-index: -1;
     inset: 0;
     background-color: color-mix(in srgb, var(--couleur-voile) 50%, transparent);
+  }
+
+  /* Dès 900 px, le texte n'occupe que la gauche : le voile s'assombrit
+     (60 %) sous le texte, puis s'efface ; la photo reste intacte à droite.
+     --fin-texte : bord droit de la colonne de texte (environ 60 % de la
+     largeur du contenu, centré dans --largeur-max). */
+  @media (min-width: 900px) {
+    .super-hero-2::before {
+      --fin-texte: calc(max(0px, 50% - var(--largeur-max) / 2) + min(100%, var(--largeur-max)) * 0.6);
+      background-color: transparent;
+      background-image: linear-gradient(
+        to right,
+        color-mix(in srgb, var(--couleur-voile) 60%, transparent) 0,
+        color-mix(in srgb, var(--couleur-voile) 55%, transparent) var(--fin-texte),
+        transparent calc(var(--fin-texte) + 20%)
+      );
+    }
   }
 
   .super-hero-2 :global(.super-hero-image) {

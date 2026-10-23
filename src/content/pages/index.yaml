@@ -82,6 +82,7 @@ sections:
 
   - type: image-fond
     image: ./images/engagement-accueil.webp
+    cadrage: 15%
     titre: S’engager pour une science ouverte
     texte: Notre équipe est résolument engagée dans le développement d’un accès universel aux savoirs, par son soutien à la Politique sur le libre accès aux publications savantes et par le financement de la publication de monographies savantes en libre accès, sans parler du soutien à de multiples outils et initiatives.
     bouton:

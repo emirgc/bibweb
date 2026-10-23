@@ -26,6 +26,7 @@
 import GabaritPage from './GabaritPage.astro'
 import SuperHero from '@/components/mdx/mise-en-page/SuperHero.astro'
 import SuperHero2 from '@/components/mdx/mise-en-page/SuperHero2.astro'
+import Button from '@/components/mdx/primitives/Button.astro'
 import RechercheSofiaAccueil from '@/components/mdx/dynamiques/RechercheSofiaAccueil.astro'
 import Typography from '@/components/mdx/primitives/Typography.astro'
 import Section from '@/components/mdx/mise-en-page/Section.astro'
@@ -66,7 +67,7 @@ function memeFond(i: number) {
 
 /** Réglages de la bande propres à un bloc (voir plus haut) */
 function bande(bloc: Bloc) {
-  if (bloc.type === 'image-fond') return { image: bloc.image }
+  if (bloc.type === 'image-fond') return { image: bloc.image, style: bloc.cadrage && { '--cadrage': bloc.cadrage } }
   if (bloc.type === 'fiches-bibliotheques') return { id: 'liste-bibliotheques' }
   return {}
 }
@@ -89,14 +90,19 @@ function bande(bloc: Bloc) {
             )}
             <RechercheSofiaAccueil />
           </SuperHero>
-        ) : banniere.sousTitre ? (
+        ) : banniere.sousTitre || banniere.bouton ? (
           <SuperHero2 title={banniere.titre} imageName={banniere.image} cadrage={banniere.cadrage} size={taille}>
             <Fragment slot="subTitle">
-              {banniere.sousTitre.map((ligne) => (
+              {banniere.sousTitre?.map((ligne) => (
                 <Typography component="div" variant="subtitle1">
                   {ligne}
                 </Typography>
               ))}
+              {banniere.bouton && (
+                <Button href={banniere.bouton.lien} light={!banniere.bouton.secondaire} secondary={banniere.bouton.secondaire}>
+                  {banniere.bouton.texte}
+                </Button>
+              )}
             </Fragment>
           </SuperHero2>
         ) : (
