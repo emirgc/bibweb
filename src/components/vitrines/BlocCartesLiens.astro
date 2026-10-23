@@ -3,8 +3,10 @@
  * Bloc « cartes-liens » (nous-joindre) : grille de cartes-liens bleues à
  * icône (Card2), de même hauteur, --espace-grille entre elles (.62rem et
  * 4rem de marges dans la source). Une colonne, deux dès 600 px, trois dès
- * 900 px, puis toutes les cartes sur une rangée dès 1440 px (quatre ou
- * cinq). Avec cinq cartes, 3 + 2 entre 900 et 1439 px.
+ * 900 px, puis toutes les cartes sur une rangée (quatre ou cinq) quand la
+ * zone des cartes fait 1312 px ou plus : requête de conteneur, qui équivaut à
+ * un écran de 1440 px sans ajouter de seuil à la page. Avec cinq cartes,
+ * 3 + 2 en dessous.
  */
 import Card2 from '@/components/mdx/cartes/Card2.astro'
 import { composantIcone } from '@/lib/icones'
@@ -16,17 +18,23 @@ const { bloc } = Astro.props
 const icones = await Promise.all(bloc.cartes.map((carte) => composantIcone(carte.icone)))
 ---
 
-<ul class="cartes-liens" style={`--n: ${bloc.cartes.length}`} id={bloc.id} data-revelation="groupe">
-  {
-    bloc.cartes.map((carte, i) => (
-      <li>
-        <Card2 title={carte.titre} Icon={icones[i]} href={carte.lien} />
-      </li>
-    ))
-  }
-</ul>
+<div class="zone-cartes">
+  <ul class="cartes-liens" style={`--n: ${bloc.cartes.length}`} id={bloc.id} data-revelation="groupe">
+    {
+      bloc.cartes.map((carte, i) => (
+        <li>
+          <Card2 title={carte.titre} Icon={icones[i]} href={carte.lien} />
+        </li>
+      ))
+    }
+  </ul>
+</div>
 
 <style>
+  .zone-cartes {
+    container-type: inline-size;
+  }
+
   .cartes-liens {
     display: grid;
     grid-template-columns: minmax(0, 1fr);
@@ -66,8 +74,9 @@ const icones = await Promise.all(bloc.cartes.map((carte) => composantIcone(carte
   }
 
   /* Une rangée seulement quand chaque carte garde au moins 15rem : en
-     dessous, les cartes se serraient (193 px à 1200 px) */
-  @media (min-width: 1440px) {
+     dessous, les cartes se serraient (193 px à 1200 px). 1312 px : largeur de
+     la zone à 1440 px d'écran (mesurée). */
+  @container (width >= 1312px) {
     .cartes-liens {
       grid-template-columns: repeat(min(var(--n), 5), minmax(0, 1fr));
     }

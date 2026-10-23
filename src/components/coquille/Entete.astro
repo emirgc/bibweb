@@ -328,7 +328,7 @@ const BURGER =
 
   /* Le rideau couvre la fenêtre sous 1200 px : la page ne défile plus
      derrière lui */
-  @media (max-width: 1199.98px) {
+  @media (width < 1200px) {
     :global(html:has(.entete[data-menu-ouvert])) {
       overflow: hidden;
     }
@@ -471,7 +471,7 @@ const BURGER =
     text-decoration: none;
   }
 
-  /* Entre 1200 et 1439 px, la rangée complète (marque, menu, « Je donne »,
+  /* Entre 1200 et 1439 px d'écran, la rangée complète (marque, menu, « Je donne »,
      outils) demande environ 1035 px plus les marges des liens. Au lieu d'une
      marge fixe de 10 px, la marge suit la place réellement libre dans la
      rangée (unités cqi : la largeur de la rangée, barre de défilement
@@ -480,11 +480,13 @@ const BURGER =
      22 px vers 1340 px. « Je donne » est allégé (flèche de 24 px). On ne
      recule pas le seuil de la barre compacte : SuperHero et la bannière de
      section se glissent sous l'en-tête transparent dès 1200 px. */
-  @media (max-width: 1439.98px) {
-    .barre-bureau .rangee {
-      container-type: inline-size;
-    }
+  .barre-bureau .rangee {
+    container-type: inline-size;
+  }
 
+  /* 1395 px : largeur de la rangée à 1440 px d'écran (mesurée). La règle
+     suit la rangée et non l'écran : pas de seuil de plus dans la page. */
+  @container (width < 1395px) {
     .navigation-principale ul {
       gap: 0;
     }
