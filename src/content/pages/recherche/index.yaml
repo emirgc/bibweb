@@ -123,6 +123,7 @@ sections:
         lien: mailto:orcid@bib.umontreal.ca
       - texte: Consultez le guide Découvrabilité de la recherche
         lien: https://boite-outils.bib.umontreal.ca/recherche/profils-chercheurs?p=5403769
+        contour: true
 
   - type: grille-elargissable
     titre: Explorez l’intelligence artificielle générative

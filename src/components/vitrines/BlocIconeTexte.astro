@@ -63,4 +63,11 @@ const couleur = bloc.couleurIcone === 'blanc' ? 'var(--couleur-surface)' : bloc.
     flex-wrap: wrap;
     gap: var(--espace-element);
   }
+
+  /* Bouton à contour : pilule blanche bordée, pour ne pas se fondre dans le
+     fond de la bande */
+  .boutons :global(.variante-outlined:not(.clair)) {
+    --bouton-fond: var(--couleur-surface);
+    --bouton-fond-survol: var(--bleu-100);
+  }
 </style>
