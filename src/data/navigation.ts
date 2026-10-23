@@ -53,7 +53,7 @@ export const LIENS_MENU = [
     href: 'https://calendrier.bib.umontreal.ca/calendar?cid=7690&t=m&d=0000-00-00&cal=7690&inc=0',
     Icone: CalendarDotsIcon,
   },
-  { libelle: 'Horaires', href: '/horaires/', Icone: ClockCountdownIcon },
+  { libelle: 'Horaires et lieux', href: '/horaires/', Icone: ClockCountdownIcon },
   { libelle: 'Nous joindre', href: '/nous-joindre/', Icone: AddressBookIcon },
 ]
 
@@ -171,7 +171,7 @@ export const LIENS_QUEUE_PIED = [
  */
 export const LIENS_RAPIDES = [
   { libelle: 'Sofia', court: 'Sofia', href: 'https://umontreal.on.worldcat.org/discovery?lang=fr', Icone: null, nouvelOngletBureau: true },
-  { libelle: 'Horaires', court: 'Horaires', href: '/horaires/', Icone: ClockCountdownIcon },
+  { libelle: 'Horaires et lieux', court: 'Horaires', href: '/horaires/', Icone: ClockCountdownIcon },
   { libelle: 'Réserver une salle', court: 'Réserver', href: 'https://calendrier.bib.umontreal.ca/r', Icone: CalendarBlankIcon },
   { libelle: 'Ressources informatiques', court: 'Informatique', href: 'https://studio.bib.umontreal.ca/informatique/', Icone: WrenchIcon },
 ]
