@@ -3,7 +3,9 @@
  * Bloc « image-texte » : titre, texte et bouton (ou `boutons`, qui se
  * suivent dans le pied) à côté d'une image décorative (HeroWithImage).
  * `positionImage` dit de quel côté est l'image. Le titre passe au-dessus des
- * deux colonnes, sur toute la largeur (slot « titre » de HeroWithImage).
+ * deux colonnes, sur toute la largeur (slot « titre » de HeroWithImage),
+ * sans le décalage d'une demi-colonne de la source : le bloc s'aligne sur
+ * les carrousels et les grilles de la vitrine.
  * Sur un fond foncé, les boutons prennent la variante claire (`light`) : le
  * bouton bleu foncé ne s'y voyait pas.
  *
@@ -52,7 +54,7 @@ const largeurImage = bloc.image.width
       </div>
     </div>
   ) : (
-    <HeroWithImage Image={bloc.image} align={bloc.positionImage === 'gauche' ? 'right' : 'left'}>
+    <HeroWithImage Image={bloc.image} offset={0} align={bloc.positionImage === 'gauche' ? 'right' : 'left'}>
       <Titre slot="titre" texte={bloc.titre} id={bloc.id} />
       <TexteMarkdown texte={bloc.texte} brut />
       {boutons.length > 0 && (

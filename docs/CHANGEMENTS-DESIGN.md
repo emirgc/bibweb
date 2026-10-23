@@ -84,6 +84,7 @@ Un volet « Dans cette section » sous le fil d'Ariane. Dans la source, la colon
 - **Recherche — « Faites rayonner vos connaissances scientifiques »** : le fond rose est remplacé par le bleu 100.
 - **Recherche — Kerko** : les bibliographies sont triées par ordre alphabétique.
 - **Engagements — Premiers Peuples** : les cartes à révélation deviennent des **cartes compactes qui se déplient** (le texte s'ouvre sous le titre).
+- **Blocs texte et image** (toutes les vitrines) : plus de retrait d'une demi-colonne de chaque côté ; titre et texte s'alignent sur les carrousels et les grilles voisins (64 px du bord au lieu de 119 px à 1440 px).
 - **Bandes de même couleur qui se suivent** (Nous joindre, Espaces, Études) : une seule marge entre elles, au lieu d'une double (96 px au lieu de 192 px à 1440 px).
 
 ---
