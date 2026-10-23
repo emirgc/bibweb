@@ -49,6 +49,16 @@ if (!Image) throw new Error('FlipCardWithImage : la propriété `Image` est obli
 
 const idTitre = idUnique('carte-titre')
 const Titre = `h${niveauTitre}`
+
+// En cover, une photo plus large que la carte (paysage dans une carte
+// portrait) s'affiche à la hauteur de la carte × son ratio : 37,5rem pour
+// du 3:2, et non 23rem. Annoncer 23rem faisait choisir une image trop
+// petite, agrandie et floue.
+const ratio = typeof Image === 'string' ? 1 : Image.width / Image.height
+const largeurPetite = Math.ceil(Math.max(18, 20 * ratio) * 100) / 100
+const largeurGrande = Math.ceil(Math.max(23, 25 * ratio) * 100) / 100
+const largeurs = [...new Set([largeurPetite, largeurGrande].flatMap((rem) => [1, 2].map((d) => Math.ceil(rem * 16 * d))))].sort((a, b) => a - b)
+const tailles = `(min-width: 600px) ${largeurGrande}rem, ${largeurPetite}rem`
 ---
 
 <div class:list={['carte', classes(classe, className)]} style={fusionnerStyles(style)} data-carte-revelable {...reste}>
@@ -56,7 +66,7 @@ const Titre = `h${niveauTitre}`
     typeof Image === 'string' ? (
       <img class="photo" src={Image} alt={alt} loading="lazy" decoding="async" />
     ) : (
-      <ImageAstro class="photo" src={Image} alt={alt} widths={[414, 828]} sizes="(min-width: 600px) 23rem, 18rem" formats={['avif', 'webp']} loading="lazy" />
+      <ImageAstro class="photo" src={Image} alt={alt} widths={largeurs} sizes={tailles} formats={['avif', 'webp']} loading="lazy" />
     )
   }
   <div class="degrade" aria-hidden="true"></div>
