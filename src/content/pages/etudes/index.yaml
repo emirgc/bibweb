@@ -45,7 +45,7 @@ sections:
     liens:
       - titre: Accueil en bibliothèque
         description: Notre équipe est présente en bibliothèques pour répondre à vos questions sur place - passez nous voir au comptoir!
-        lien: /nous-joindre/#bibliotheques-et-points-de-service
+        lien: /horaires/
       - titre: Clavardage
         description: Même à distance, notre équipe n'est qu'à un clic! Nous sommes là pour répondre à vos questions, vous aider à repérer un document, ou vous guider dans l’utilisation de nos ressources, de nos logiciels. Besoin de soutien informatique à distance? C’est aussi par ici!
         lien: /nous-joindre/clavarder/

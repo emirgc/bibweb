@@ -23,26 +23,6 @@ sections:
       - titre: Faire une suggestion d'achat
         icone: book-open-text
         lien: /nous-joindre/suggestion-achat/
-
-  - type: accordeons
-    id: services
-    titre: Services
-    volets:
-      - titre: Service Accessibilité
-        id: mon-accordeon
-        coordonnees:
-          courriel: accessibilite@bib.umontreal.ca
-          telephone: 514 343-2135
-          adresse:
-            - Pavillon Samuel-Bronfman
-            - 3000, rue Jean-Brillant
-            - 1er étage, salle 1085
-          itineraire: https://www.google.com/maps/place/Pavillon+Samuel-Bronfman,+3000+Jean+Brillant+St,+Montreal,+QC+H3T+1N7,+Canada/@45.499427,-73.616554,4251m/data=!3m1!1e3!4m6!3m5!1s0x4cc919f3c6b6c4fd:0x1783a82167c956!8m2!3d45.4994274!4d-73.6165537!16s%2Fg%2F1tftqq4m?hl=en&entry=ttu&g_ep=EgoyMDI1MDQwOC4wIKXMDSoASAFQAw%3D%3D
-      - titre: Prêt entre bibliothèques
-        coordonnees:
-          courriel: peb@bib.umontreal.ca
-          telephone: 514 343-6903
-
-  - type: fiches-bibliotheques
-    id: bibliotheques-et-points-de-service
-    titre: Bibliothèques et points de service
+      - titre: Horaires et lieux
+        icone: map-pin
+        lien: /horaires/

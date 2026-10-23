@@ -294,8 +294,8 @@
 /soutien-enseignement/deposer	/enseignement/formulaire-reserve
 /soutien-enseignement/reserve/	/enseignement/reserve
 /soutien-recherche	/recherche/
-/travailler/les-bibliotheques	/espaces/#liste-bibliotheques
-/travailler/les-bibliotheques/*	/espaces/#liste-bibliotheques
+/travailler/les-bibliotheques	/horaires/
+/travailler/les-bibliotheques/*	/horaires/
 /utilisation-ressources-electroniques	/a-propos/nos-collections#avis-sur-lutilisation-des-ressources-electroniques
 /collections	/a-propos/nos-collections
 /collections/collections-bref	/a-propos/nos-collections
