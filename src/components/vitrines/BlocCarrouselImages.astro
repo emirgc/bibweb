@@ -2,6 +2,8 @@
 /*
  * Bloc « carrousel-images » : titre, texte et carrousel (Carousel1) de
  * cartes-liens à photo (CardWithImage), titres en h3.
+ * Option `titresSansSerif` : les titres des cartes en Figtree (sans empattement)
+ * au lieu de Lora, comme le titre du bloc.
  */
 import Carousel1 from '@/components/mdx/mise-en-page/Carousel1.astro'
 import CardWithImage from '@/components/mdx/cartes/CardWithImage.astro'
@@ -14,8 +16,15 @@ type Props = { bloc: BlocDe<'carrousel-images'> }
 const { bloc } = Astro.props
 ---
 
-<Carousel1>
+<Carousel1 class={bloc.titresSansSerif ? 'cartes-titres-sans' : undefined}>
   <Titre slot="title" texte={bloc.titre} id={bloc.id} />
   {bloc.texte && <TexteMarkdown slot="description" texte={bloc.texte} espacerParagraphes />}
   {bloc.cartes.map((carte) => <CardWithImage title={carte.titre} Image={carte.image} href={carte.lien} moreText={carte.appel} />)}
 </Carousel1>
+
+<style>
+  /* .contenu .titre : les titres des cartes seulement, pas celui du bloc */
+  :global(.cartes-titres-sans .contenu .titre.titre) {
+    font-family: var(--police-sans);
+  }
+</style>

@@ -870,6 +870,7 @@ Une grille de grandes cartes bleues (une à quatre par rangée selon l'écran), 
 | :-- | :-- | :-- |
 | `titre` | Titre du carrousel | Oui |
 | `texte` | Phrase d'introduction (Markdown) | Non |
+| `titresSansSerif` | `true` : les titres des cartes en Figtree (sans empattement) au lieu de Lora | Non (Lora) |
 | `cartes` | Liste de `titre`, `image` (voir 4.1, décorative), `lien` et `appel` (facultatif ; « En savoir plus » par défaut) | Oui |
 
 #### `cartes-images` : cartes à photo, sans défilement

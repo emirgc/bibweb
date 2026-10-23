@@ -319,6 +319,8 @@ export function schemaVitrine<I extends z.ZodType, N extends z.ZodType, L extend
       ...communs,
       titre: texteCourt,
       texte: markdown.optional(),
+      /** Titres des cartes en Figtree (sans empattement) au lieu de Lora */
+      titresSansSerif: z.boolean().optional(),
       cartes: z.array(carteImage).min(1),
     })
     .strict()

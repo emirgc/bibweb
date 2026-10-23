@@ -104,6 +104,7 @@ sections:
     fond: vertFonce
     titre: Changez de décor!
     libelle: Espaces
+    titresSansSerif: true
     texte: Nous offrons plusieurs salles de formation à réserver. Consultez notre répertoire de salles pour donner un cours dans un environnement pensé pour l’apprentissage de groupe, le partage des connaissances ou le visionnement multimédia en groupe.
     cartes:
       - titre: Salle didactique
