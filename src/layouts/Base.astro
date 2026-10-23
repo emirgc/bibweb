@@ -19,6 +19,7 @@ import BandeauHoraires from '@/components/coquille/BandeauHoraires.astro'
 import PiedDePage from '@/components/coquille/PiedDePage.astro'
 import LiensRapides from '@/components/coquille/LiensRapides.astro'
 import ServicesInstitutionnels from '@/components/coquille/ServicesInstitutionnels.astro'
+import RetourHaut from '@/components/coquille/RetourHaut.astro'
 import Recherche from '@/components/coquille/Recherche.astro'
 import { LANGUE_SITE, estEnFrancais } from '@/lib/contenu'
 
@@ -111,6 +112,7 @@ const attributsCoquille = langPage === LANGUE_SITE ? {} : { lang: LANGUE_SITE, s
             <PiedDePage />
             <Recherche />
             <ServicesInstitutionnels position="bas" niveau={niveau} />
+            <RetourHaut />
           </Coquille>
         </>
       )
