@@ -103,7 +103,10 @@ export function schemaVitrine<I extends z.ZodType, N extends z.ZodType, L extend
       texte: markdown,
       image: image(),
       positionImage: z.enum(['gauche', 'droite']).default('droite'),
+      /** `encart` : carte bleu foncé ramassée, image fondue au bord (BlocImageTexte) */
+      disposition: z.enum(['colonnes', 'encart']).default('colonnes'),
       bouton: bouton.optional(),
+      boutons: boutons.optional(),
     })
     .strict()
 

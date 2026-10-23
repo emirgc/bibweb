@@ -22,6 +22,11 @@
  * pleine largeur au-dessus ou au-dessous du texte ; une page qui en enchaîne
  * une douzaine (nos-collections-speciales) ne s'allonge plus d'autant.
  *
+ * Slot « titre » (blocs image-texte des vitrines) : le titre passe au-dessus
+ * des deux colonnes, sur toute la largeur, au lieu d'être serré dans la
+ * colonne du texte (5/12) ; les hauts du texte et de l'image restent
+ * alignés dessous.
+ *
  * L'image est décorative (alt="" dans la source).
  */
 import type { ImageMetadata } from 'astro'
@@ -53,6 +58,7 @@ const aPied = footer !== undefined || (Astro.slots.has('footer') && (await Astro
 ---
 
 <GridOffset offset={0.5} class={classes('hero-avec-image', classe, className)} style={fusionnerStyles(style)} {...reste}>
+  {Astro.slots.has('titre') && <div class="titre-large"><slot name="titre" /></div>}
   <div class:list={['rangee', `image-${align === 'left' ? 'droite' : 'gauche'}`, { compact }]} data-revelation="groupe">
     <div class="colonne-texte">
       <div class="contenu"><slot /></div>
@@ -86,6 +92,11 @@ const aPied = footer !== undefined || (Astro.slots.has('footer') && (await Astro
 
   .colonne-texte {
     display: contents;
+  }
+
+  /* Le titre ouvre le bloc ; --espace-titre dessous (Titre.astro) */
+  .titre-large > :global(:last-child) {
+    margin-bottom: var(--espace-titre);
   }
 
   /* Le titre et le dernier élément du texte n'ajoutent pas leur marge aux
@@ -180,6 +191,12 @@ const aPied = footer !== undefined || (Astro.slots.has('footer') && (await Astro
       display: grid;
       align-items: center;
       gap: 0;
+    }
+
+    /* Titre au-dessus : le texte et l'image partent du même haut, juste
+       sous le titre, au lieu d'être centrés l'un sur l'autre */
+    .titre-large + .rangee {
+      align-items: start;
     }
 
     .image-droite {

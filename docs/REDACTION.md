@@ -644,7 +644,8 @@ Quel bloc choisir ?
 | `titre`, `texte` | Titre et texte (Markdown : paragraphes, listes) | Oui |
 | `image` | Chemin de l'image (voir 4.1) ; l'image est décorative | Oui |
 | `positionImage` | `gauche` ou `droite` | Non (`droite`) |
-| `bouton` | Bouton sous le texte (voir 3.3) | Non |
+| `disposition` | `encart` : appel à l'action ramassé, dans une carte bleu foncé aux coins arrondis, l'image fondue jusqu'au bord, bouton blanc (Espaces, « Trouver un lieu ») ; ne mettez pas de `fond` | Non (`colonnes`) |
+| `bouton` | Bouton sous le texte (voir 3.3) ; blanc sur un fond foncé | Non |
 
 #### `image-fond` : texte sur une grande photo
 

@@ -1,27 +1,203 @@
 ---
 /*
- * Bloc « image-texte » : titre, texte et bouton à côté d'une image
- * décorative (HeroWithImage). `positionImage` dit de quel côté est l'image.
+ * Bloc « image-texte » : titre, texte et bouton (ou `boutons`, qui se
+ * suivent dans le pied) à côté d'une image décorative (HeroWithImage).
+ * `positionImage` dit de quel côté est l'image. Le titre passe au-dessus des
+ * deux colonnes, sur toute la largeur (slot « titre » de HeroWithImage).
+ * Sur un fond foncé, les boutons prennent la variante claire (`light`) : le
+ * bouton bleu foncé ne s'y voyait pas.
+ *
+ * Disposition `encart` : un appel à l'action plus ramassé, dans une carte
+ * bleu foncé aux coins arrondis (largeur du contenu, pas toute la bande).
+ * Le texte est d'un côté, et l'image remplit l'autre jusqu'au bord de la
+ * carte (cover), fondue dans le bleu par un dégradé. Sous 900 px, l'image
+ * passe en bandeau au-dessus du texte. Titre réduit, bouton blanc. Texte
+ * blanc sur bleu foncé : 18,17:1.
  */
+import { Picture } from 'astro:assets'
 import HeroWithImage from '@/components/mdx/mise-en-page/HeroWithImage.astro'
 import Button from '@/components/mdx/primitives/Button.astro'
 import Titre from './Titre.astro'
 import TexteMarkdown from './TexteMarkdown.astro'
+import { FONDS } from '@/lib/fonds'
 import type { BlocDe } from './types'
 
 type Props = { bloc: BlocDe<'image-texte'> }
 
 const { bloc } = Astro.props
+const encart = bloc.disposition === 'encart'
+const clair = encart || (bloc.fond !== undefined && FONDS[bloc.fond].ton === 'fonce')
+const boutons = [...(bloc.bouton ? [bloc.bouton] : []), ...(bloc.boutons ?? [])]
+const largeurImage = bloc.image.width
 ---
 
-<HeroWithImage Image={bloc.image} align={bloc.positionImage === 'gauche' ? 'right' : 'left'}>
-  <Titre texte={bloc.titre} id={bloc.id} />
-  <TexteMarkdown texte={bloc.texte} brut />
-  {
-    bloc.bouton && (
-      <Button slot="footer" href={bloc.bouton.lien} primary={!bloc.bouton.secondaire} secondary={bloc.bouton.secondaire}>
-        {bloc.bouton.texte}
-      </Button>
-    )
+{
+  encart ? (
+    <div class:list={['encart', `image-${bloc.positionImage}`]}>
+      <div class="encart-texte">
+        <Titre texte={bloc.titre} id={bloc.id} />
+        <TexteMarkdown texte={bloc.texte} brut />
+        {boutons.length > 0 && (
+          <div class="encart-pied">
+            {boutons.map((bouton) => (
+              <Button href={bouton.lien} primary={!bouton.secondaire} secondary={bouton.secondaire} light>
+                {bouton.texte}
+              </Button>
+            ))}
+          </div>
+        )}
+      </div>
+      <div class="encart-image">
+        <Picture src={bloc.image} formats={['avif', 'webp']} fallbackFormat="webp" widths={[480, 768, 1024, 1536].filter((l) => l < largeurImage).concat(Math.min(largeurImage, 1536))} sizes="(min-width: 1536px) 860px, (min-width: 900px) 55vw, 92vw" alt="" loading="lazy" />
+      </div>
+    </div>
+  ) : (
+    <HeroWithImage Image={bloc.image} align={bloc.positionImage === 'gauche' ? 'right' : 'left'}>
+      <Titre slot="titre" texte={bloc.titre} id={bloc.id} />
+      <TexteMarkdown texte={bloc.texte} brut />
+      {boutons.length > 0 && (
+        <Fragment slot="footer">
+          {boutons.map((bouton) => (
+            <Button href={bouton.lien} primary={!bouton.secondaire} secondary={bouton.secondaire} light={clair}>
+              {bouton.texte}
+            </Button>
+          ))}
+        </Fragment>
+      )}
+    </HeroWithImage>
+  )
+}
+
+<style>
+  .encart {
+    /* Liens, focus et accent du ton foncé de Section */
+    --couleur-lien: var(--couleur-surface);
+    --couleur-lien-survol: var(--couleur-surface);
+    --couleur-focus: var(--couleur-surface);
+    --rouge-orange-texte: var(--jaune);
+    display: grid;
+    grid-template-rows: auto auto;
+    overflow: hidden;
+    border-radius: var(--rayon-grand);
+    background-color: var(--bleu-fonce);
+    color: var(--couleur-surface);
   }
-</HeroWithImage>
+
+  .encart-texte {
+    padding: var(--espace-bloc) clamp(1.25rem, 4vw, 3.5rem) clamp(1.75rem, 4vw, 3.5rem);
+  }
+
+  /* Titre plus petit que celui d'une bande entière */
+  .encart :global(h2.titre-bloc) {
+    font-size: clamp(2rem, 1.4rem + 1.6vw, 2.75rem);
+  }
+
+  .encart-texte > :global(p) {
+    max-width: 36rem;
+  }
+
+  .encart-texte > :global(p:last-of-type) {
+    margin-bottom: 0;
+  }
+
+  .encart-pied {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--espace-element);
+    padding-top: var(--espace-bloc);
+  }
+
+  .encart-pied :global(.bouton) {
+    margin: 0;
+  }
+
+  /* L'image remplit sa case ; le dégradé la fond dans le bleu du côté du
+     texte (en bas sur mobile) */
+  .encart-image {
+    position: relative;
+    order: -1;
+    min-height: 11rem;
+  }
+
+  .encart-image :global(img) {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+  }
+
+  /* Fondu adouci : opacité en courbe (paliers d'une sortie douce) sur 60 %
+     de l'image, au lieu d'une rampe linéaire qui laissait une bande grise
+     et une cassure nette */
+  .encart-image {
+    --_fondu:
+      color-mix(in srgb, var(--bleu-fonce) 100%, transparent) 0%,
+      color-mix(in srgb, var(--bleu-fonce) 95%, transparent) 6%,
+      color-mix(in srgb, var(--bleu-fonce) 86%, transparent) 12%,
+      color-mix(in srgb, var(--bleu-fonce) 74%, transparent) 18%,
+      color-mix(in srgb, var(--bleu-fonce) 60%, transparent) 24%,
+      color-mix(in srgb, var(--bleu-fonce) 45%, transparent) 30%,
+      color-mix(in srgb, var(--bleu-fonce) 31%, transparent) 36%,
+      color-mix(in srgb, var(--bleu-fonce) 19%, transparent) 42%,
+      color-mix(in srgb, var(--bleu-fonce) 9%, transparent) 48%,
+      color-mix(in srgb, var(--bleu-fonce) 3%, transparent) 54%,
+      color-mix(in srgb, var(--bleu-fonce) 0%, transparent) 60%;
+  }
+
+  .encart-image::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(to top, var(--_fondu));
+  }
+
+  @media (min-width: 900px) {
+    .encart {
+      grid-template-rows: none;
+      grid-template-columns: minmax(0, 7fr) minmax(0, 5fr);
+      align-items: center;
+    }
+
+    .encart-texte {
+      padding: clamp(2.5rem, 4vw, 3.5rem);
+    }
+
+    /* L'image déborde sous la marge du texte : le fondu s'y étale au lieu
+       de commencer au bord de l'image et d'en assombrir la moitié */
+    .encart-texte {
+      position: relative;
+      z-index: 1;
+    }
+
+    .encart-image {
+      align-self: stretch;
+      order: 0;
+      min-height: 18rem;
+      margin-inline-start: -10rem;
+    }
+
+    .encart-image::after {
+      background: linear-gradient(to right, var(--_fondu));
+    }
+
+    .image-gauche {
+      grid-template-columns: minmax(0, 5fr) minmax(0, 7fr);
+    }
+
+    .image-gauche .encart-image {
+      order: -1;
+      margin-inline: 0 -10rem;
+    }
+
+    .image-gauche .encart-image::after {
+      background: linear-gradient(to left, var(--_fondu));
+    }
+  }
+
+  @media (forced-colors: active) {
+    .encart {
+      border: 1px solid CanvasText;
+    }
+  }
+</style>
