@@ -105,6 +105,15 @@ const aEnfants = Astro.slots.has('default')
     margin-bottom: min(0px, calc(5rem - var(--retrait)));
   }
 
+  /* Avec un sommaire (panneau de liens qui déborde de la bannière) : rien
+     n'est rogné, et la bannière passe au-dessus de la bande suivante (z-index 1,
+     sous celui du bandeau d'horaires, 2). La
+     photo et le voile sont en inset: 0, ils ne débordent pas. */
+  .super-hero-2:has([data-sommaire]) {
+    z-index: 1;
+    overflow: visible;
+  }
+
   .taille-small {
     --hauteur: 15rem;
   }

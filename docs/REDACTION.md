@@ -561,6 +561,7 @@ banniere:
 | `type` | Type du bloc (voir plus bas) ; obligatoire |
 | `fond` | Couleur de la bande (mêmes couleurs qu'en 2.3, « Section de couleur ») ; sans `fond`, la bande est blanche |
 | `id` | Ancre du titre du bloc, pour y faire un lien (`/recherche/#orcid`) : minuscules, sans accents, tirets. **Ne changez jamais une ancre existante** : d'autres pages y mènent. |
+| `libelle` | Nom court du bloc dans le sommaire « Sur cette page », dans la bannière (pastille « Aller à une section » qui ouvre un panneau de liens). Le bloc doit avoir un titre. Le sommaire apparaît dès que deux blocs ont un `libelle` ; sans `libelle`, un bloc n'y figure pas (recherche, espaces, études, enseignement, engagements). |
 
 La première bande sous la bannière, si elle a un fond, est décalée automatiquement pour ne pas coller à la photo.
 

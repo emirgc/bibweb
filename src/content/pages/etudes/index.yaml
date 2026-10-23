@@ -9,6 +9,7 @@ banniere:
 sections:
   - type: grille-elargissable
     titre: Des outils essentiels pour vos travaux
+    libelle: Outils essentiels
     texte: Dans le torrent d’information disponible en ligne et sur nos rayons, par où commencer l’exploration? Nos spécialistes ont conçu des guides et sélectionné les ressources les plus pratiques pour vous. Profitez-en!
     bouton:
       texte: Voir la boîte à outils
@@ -34,6 +35,7 @@ sections:
   - type: formations
     fond: bleu100
     titre: Profiter de nos formations gratuites, c'est payant
+    libelle: Formations
     texte: Consultez notre calendrier de formations - il y en a pour tous les goûts, tous les niveaux!
     lienTout:
       texte: Toutes nos formations
@@ -42,6 +44,7 @@ sections:
   - type: liste-liens
     fond: vertFonce
     titre: Des services personnalisés
+    libelle: Services personnalisés
     liens:
       - titre: Accueil en bibliothèque
         description: Notre équipe est présente en bibliothèques pour répondre à vos questions sur place - passez nous voir au comptoir!
@@ -61,6 +64,7 @@ sections:
 
   - type: grille-elargissable
     titre: Problème informatique? Pas de panique!
+    libelle: Aide informatique
     texte: Nos comptoirs, nos services et nos spécialistes vous sont accessibles à l’année! De la connexion hors campus à l’impression, en passant par le prêt d’ordinateurs ou de tablettes, notre équipe est là pour vous soutenir.
     couleurCartes: jaune
     bouton:
@@ -86,6 +90,7 @@ sections:
 
   - type: image-texte
     titre: Bienvenue chez vous!
+    libelle: Espaces
     texte: Offrir des lieux communs qui répondent à des besoins individuels, c’était l’idée à la base de la conception de nos espaces multifonctionnels! Salons de détente, cabines individuelles insonorisées, salles de réunion, découvrez les espaces qui vous sont offerts sur les campus!
     image: ./images/espaces-montage.webp
     positionImage: droite

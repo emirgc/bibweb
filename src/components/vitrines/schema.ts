@@ -88,6 +88,8 @@ const banniere = z
 const communs = {
   fond: couleur.optional(),
   id: ancre.optional(),
+  /** Nom court du bloc dans le sommaire « Sur cette page » (Sommaire.astro) ; sans libellé, le bloc n'y figure pas */
+  libelle: texteCourt.optional(),
 }
 
 // Génériques : les types générés par Astro (CollectionEntry<'vitrines'>)

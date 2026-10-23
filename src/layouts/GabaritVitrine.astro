@@ -30,6 +30,7 @@ import Button from '@/components/mdx/primitives/Button.astro'
 import RechercheSofiaAccueil from '@/components/mdx/dynamiques/RechercheSofiaAccueil.astro'
 import Typography from '@/components/mdx/primitives/Typography.astro'
 import Section from '@/components/mdx/mise-en-page/Section.astro'
+import Sommaire from '@/components/vitrines/Sommaire.astro'
 import BlocImageTexte from '@/components/vitrines/BlocImageTexte.astro'
 import BlocCartesSections from '@/components/vitrines/BlocCartesSections.astro'
 import BlocCarrousel from '@/components/vitrines/BlocCarrousel.astro'
@@ -50,6 +51,7 @@ import BlocFichesBibliotheques from '@/components/vitrines/BlocFichesBibliothequ
 import BlocFormations from '@/components/vitrines/BlocFormations.astro'
 import type { Bloc } from '@/components/vitrines/types'
 import type { Vitrine } from '@/lib/contenu'
+import { idDeTitre } from '@/lib/ancres'
 
 interface Props {
   vitrine: Vitrine
@@ -58,6 +60,17 @@ interface Props {
 const { data } = Astro.props.vitrine
 const banniere = data.banniere
 const taille = banniere?.taille === 'petite' ? 'small' : 'default'
+
+/**
+ * Sommaire « Sur cette page » : les blocs qui ont un `libelle` et un titre
+ * (ancre = `id` ou celle que Titre.astro calcule du titre). Il faut au moins
+ * deux liens pour qu'il serve.
+ */
+const liensSommaire = data.sections.flatMap((bloc) => {
+  const titre = 'titre' in bloc && typeof bloc.titre === 'string' ? bloc.titre : undefined
+  if (!bloc.libelle || !titre) return []
+  return [{ libelle: bloc.libelle, id: bloc.id ?? idDeTitre(titre.split('\n').map((l) => l.trim()).join(' ')) }]
+})
 
 /** Le bloc i a le même fond que le précédent (aucun des deux n'a de photo) */
 function memeFond(i: number) {
@@ -90,7 +103,7 @@ function bande(bloc: Bloc) {
             )}
             <RechercheSofiaAccueil />
           </SuperHero>
-        ) : banniere.sousTitre || banniere.bouton ? (
+        ) : banniere.sousTitre || banniere.bouton || liensSommaire.length > 1 ? (
           <SuperHero2 title={banniere.titre} imageName={banniere.image} cadrage={banniere.cadrage} size={taille}>
             <Fragment slot="subTitle">
               {banniere.sousTitre?.map((ligne) => (
@@ -103,6 +116,7 @@ function bande(bloc: Bloc) {
                   {banniere.bouton.texte}
                 </Button>
               )}
+              {liensSommaire.length > 1 && <Sommaire liens={liensSommaire} />}
             </Fragment>
           </SuperHero2>
         ) : (

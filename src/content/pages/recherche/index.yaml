@@ -11,6 +11,7 @@ sections:
   - type: image-texte
     fond: vertFonce
     titre: Premier arrêt, votre bibliothécaire disciplinaire
+    libelle: Bibliothécaire disciplinaire
     texte: De l’idéation à la communication de vos résultats, nous pouvons vous accompagner tout au long du cycle de la recherche. Trouvez votre bibliothécaire disciplinaire.
     image: ../images/bibliothecaire-montage.webp
     positionImage: gauche
@@ -20,6 +21,7 @@ sections:
 
   - type: grille-elargissable
     titre: Vers une science ouverte et libre
+    libelle: Science ouverte
     texte: Participez à la science ouverte, nous sommes là pour vous conseiller et vous accompagner.
     couleurCartes: vertFonce
     cartes:
@@ -43,6 +45,7 @@ sections:
   - type: grille-elargissable
     fond: bleu100
     titre: Faites rayonner vos connaissances scientifiques
+    libelle: Diffusion
     texte: Faire rayonner votre recherche dans un monde de surabondance d’information et de mésinformation, c’est une tâche pour laquelle nous pouvons vous aider!
     cartes:
       - titre: Publier un article
@@ -65,6 +68,7 @@ sections:
     fond: bleu200
     id: enrichissez-votre-recherche
     titre: De la recherche à la communication savante
+    libelle: Communication savante
     texte: Nos bibliothécaires peuvent vous accompagner, de la constitution ou la mise à jour de votre corpus documentaire à la rédaction et à la diffusion de votre article.
     bouton:
       texte: Consultez la page sur la diffusion des savoirs
@@ -84,6 +88,7 @@ sections:
     fond: vertFonce
     id: produisez-syntheses-connaissance
     titre: Produisez des synthèses de connaissances
+    libelle: Synthèses de connaissances
     texte: Nous offrons un service de soutien flexible pour la réalisation des synthèses de connaissances.
     liens:
       - titre: Consultation
@@ -96,6 +101,7 @@ sections:
   - type: image-texte
     fond: vertPale
     titre: Mesurez votre impact
+    libelle: Impact
     texte: Nous pouvons vous conseiller et vous guider dans l’utilisation des méthodes bibliométriques responsables pour mieux documenter vos stratégies, trouver des partenaires de recherche, optimiser vos demandes de financement et comprendre l’impact de votre production scientifique.
     image: ../images/portee-scientifique.webp
     positionImage: droite
@@ -109,6 +115,7 @@ sections:
     icone: user-focus
     couleurIcone: vertPale
     titre: Gagnez en visibilité avec ORCID
+    libelle: ORCID
     texte: Améliorez la découvrabilité de vos travaux de recherche, et optimisez votre visibilité et votre crédibilité dans le monde numérique en utilisant ORCID.
     boutons:
       - texte: Écrivez à notre équipe ORCID en bibliothèque
@@ -118,6 +125,7 @@ sections:
 
   - type: grille-elargissable
     titre: Explorez l’intelligence artificielle générative
+    libelle: IA générative
     texte: Pour utiliser l'IAg de façon efficace, éthique et responsable à l’Université, consultez nos ressources spécialisées.
     couleurCartes: vertFonce
     cartes:
@@ -141,6 +149,7 @@ sections:
     fond: rose300
     id: droit-auteur
     titre: Comprenez le droit d’auteur
+    libelle: Droit d’auteur
     texte: Protégez vos droits d’auteur tout en respectant ceux de vos collègues, que ce soit durant de vos travaux de recherche ou à leur publication.
     bouton:
       texte: Consulter le guide sur le droit d'auteur
@@ -158,6 +167,7 @@ sections:
 
   - type: grille-elargissable
     titre: Gérez vos données de recherche
+    libelle: Données de recherche
     texte: De l’élaboration d’un plan de gestion de données jusqu’au partage dans un dépôt fiable et reconnu, nous vous aidons à y voir plus clair en gestion de données de recherche et à tirer profit des données ouvertes.
     couleurCartes: vertFonce
     cartes:
@@ -179,6 +189,7 @@ sections:
     icone: cube-transparent
     couleurIcone: blanc
     titre: Exploitez toutes les facettes de vos données
+    libelle: Exploitation des données
     texte: |
       Nous vous offrons l’accès à une panoplie d’outils numériques et de l’aide pour les utiliser afin d’explorer, d’exploiter, d’enrichir et d’analyser vos données de recherche.
 
@@ -197,6 +208,7 @@ sections:
     fond: vertFonce
     id: services-cycles-superieurs
     titre: Nos services pour les cycles supérieurs
+    libelle: Cycles supérieurs
     liens:
       - titre: Matinées de rédaction
         description: Séances de rédaction en groupe divisées en cycles de rédaction, suivis de pauses d’échanges informels.

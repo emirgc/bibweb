@@ -11,6 +11,7 @@ sections:
   - type: cartes-revelation
     fond: bleu100
     titre: La science ouverte, notre conviction
+    libelle: Science ouverte
     texte: |
       Selon l’UNESCO, la science ouverte vise à rendre la recherche scientifique de tous les domaines accessibles à tous les publics, au bénéfice des scientifiques et de la société dans son ensemble.
 
@@ -39,6 +40,7 @@ sections:
 
   - type: liste-liens
     titre: Soutien à la publication et à l’édition savante en libre accès
+    libelle: Édition savante
     liens:
       - titre: Soutien aux auteurs et aux autrices UdeM pour choisir les meilleures options
         description: Les bibliothécaires disciplinaires de l’UdeM accompagnent les auteurs et autrices dans le choix des options de publication en libre accès les mieux adaptées à leurs besoins. Contactez-les !
@@ -56,6 +58,7 @@ sections:
   - type: cartes-revelation
     fond: bleu100
     titre: L’équité, la diversité, l’inclusion et l’accessibilité au cœur de nos actions
+    libelle: Équité, diversité, inclusion
     texte: L’accès aux savoirs dans leur diversité est au cœur de notre mission en tant que bibliothèque universitaire. Nous œuvrons à rendre nos collections, services et espaces inclusifs et accessibles, en accueillant la pluralité des perspectives et des besoins de nos communautés.
     couleurCartes: rose300
     cartes:
@@ -86,6 +89,7 @@ sections:
 
   - type: cartes-revelation
     titre: Soutien et valorisation des savoirs des Premiers Peuples
+    libelle: Premiers Peuples
     disposition: compacte
     texte: Nous nous engageons à contribuer au soutien et à la valorisation des savoirs des Premiers Peuples. Ces actions s’inscrivent dans une volonté de décolonisation et de soutien à l’inclusion, en cohérence avec les principes du plan d’action *Place aux Premiers Peuples 2024-2029* de l'UdeM.
     couleurCartes: vertFonce
@@ -106,6 +110,7 @@ sections:
   - type: image-texte
     fond: bleu100
     titre: Vers une empreinte écologique réduite
+    libelle: Empreinte écologique
     texte: |
       À l’heure où chaque geste compte pour préserver notre planète, nous nous engageons à explorer et adopter des pratiques pour réduire notre impact environnemental.
 
@@ -120,6 +125,7 @@ sections:
     icone: head-circuit
     couleurIcone: rose300
     titre: Intelligence artificielle, une intégration éthique
+    libelle: IA éthique
     texte: Nous nous engageons à soutenir et à encourager un usage éthique et innovant de l’intelligence artificielle dans un contexte de recherche, d’enseignement et d’apprentissage. Nous voulons créer un environnement expérientiel où l’IA est mise au service de la collaboration, de la créativité et de l’accès équitable à la connaissance, tout en s’ancrant dans un cadre d’utilisation responsable. Nous avons adopté des principes directeurs pour guider les actions et formations portées par les bibliothèques en IA.
     couleurAccordeons: rose
     accordeons:
@@ -146,6 +152,7 @@ sections:
   - type: cartes-revelation
     fond: bleu100
     titre: La science en français, notre singularité
+    libelle: Science en français
     texte: |
       Nous mettons la langue française au cœur de nos actions, en soutien à la vision institutionnelle: être la plus influente université de langue française dans le monde.
 

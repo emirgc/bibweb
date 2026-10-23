@@ -10,6 +10,7 @@ sections:
   - type: image-texte
     disposition: encart
     titre: Trouver un lieu
+    libelle: Trouver un lieu
     texte: Les bibliothèques de l’UdeM, c’est un réseau de 14 bibliothèques. Si vous êtes sur un campus UdeM, il y a probablement une bibliothèque près de vous! Explorez notre répertoire pour planifier votre visite!
     image: ../images/super-heroes/facade.webp
     bouton:
@@ -18,6 +19,7 @@ sections:
 
   - type: cartes-revelation
     titre: On s’adapte à vos besoins
+    libelle: Adaptation à vos besoins
     texte: Besoin de concentration pour étudier? Un travail à faire en équipe? Nos bibliothèques sont aménagées pour faire cohabiter travail de groupe et étude en silence, avec ou sans réservation.
     lienTout:
       texte: Réserver une salle
@@ -64,6 +66,7 @@ sections:
     fond: bleu100
     id: bien-etre
     titre: On repense nos espaces
+    libelle: Nouveaux espaces
     texte: Entre les cours et l’étude, il y a aussi des moments à vivre en bibliothèque! Nous avons pensé toute une série d’espaces pour se reposer, explorer la création ou même se tenir en forme!
     cartes:
       - titre: Technologies créatives
@@ -115,6 +118,7 @@ sections:
     titre: |
       Des bibliothèques ouvertes au monde.
       Tout le monde.
+    libelle: Accessibilité
     texte: La Bibliothèque des lettres et sciences humaines et la Bibliothèque Hubert-Reeves offrent chacune une salle mettant à votre disposition des équipements et des logiciels spécialisés afin d’adapter l’expérience en bibliothèque à vos besoins et de vous accompagner dans votre réussite.
     image: images/ouvertes-au-monde.webp
     boutons:
