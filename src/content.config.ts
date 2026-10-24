@@ -5,6 +5,7 @@ import slugify from '@sindresorhus/slugify'
 import { existsSync } from 'node:fs'
 import { join } from 'node:path'
 import { schemaVitrine } from '@/components/vitrines/schema'
+import { IDS_SUJETS } from '@/data/sujets'
 
 /*
  * Collections de contenu.
@@ -68,8 +69,6 @@ const superHero = z
   .object({
     imageName: z.string(),
     title: z.string().optional(),
-    // Format de la bannière d'une page de niveau 1 en .md (SuperHero2)
-    size: z.enum(['default', 'small']).optional(),
     // Hauteur de la photo gardée au recadrage (« 20% ») ; voir lib/bannieres.ts
     cadrage: z.string().regex(/^(100|[1-9]?\d)%$/).optional(),
   })
@@ -101,6 +100,9 @@ const pages = defineCollection({
     lang,
   }),
 })
+
+// Sujets d'une nouvelle ou d'un article de presse (src/data/sujets.ts)
+const sujets = z.array(z.enum(IDS_SUJETS)).default([])
 
 const nouvelles = defineCollection({
   loader: glob({
@@ -134,6 +136,7 @@ const nouvelles = defineCollection({
           source: z.string().nullish(),
         })
         .optional(),
+      sujets,
     }),
 })
 
@@ -148,6 +151,7 @@ const revueDePresse = defineCollection({
     source: z.string().trim(),
     url: z.string().url(),
     lang: z.string().default('fr'),
+    sujets,
   }),
 })
 

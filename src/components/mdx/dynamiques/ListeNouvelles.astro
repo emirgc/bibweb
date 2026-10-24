@@ -11,10 +11,15 @@
  *   d'éléments affichés est annoncé dans une région role="status".
  * - Le filtre se retrouve dans l'URL (?type=revue-de-presse), pour partager
  *   un lien vers la revue de presse seule.
+ * - Un second filtre, par sujet (src/data/sujets.ts), se combine au premier :
+ *   /nouvelles/?sujet=livres-rares est la revue de presse « coordonnée » de
+ *   la Bibliothèque des livres rares. Les nombres des boutons de type suivent
+ *   le sujet choisi.
  * - `moreLink`, ignoré par la source, n'est pas repris.
  */
 import ElementNouvelle from './ElementNouvelle.astro'
 import { TYPE_NOUVELLE, TYPE_PRESSE, toutesLesActualites, type Actualite } from './actualites'
+import { SUJETS } from '@/data/sujets'
 import { classes, fusionnerStyles, type Style } from '@/lib/styles'
 
 interface Props {
@@ -34,6 +39,8 @@ const FILTRES = [
 
 const nouvelles = await toutesLesActualites()
 const compte = (type: string) => (type ? nouvelles.filter((n) => n.type === type).length : nouvelles.length)
+// Seuls les sujets qui ont au moins une actualité ont leur bouton
+const sujets = SUJETS.filter((s) => nouvelles.some((n) => n.sujets.includes(s.id)))
 
 // Déjà triées par date décroissante : on regroupe les années consécutives
 const groupes = nouvelles.reduce<{ annee: number; items: Actualite[] }[]>((acc, item) => {
@@ -52,11 +59,25 @@ const annonce = (n: number) => `${n} ${n > 1 ? 'éléments affichés' : 'éléme
       FILTRES.map(({ valeur, libelle, type }) => (
         <button type="button" class="filtre" aria-pressed={valeur === 'tout' ? 'true' : 'false'} data-filtre={valeur} data-type={type}>
           {libelle}
-          <span class="compte">{compte(type)}</span>
+          <span class="compte" data-compte>{compte(type)}</span>
         </button>
       ))
     }
   </div>
+  {
+    sujets.length > 0 && (
+      <div class="filtres" role="group" aria-label="Filtrer par sujet">
+        <button type="button" class="filtre" aria-pressed="true" data-sujet="">
+          Tous les sujets
+        </button>
+        {sujets.map((s) => (
+          <button type="button" class="filtre" aria-pressed="false" data-sujet={s.id}>
+            {s.libelle}
+          </button>
+        ))}
+      </div>
+    )
+  }
 
   <p class="visuellement-masque" role="status" data-annonce>{annonce(nouvelles.length)}</p>
 
@@ -67,9 +88,9 @@ const annonce = (n: number) => `${n} ${n > 1 ? 'éléments affichés' : 'éléme
           <h2 id={`${id}-${annee}`} class="titre-annee">
             {annee}
           </h2>
-          <ul>
+          <ul class="elements">
             {items.map((item) => (
-              <ElementNouvelle item={item} data-type={item.type} />
+              <ElementNouvelle item={item} data-type={item.type} data-sujets={item.sujets.join(' ') || undefined} />
             ))}
           </ul>
         </section>
@@ -85,17 +106,27 @@ const annonce = (n: number) => `${n} ${n > 1 ? 'éléments affichés' : 'éléme
 
   for (const racine of document.querySelectorAll<HTMLElement>('[data-liste-nouvelles]')) {
     const boutons = [...racine.querySelectorAll<HTMLButtonElement>('[data-filtre]')]
+    const boutonsSujet = [...racine.querySelectorAll<HTMLButtonElement>('[data-sujet]')]
     const annonce = racine.querySelector<HTMLElement>('[data-annonce]')
     const elements = [...racine.querySelectorAll<HTMLElement>('li[data-type]')]
     const annees = [...racine.querySelectorAll<HTMLElement>('[data-annee]')]
+    let valeur = 'tout'
+    let sujet = ''
 
-    function appliquer(valeur: string, majUrl: boolean) {
+    const duSujet = (li: HTMLElement) => !sujet || (li.dataset.sujets ?? '').split(' ').includes(sujet)
+
+    function appliquer(majUrl: boolean) {
       const bouton = boutons.find((b) => b.dataset.filtre === valeur) ?? boutons[0]
       const type = bouton.dataset.type
-      for (const b of boutons) b.setAttribute('aria-pressed', String(b === bouton))
+      for (const b of boutons) {
+        b.setAttribute('aria-pressed', String(b === bouton))
+        const compte = b.querySelector<HTMLElement>('[data-compte]')
+        if (compte) compte.textContent = String(elements.filter((li) => duSujet(li) && (!b.dataset.type || li.dataset.type === b.dataset.type)).length)
+      }
+      for (const b of boutonsSujet) b.setAttribute('aria-pressed', String((b.dataset.sujet ?? '') === sujet))
       let visibles = 0
       for (const li of elements) {
-        const visible = !type || li.dataset.type === type
+        const visible = duSujet(li) && (!type || li.dataset.type === type)
         li.hidden = !visible
         if (visible) visibles++
       }
@@ -103,16 +134,31 @@ const annonce = (n: number) => `${n} ${n > 1 ? 'éléments affichés' : 'éléme
       if (annonce) annonce.textContent = `${visibles} ${visibles > 1 ? 'éléments affichés' : 'élément affiché'}`
       if (majUrl) {
         const url = new URL(window.location.href)
-        if (bouton.dataset.filtre === 'tout') url.searchParams.delete('type')
-        else url.searchParams.set('type', bouton.dataset.filtre ?? '')
+        if (valeur === 'tout') url.searchParams.delete('type')
+        else url.searchParams.set('type', valeur)
+        if (sujet) url.searchParams.set('sujet', sujet)
+        else url.searchParams.delete('sujet')
         window.history.replaceState(window.history.state, '', url)
       }
     }
 
-    for (const b of boutons) b.addEventListener('click', () => appliquer(b.dataset.filtre ?? 'tout', true))
+    for (const b of boutons)
+      b.addEventListener('click', () => {
+        valeur = b.dataset.filtre ?? 'tout'
+        appliquer(true)
+      })
+    for (const b of boutonsSujet)
+      b.addEventListener('click', () => {
+        sujet = b.dataset.sujet ?? ''
+        appliquer(true)
+      })
 
-    const demande = new URLSearchParams(window.location.search).get('type')
-    if (demande && VALEURS.includes(demande) && demande !== 'tout') appliquer(demande, false)
+    const parametres = new URLSearchParams(window.location.search)
+    const demande = parametres.get('type')
+    const sujetDemande = parametres.get('sujet')
+    if (demande && VALEURS.includes(demande)) valeur = demande
+    if (sujetDemande && boutonsSujet.some((b) => b.dataset.sujet === sujetDemande)) sujet = sujetDemande
+    if (valeur !== 'tout' || sujet) appliquer(false)
   }
 </script>
 
@@ -122,6 +168,11 @@ const annonce = (n: number) => `${n} ${n > 1 ? 'éléments affichés' : 'éléme
     flex-wrap: wrap;
     gap: var(--espace-1);
     margin-bottom: var(--espace-bloc);
+  }
+
+  /* Type puis sujet : deux rangées d'un même groupe de réglages */
+  .filtres:has(+ .filtres) {
+    margin-bottom: var(--espace-element);
   }
 
   /* Sans JavaScript, le filtre ne ferait rien : la liste reste complète */
@@ -201,8 +252,19 @@ const annonce = (n: number) => `${n} ${n > 1 ? 'éléments affichés' : 'éléme
     }
   }
 
-  ul {
+  /* Deux colonnes dès 900 px : à la mesure d'un paragraphe (52ch), la liste
+     n'occupait que la moitié gauche de la page. Lecture par rangées, de la
+     plus récente à la plus ancienne. */
+  .elements {
+    display: grid;
+    column-gap: var(--espace-blocs);
     margin: 0;
     padding: 0;
+  }
+
+  @media (min-width: 900px) {
+    .elements {
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
   }
 </style>

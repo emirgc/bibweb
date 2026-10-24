@@ -1,5 +1,6 @@
 import { getCollection } from 'astro:content'
 import { toutesLesNouvelles, urlDeNouvelle } from '@/lib/contenu'
+import type { IdSujet } from '@/data/sujets'
 // Seulement pour l'ordre du fichier, que getCollection ne garde pas : à date
 // égale, les articles de presse restent dans l'ordre où l'équipe les a saisis.
 import articles from '@/content/revue-de-presse/articles.json'
@@ -23,6 +24,8 @@ export type Actualite = {
   source?: string
   lang: string
   externe: boolean
+  /** Sujets (src/data/sujets.ts), pour /nouvelles/?sujet=… */
+  sujets: IdSujet[]
   /** AAAA-MM-JJ */
   date: string
   dateTexte: string
@@ -54,6 +57,7 @@ export async function toutesLesActualites(): Promise<Actualite[]> {
       url: urlDeNouvelle(n),
       lang: 'fr',
       externe: false,
+      sujets: n.data.sujets,
       ...champsDate(n.data.date),
     }))
   const presse: Actualite[] = (await getCollection('revueDePresse')).map(({ data }) => ({
@@ -64,6 +68,7 @@ export async function toutesLesActualites(): Promise<Actualite[]> {
     source: data.source,
     lang: data.lang,
     externe: true,
+    sujets: data.sujets,
     ...champsDate(data.date),
   }))
   const rang = new Map(articles.map((a: { url: string }, i: number) => [a.url, i]))
