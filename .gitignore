@@ -25,3 +25,6 @@ pnpm-debug.log*
 
 # Dossier de travail de la migration depuis coquille-web (temporaire)
 migration/
+
+# Documentation interne (conventions, inventaire, guide des rédacteurs) : gardée en local, hors du dépôt
+docs/
