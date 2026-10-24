@@ -20,6 +20,9 @@
  *   survol ; bleu foncé ≥ 11:1 sur rose 300/500 et sur jaune. La flèche (elle
  *   distingue lien interne et externe) passe de rouge orangé, 2,2:1 sur la
  *   pastille rose 500, au rouge orangé foncé (3,74:1).
+ * - Sans `href` (vitrine : tuile d'une page à venir) : ni lien ni pastille,
+ *   la carte ne s'élargit pas au survol, et le texte d'appel (« Bientôt »)
+ *   reste lu par les lecteurs d'écran.
  */
 import { ArrowRightIcon } from '@phosphor-icons/react/dist/ssr/ArrowRight'
 import { ArrowUpRightIcon } from '@phosphor-icons/react/dist/ssr/ArrowUpRight'
@@ -35,7 +38,8 @@ interface Props {
   Icon?: any
   color?: Couleur
   moreText?: unknown
-  href: string
+  /** Sans lien : carte d'annonce, sans flèche */
+  href?: string
   target?: string
   rel?: string
   small?: boolean
@@ -53,35 +57,50 @@ const CLAIRES: Couleur[] = ['rose300', 'jaune']
 const { title, Icon, color = 'bleuPrincipal', moreText, href, target, rel, small = false, fullWidth = false, class: classe, className, style, sx: _sx, ...reste } = Astro.props
 
 if (title === undefined) throw new Error('CardWithIcon : la propriété `title` est obligatoire.')
-if (typeof href !== 'string') throw new Error('CardWithIcon : la propriété `href` doit être une chaîne.')
+if (href !== undefined && typeof href !== 'string') throw new Error('CardWithIcon : la propriété `href` doit être une chaîne.')
 
 // Comme la source, une couleur inconnue retombe sur le bleu principal
 const couleur = COULEURS.includes(color) ? color : 'bleuPrincipal'
-const { interne, rel: relFinal, annonce } = lienCarte(href, target, rel)
-const idPlus = moreText ? idUnique('carte-plus') : undefined
+const { interne, rel: relFinal, annonce } = href ? lienCarte(href, target, rel) : { interne: true, rel: undefined, annonce: undefined }
+const idPlus = moreText && href ? idUnique('carte-plus') : undefined
 const Fleche = interne ? ArrowRightIcon : ArrowUpRightIcon
 ---
 
 <div
-  class:list={['carte', `couleur-${couleur}`, { petite: small, 'pleine-largeur': fullWidth, 'surface-claire': CLAIRES.includes(couleur) }, classes(classe, className)]}
+  class:list={['carte', `couleur-${couleur}`, { petite: small, 'pleine-largeur': fullWidth, 'surface-claire': CLAIRES.includes(couleur), 'sans-lien': !href }, classes(classe, className)]}
   style={fusionnerStyles(style)}
   {...reste}
 >
   <div class="icone">{Icon && <Icon size={55} aria-hidden="true" focusable="false" />}</div>
   <div class="titre">
-    <a class="lien-carte" href={href} target={target} rel={relFinal} aria-describedby={idPlus}
-      >{typeof title === 'string' ? title : <RenduJsx valeur={title} />}{annonce && <span class="visuellement-masque">{annonce}</span>}</a
-    >
+    {
+      href ? (
+        <a class="lien-carte" href={href} target={target} rel={relFinal} aria-describedby={idPlus}>
+          {typeof title === 'string' ? title : <RenduJsx valeur={title} />}
+          {annonce && <span class="visuellement-masque">{annonce}</span>}
+        </a>
+      ) : typeof title === 'string' ? (
+        title
+      ) : (
+        <RenduJsx valeur={title} />
+      )
+    }
   </div>
   <div class="pied">
     {
       moreText && (
-        <div class="plus" id={idPlus} aria-hidden="true">
+        <div class="plus" id={idPlus} aria-hidden={href ? 'true' : undefined}>
           {typeof moreText === 'string' ? moreText : <RenduJsx valeur={moreText} />}
         </div>
       )
     }
-    <span class:list={['pastille', { externe: !interne }]}><Fleche size="1.5rem" weight="light" aria-hidden="true" focusable="false" /></span>
+    {
+      href && (
+        <span class:list={['pastille', { externe: !interne }]}>
+          <Fleche size="1.5rem" weight="light" aria-hidden="true" focusable="false" />
+        </span>
+      )
+    }
   </div>
 </div>
 
@@ -130,8 +149,8 @@ const Fleche = interne ? ArrowRightIcon : ArrowUpRightIcon
     }
   }
 
-  .carte:not(.pleine-largeur):hover,
-  .carte:not(.pleine-largeur):focus-within {
+  .carte:not(.pleine-largeur, .sans-lien):hover,
+  .carte:not(.pleine-largeur, .sans-lien):focus-within {
     width: calc(var(--_largeur) * 1.1);
   }
 
@@ -151,7 +170,7 @@ const Fleche = interne ? ArrowRightIcon : ArrowUpRightIcon
     transition: opacity var(--duree-moyenne-2) var(--courbe-standard);
   }
 
-  .carte:hover::before {
+  .carte:not(.sans-lien):hover::before {
     opacity: 1;
   }
 

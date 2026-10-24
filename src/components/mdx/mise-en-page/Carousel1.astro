@@ -49,7 +49,10 @@ const id = idUnique('carrousel')
 const { panneaux, annexes } = panneauxDuSlot(Astro.slots.has('default') ? await Astro.slots.render('default') : '')
 const total = panneaux.length
 const aTitre = title !== undefined || Astro.slots.has('title')
-const aDescription = description !== undefined || Astro.slots.has('description')
+// Un slot passé sous condition ({texte && <… slot="description" />}) existe
+// même vide pour Astro.slots.has : on regarde ce qu'il rend
+const htmlDescription = Astro.slots.has('description') ? (await Astro.slots.render('description')).trim() : ''
+const aDescription = description !== undefined || htmlDescription !== ''
 // Cercle et flèche des icônes arrow-*-circle.svg de la source
 const FLECHE = 'm16.492 24.587 7.031-7.031a.586.586 0 0 1 .828.828l-6.03 6.031h15.772a.586.586 0 1 1 0 1.172H18.321l6.03 6.031a.586.586 0 0 1-.828.828l-7.031-7.03a.586.586 0 0 1 0-.829z'
 ---
@@ -64,7 +67,7 @@ const FLECHE = 'm16.492 24.587 7.031-7.031a.586.586 0 0 1 .828.828l-6.03 6.031h1
   data-carrousel
   {...reste}
 >
-  <div class="entete">
+  <div class:list={['entete', { 'sans-description': !aDescription }]}>
     {
       aTitre && (
         <div class="titre" id={`${id}-titre`}>
@@ -84,15 +87,15 @@ const FLECHE = 'm16.492 24.587 7.031-7.031a.586.586 0 0 1 .828.828l-6.03 6.031h1
       <div class="description">
         {
           aDescription && (
-            <slot name="description">
-              {typeof description === 'string' ? (
-                <Typography variant="body1" component="div">
-                  {description}
-                </Typography>
-              ) : (
-                <RenduJsx valeur={description} />
-              )}
-            </slot>
+            htmlDescription ? (
+              <Fragment set:html={htmlDescription} />
+            ) : typeof description === 'string' ? (
+              <Typography variant="body1" component="div">
+                {description}
+              </Typography>
+            ) : (
+              <RenduJsx valeur={description} />
+            )
           )
         }
       </div>
@@ -304,6 +307,23 @@ const FLECHE = 'm16.492 24.587 7.031-7.031a.586.586 0 0 1 .828.828l-6.03 6.031h1
   @media (min-width: 600px) {
     .rangee {
       flex-direction: row;
+    }
+
+    /* Sans description, les flèches se rangent à droite du titre : seules
+       sur leur ligne, elles creusaient 66 px de plus entre titre et cartes */
+    .sans-description {
+      display: flex;
+      align-items: flex-end;
+      justify-content: space-between;
+    }
+
+    .sans-description .titre {
+      flex: 1 1 auto;
+      min-width: 0;
+    }
+
+    .sans-description .description {
+      display: none;
     }
 
     .commandes {

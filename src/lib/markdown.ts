@@ -36,3 +36,8 @@ export async function markdownEnHtml(texte: string): Promise<string> {
   rendu ??= unified({ smartypants: false, rehypePlugins: [rehypeAnnonceLiens] }).createRenderer({ syntaxHighlight: false })
   return (await (await rendu).render(texte)).code
 }
+
+/** Une seule ligne de Markdown (légende, italique et liens) : sans le <p> qui l'entoure */
+export async function markdownEnLigne(texte: string): Promise<string> {
+  return (await markdownEnHtml(texte)).trim().replace(/^<p>([\s\S]*)<\/p>$/, '$1')
+}

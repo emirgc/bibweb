@@ -1,7 +1,7 @@
 import type { APIRoute } from 'astro'
 import { toutesLesPages, toutesLesNouvelles, estExclueDeLaRecherche, estVitrine, urlDePage, urlDeNouvelle } from '@/lib/contenu'
 import { bibliotheques } from '@/data/bibliotheques'
-import { personnel } from '@/lib/personnel'
+import { personnel, urlFichePersonne } from '@/lib/personnel'
 import { extrait, extraitVitrine } from '@/lib/extrait'
 
 /*
@@ -63,7 +63,7 @@ export const GET: APIRoute = async () => {
     entrees.push({
       title: personne.nomComplet,
       excerpt: [personne.fonction, personne.direction].filter(Boolean).join(' — '),
-      url: `/nous-joindre/notre-equipe/?q=${encodeURIComponent(personne.nomComplet)}`,
+      url: urlFichePersonne(personne),
       section: 'Personnel',
     })
   }

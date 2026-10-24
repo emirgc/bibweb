@@ -83,3 +83,11 @@ export function personnel(): Personne[] {
     .sort((a, b) => a.nom.localeCompare(b.nom, 'fr') || a.prenom.localeCompare(b.prenom, 'fr'))
   return cache
 }
+
+/**
+ * Fiche d'une personne : le répertoire filtré sur son nom (?q=), comme les
+ * résultats « Personnel » de la recherche du site.
+ */
+export function urlFichePersonne(personne: Pick<Personne, 'nomComplet'>) {
+  return `/nous-joindre/notre-equipe/?q=${encodeURIComponent(personne.nomComplet)}`
+}

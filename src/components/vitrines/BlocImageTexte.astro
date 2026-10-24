@@ -25,6 +25,7 @@ import Button from '@/components/mdx/primitives/Button.astro'
 import Titre from './Titre.astro'
 import TexteMarkdown from './TexteMarkdown.astro'
 import { FONDS } from '@/lib/fonds'
+import { markdownEnLigne } from '@/lib/markdown'
 import type { BlocDe } from './types'
 
 type Props = { bloc: BlocDe<'image-texte'> }
@@ -34,6 +35,7 @@ const encart = bloc.disposition === 'encart'
 const clair = encart || (bloc.fond !== undefined && FONDS[bloc.fond].ton === 'fonce')
 const boutons = [...(bloc.bouton ? [bloc.bouton] : []), ...(bloc.boutons ?? [])]
 const largeurImage = bloc.image.width
+const legende = bloc.legende ? await markdownEnLigne(bloc.legende) : undefined
 ---
 
 {
@@ -57,7 +59,7 @@ const largeurImage = bloc.image.width
       </div>
     </div>
   ) : (
-    <HeroWithImage class:list={{ 'image-recadree': bloc.recadrerImage, 'image-reduite': bloc.imageReduite, 'titre-en-colonne': bloc.titreEnColonne }} Image={bloc.image} offset={0} align={bloc.positionImage === 'gauche' ? 'right' : 'left'}>
+    <HeroWithImage class:list={{ 'image-recadree': bloc.recadrerImage, 'image-reduite': bloc.imageReduite, 'titre-en-colonne': bloc.titreEnColonne }} Image={bloc.image} legende={legende} offset={0} align={bloc.positionImage === 'gauche' ? 'right' : 'left'}>
       {!bloc.titreEnColonne && <Titre slot="titre" texte={bloc.titre} id={bloc.id} />}
       {bloc.titreEnColonne && <Titre texte={bloc.titre} id={bloc.id} />}
       <TexteMarkdown texte={bloc.texte} brut />
@@ -89,6 +91,15 @@ const largeurImage = bloc.image.width
   @media (min-width: 900px) {
     :global(.image-reduite .colonne-image img) {
       width: 88%;
+    }
+
+    /* Image légendée : la figure prend les 88 %, l'image toute la figure */
+    :global(.image-reduite .colonne-image figure) {
+      width: 88%;
+    }
+
+    :global(.image-reduite .colonne-image figure img) {
+      width: 100%;
     }
   }
 

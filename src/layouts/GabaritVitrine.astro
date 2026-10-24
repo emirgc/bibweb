@@ -21,7 +21,11 @@
  *   marge de bande (`suite` de Section) : chaque bloc reste une bande, mais
  *   on n'additionne plus deux marges de 96 px sur un même fond ;
  * - les blocs apparaissent au défilement (`revelation` de Section, voir
- *   CONVENTIONS, « Mouvement ») ; la bannière n'est jamais animée.
+ *   CONVENTIONS, « Mouvement ») ; la bannière n'est jamais animée ;
+ * - une vitrine sous une section (/espaces/blrcs/) garde la mise en page
+ *   pleine largeur des vitrines (niveau 1 pour GabaritPage), avec un fil
+ *   d'Ariane sous la bannière : sans lui, rien ne dirait qu'elle appartient
+ *   à Espaces.
  */
 import GabaritPage from './GabaritPage.astro'
 import SuperHero from '@/components/mdx/mise-en-page/SuperHero.astro'
@@ -49,15 +53,22 @@ import BlocOnglets from '@/components/vitrines/BlocOnglets.astro'
 import BlocAccordeons from '@/components/vitrines/BlocAccordeons.astro'
 import BlocFichesBibliotheques from '@/components/vitrines/BlocFichesBibliotheques.astro'
 import BlocFormations from '@/components/vitrines/BlocFormations.astro'
+import BlocPersonnel from '@/components/vitrines/BlocPersonnel.astro'
+import BlocVideo from '@/components/vitrines/BlocVideo.astro'
 import type { Bloc } from '@/components/vitrines/types'
 import type { Vitrine } from '@/lib/contenu'
+import FilAriane from '@/components/coquille/FilAriane.astro'
 import { idDeTitre } from '@/lib/ancres'
+import { sansBase } from '@/lib/chemin'
+import { niveauDe } from '@/lib/contenu'
 
 interface Props {
   vitrine: Vitrine
 }
 
 const { data } = Astro.props.vitrine
+const url = sansBase(Astro.url.pathname)
+const sousSection = niveauDe(url) >= 2
 const banniere = data.banniere
 const taille = banniere?.taille === 'petite' ? 'small' : 'default'
 
@@ -86,7 +97,7 @@ function bande(bloc: Bloc) {
 }
 ---
 
-<GabaritPage titre={data.title} description={data.description} noindex={data.noindex} lang={data.lang}>
+<GabaritPage titre={data.title} description={data.description} noindex={data.noindex} lang={data.lang} niveau={sousSection ? 1 : undefined}>
   {
     banniere && (
       <Fragment>
@@ -126,6 +137,13 @@ function bande(bloc: Bloc) {
     )
   }
   {
+    sousSection && (
+      <div class="conteneur fil-vitrine">
+        <FilAriane url={url} />
+      </div>
+    )
+  }
+  {
     data.sections.map((bloc, i) => (
       <Section bg={bloc.fond} marginTop={i === 0 && banniere && !banniere.rechercheSofia && bloc.fond ? '3rem' : undefined} suite={memeFond(i)} revelation {...bande(bloc)}>
         {bloc.type === 'image-texte' && <BlocImageTexte bloc={bloc} />}
@@ -146,7 +164,20 @@ function bande(bloc: Bloc) {
         {bloc.type === 'accordeons' && <BlocAccordeons bloc={bloc} />}
         {bloc.type === 'fiches-bibliotheques' && <BlocFichesBibliotheques bloc={bloc} />}
         {bloc.type === 'formations' && <BlocFormations bloc={bloc} />}
+        {bloc.type === 'personnel' && <BlocPersonnel bloc={bloc} />}
+        {bloc.type === 'video' && <BlocVideo bloc={bloc} />}
       </Section>
     ))
   }
 </GabaritPage>
+
+<style>
+  /* La bande qui suit garde sa propre marge haute */
+  .fil-vitrine {
+    padding-block-start: var(--espace-4);
+  }
+
+  .fil-vitrine :global(.fil-ariane) {
+    margin-block-end: 0;
+  }
+</style>

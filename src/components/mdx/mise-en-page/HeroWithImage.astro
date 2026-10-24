@@ -20,7 +20,7 @@
  * `compact` (image-texte des pages de texte) : sous 900 px, l'image devient
  * une vignette carrée à côté du premier élément (le titre), au lieu d'une
  * pleine largeur au-dessus ou au-dessous du texte ; une page qui en enchaîne
- * une douzaine (nos-collections-speciales) ne s'allonge plus d'autant.
+ * une douzaine ne s’allonge plus d’autant.
  *
  * Slot « titre » (blocs image-texte des vitrines) : le titre passe au-dessus
  * des deux colonnes, sur toute la largeur, au lieu d'être serré dans la
@@ -48,6 +48,8 @@ interface Props {
   footer?: unknown
   /** Vignette à côté du titre sous 900 px (voir plus haut) */
   compact?: boolean
+  /** Légende sous l'image (HTML) : l'image et elle forment une <figure> */
+  legende?: string
   /** Décalage de chaque côté, en colonnes (voir plus haut) */
   offset?: number
   class?: string
@@ -56,7 +58,7 @@ interface Props {
   [attribut: string]: unknown
 }
 
-const { align = 'left', Image, imageWidth, imageHeight, footer, compact = false, offset = 0.5, class: classe, className, style, sx: _sx, ...reste } = Astro.props
+const { align = 'left', Image, imageWidth, imageHeight, footer, compact = false, legende, offset = 0.5, class: classe, className, style, sx: _sx, ...reste } = Astro.props
 if (align !== 'left' && align !== 'right') throw new Error(`HeroWithImage : align « ${align} » invalide (left ou right).`)
 if (Image === undefined) throw new Error('HeroWithImage : la propriété `Image` est requise.')
 // Un slot « footer » posé mais vide ne compte pas (voir HeroWithText)
@@ -78,7 +80,16 @@ const aPied = footer !== undefined || (Astro.slots.has('footer') && (await Astro
     </div>
     <div class="colonne-image">
       {
-        typeof Image === 'string' ? (
+        legende ? (
+          <figure>
+            {typeof Image === 'string' ? (
+              <img src={Image} width={imageWidth} height={imageHeight} alt="" loading="lazy" decoding="async" />
+            ) : (
+              <Picture src={Image} formats={['avif', 'webp']} fallbackFormat="webp" widths={[480, 768, 1024, 1536].filter((l) => l < Image.width).concat(Math.min(Image.width, 1536))} sizes="(min-width: 1536px) 690px, (min-width: 900px) 46vw, 92vw" alt="" loading="lazy" />
+            )}
+            <figcaption set:html={legende} />
+          </figure>
+        ) : typeof Image === 'string' ? (
           <img src={Image} width={imageWidth} height={imageHeight} alt="" loading="lazy" decoding="async" />
         ) : (
           <Picture src={Image} formats={['avif', 'webp']} fallbackFormat="webp" widths={[480, 768, 1024, 1536].filter((l) => l < Image.width).concat(Math.min(Image.width, 1536))} sizes="(min-width: 1536px) 690px, (min-width: 900px) 46vw, 92vw" alt="" loading="lazy" />
@@ -147,6 +158,25 @@ const aPied = footer !== undefined || (Astro.slots.has('footer') && (await Astro
     max-width: 100%;
     height: auto;
     border-radius: var(--rayon-petit);
+  }
+
+  /* Image légendée : la légende prend la largeur de l'image. L'image garde
+     alt="" : la légende, juste dessous et liée par <figure>, la décrit. */
+  figure {
+    width: 100%;
+    margin: 0;
+  }
+
+  figure :global(img) {
+    display: block;
+    width: 100%;
+  }
+
+  figcaption {
+    margin-block-start: 0.625rem;
+    color: var(--couleur-texte-secondaire);
+    font-size: 0.875rem;
+    line-height: 1.45;
   }
 
   /* ---- Compact (sous 900 px) : vignette à droite du premier élément ---- */

@@ -38,7 +38,11 @@ const nom = libelle ?? nomTableau ?? 'Tableau'
 ></Balise>
 
 <style>
+  /* position: relative : les éléments en position absolue du tableau (texte
+     .visuellement-masque des liens) restent dans la zone qui défile ; sans
+     elle, ils débordaient de la page sur un téléphone */
   .conteneur-tableau {
+    position: relative;
     width: 100%;
     overflow-x: auto;
   }

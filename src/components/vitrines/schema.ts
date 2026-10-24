@@ -16,6 +16,7 @@ import { join } from 'node:path'
 import { z } from 'astro/zod'
 import { NOMS_FONDS } from '@/lib/fonds'
 import { messageIconeInconnue, trouverIcone } from '@/plugins/icones.mjs'
+import { lieuxAvecFiche } from '@/data/horaires/lieux'
 
 // ---- Valeurs communes ----
 
@@ -82,6 +83,10 @@ const banniere = z
   })
   .strict()
 
+// Ancre d'une fiche de bibliothèque (fiche.id dans src/data/horaires/lieux.ts)
+const IDS_FICHES = lieuxAvecFiche.map((lieu) => lieu.fiche!.id)
+const bibliotheque = z.string().refine((id) => IDS_FICHES.includes(id), { message: `Bibliothèque inconnue. Noms possibles : ${IDS_FICHES.join(', ')}` })
+
 // ---- Blocs ----
 
 /** Champs de toute section : fond de la bande et ancre du titre */
@@ -106,6 +111,8 @@ export function schemaVitrine<I extends z.ZodType, N extends z.ZodType, L extend
       titre: texteCourt,
       texte: markdown,
       image: image(),
+      /** Légende sous l'image : ce qu'on y voit (Markdown sur une ligne : italique, lien) */
+      legende: texteCourt.optional(),
       positionImage: z.enum(['gauche', 'droite']).default('droite'),
       /** `encart` : carte bleu foncé ramassée, image fondue au bord (BlocImageTexte) */
       disposition: z.enum(['colonnes', 'encart']).default('colonnes'),
@@ -179,8 +186,25 @@ export function schemaVitrine<I extends z.ZodType, N extends z.ZodType, L extend
       couleurCartes: z.enum(['bleuPrincipal', 'vertFonce', 'rose300', 'jaune']).default('bleuPrincipal'),
       /** Cartes de 290 × 332 px au lieu de 353 × 400 (etudes, informatique) */
       petitesCartes: z.boolean().optional(),
-      cartes: z.array(carteIcone).min(1),
+      /** Une carte sans `lien` annonce ce qui s'en vient (« Bientôt ») : ni lien ni flèche */
+      cartes: z.array(carteIcone.extend({ lien: lien.optional() })).min(1),
       lienTout: lienTout.optional(),
+    })
+    .strict()
+
+  /** Vidéo YouTube sous un titre et un texte (VideoYouTube) */
+  const video = z
+    .object({
+      type: z.literal('video'),
+      ...communs,
+      titre: texteCourt,
+      texte: markdown.optional(),
+      /** Identifiant YouTube : les 11 caractères après « watch?v= » */
+      youtube: z.string().regex(/^[A-Za-z0-9_-]{11}$/, 'L’identifiant YouTube a 11 caractères : ce qui suit « watch?v= » dans l’adresse de la vidéo'),
+      /** Titre de la vidéo, annoncé sur le bouton de lecture et le lecteur */
+      titreVideo: texteCourt,
+      /** Page de la transcription (WCAG 1.2) */
+      transcription: lien.optional(),
     })
     .strict()
 
@@ -391,6 +415,23 @@ export function schemaVitrine<I extends z.ZodType, N extends z.ZodType, L extend
     })
     .strict()
 
+  /** Membres du personnel d'une bibliothèque (RepertoirePersonnel, sans les filtres) */
+  const personnel = z
+    .object({
+      type: z.literal('personnel'),
+      ...communs,
+      titre: texteCourt,
+      texte: markdown.optional(),
+      bibliotheque,
+      /** Noms (prénom et nom, comme dans le tableur) dans l'ordre d'affichage ; les autres suivent par ordre alphabétique */
+      ordre: z.array(texteCourt).min(1).optional(),
+      /** Lien vers le répertoire complet, sous les fiches */
+      lienTout: lienTout.optional(),
+      /** Coordonnées de la bibliothèque, dans une colonne à gauche de l'équipe */
+      coordonnees: z.object({ titre: texteCourt, texte: markdown, bouton: bouton.optional() }).strict().optional(),
+    })
+    .strict()
+
   /** Prochaines formations, en deux colonnes côte à côte (ListeFormationsAccueil) */
   const formations = z
     .object({
@@ -422,6 +463,8 @@ export function schemaVitrine<I extends z.ZodType, N extends z.ZodType, L extend
     onglets,
     accordeons,
     fichesBibliotheques,
+    personnel,
+    video,
     formations,
   ])
 
