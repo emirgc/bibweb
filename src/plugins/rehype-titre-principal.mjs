@@ -12,13 +12,13 @@
  * de la source restent valides.
  *
  * Exclus : l'accueil (niveau 0) et les nouvelles, dont le gabarit pose le
- * h1. Les pages de niveau 1 ont en général leur h1 dans SuperHero ou
- * SuperHero2 (dans le corps en MDX, ou `superHero` du frontmatter d'un .md,
- * rendu par GabaritPage) : on n'y touche que si leurs titres commencent plus bas que h2
- * (`###` dans la source de accessibilite-web, conditions-utilisation,
- * service-accessibilite), pour qu'ils commencent à h2 sans saut de niveau.
- * Une page de niveau 1 sans SuperHero (personnel) est traitée comme une page
- * de niveau 2. Le frontmatter `lvl` prime sur le niveau déduit du chemin.
+ * h1. Une page MDX de niveau 1 qui a un SuperHero ou SuperHero2 dans son
+ * corps y a son h1 : on n'y touche que si ses titres commencent plus bas que
+ * h2, pour qu'ils commencent à h2 sans saut de niveau. Les autres pages de
+ * niveau 1 (personnel, et les pages autonomes en .md comme
+ * accessibilite-web, dont GabaritPage fait une bannière sans titre) sont
+ * traitées comme des pages de niveau 2. Le frontmatter `lvl` prime sur le
+ * niveau déduit du chemin.
  */
 
 const DOSSIER_PAGES = '/src/content/pages/'
@@ -62,9 +62,7 @@ export default function rehypeTitrePrincipal() {
 
     const titres = []
     let plusHaut = 7
-    // Au niveau 1, le superHero du frontmatter (pages .md) est rendu par
-    // GabaritPage avec SuperHero2, qui porte le h1
-    let banniere = niveau === 1 && Boolean(fichier.data?.astro?.frontmatter?.superHero)
+    let banniere = false
     parcourir(arbre, (noeud) => {
       if (noeud.type === 'mdxJsxFlowElement' && /^SuperHero2?$/.test(noeud.name ?? '')) banniere = true
       if (noeud.type === 'element' && TITRE.test(noeud.tagName)) {

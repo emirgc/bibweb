@@ -1,5 +1,5 @@
 import GithubSlugger from 'github-slugger'
-import { ICONE_ANCRE, idDeTitre } from '../lib/ancres.ts'
+import { ICONE_ANCRE, idDeTitre, nomLienAncre } from '../lib/ancres.ts'
 
 /*
  * Identifiants et liens d'ancre des titres h2 à h6, comme
@@ -50,7 +50,7 @@ export default function rehypeAncresTitres() {
         tagName: 'a',
         properties: { href: `#${id}`, className: ['ancre-titre'] },
         children: [
-          { type: 'element', tagName: 'span', properties: { className: ['visuellement-masque'] }, children: [{ type: 'text', value: `Lien vers la section « ${texte} »` }] },
+          { type: 'element', tagName: 'span', properties: { className: ['visuellement-masque'] }, children: [{ type: 'text', value: nomLienAncre(texte) }] },
           {
             type: 'element',
             tagName: 'svg',

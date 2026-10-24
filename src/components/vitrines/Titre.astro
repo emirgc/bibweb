@@ -14,7 +14,7 @@
  * donne l'espace), --espace-titre dessous, le même dans tous les blocs.
  */
 import Typography from '@/components/mdx/primitives/Typography.astro'
-import { ICONE_ANCRE, idDeTitre } from '@/lib/ancres'
+import { ICONE_ANCRE, idDeTitre, nomLienAncre } from '@/lib/ancres'
 
 interface Props {
   texte: string
@@ -27,7 +27,7 @@ const id = Astro.props.id ?? idDeTitre(texte)
 ---
 
 <Typography component="h2" variant="h2" id={id} class="titre-ancre titre-bloc">
-  {lignes.map((ligne, i) => (i > 0 ? [<br />, ligne] : ligne))}<a href={`#${id}`} class="ancre-titre"><span class="visuellement-masque">Lien vers la section « {texte} »</span><svg aria-hidden="true" focusable="false" viewBox="0 0 256 256" width="1em" height="1em" fill="currentColor"><path d={ICONE_ANCRE}></path></svg></a>
+  {lignes.map((ligne, i) => (i > 0 ? [<br />, ligne] : ligne))}<a href={`#${id}`} class="ancre-titre"><span class="visuellement-masque">{nomLienAncre(texte)}</span><svg aria-hidden="true" focusable="false" viewBox="0 0 256 256" width="1em" height="1em" fill="currentColor"><path d={ICONE_ANCRE}></path></svg></a>
 </Typography>
 
 <style>

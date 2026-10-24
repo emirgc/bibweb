@@ -3,45 +3,53 @@
  * Gabarit par défaut des pages (PageTemplate de coquille-web).
  *
  * - Niveau 0-1 (accueil, /obtenir/…) : contenu pleine largeur ; le MDX gère
- *   sa propre mise en page avec SuperHero2, Section, etc. Une page de texte
- *   (.md) de niveau 1 déclare plutôt sa bannière dans le frontmatter
- *   (`superHero: { imageName, title }`) : elle est rendue ici par SuperHero2
- *   en petit format (le titre devient le h1, à défaut celui de la page), et
- *   le contenu dans une Section, comme accessibilite-web dans la source.
+ *   sa propre mise en page avec SuperHero2, Section, etc.
  * - Niveau 2 et plus : bannière (superHero du frontmatter), fil d'Ariane, et
  *   à partir de 1200 px une colonne de navigation secondaire à gauche.
  *   Sous 1200 px, la même navigation devient un bloc repliable « Dans cette
  *   section » sous le fil d'Ariane. Les variantes sont rendues en HTML et
  *   basculées en CSS : plus de saut à l'hydratation comme avec useMediaQuery.
+ * - Page autonome : une page de texte (.md) de niveau 1 qui n'est la racine
+ *   d'aucune section (/accessibilite-web/, /service-accessibilite/). La
+ *   source lui donnait une grande bannière et rien d'autre : ni fil d'Ariane
+ *   ni navigation, et une moitié d'écran vide. Elle prend la mise en page du
+ *   niveau 2, h1 en tête du contenu. Sa colonne de gauche est la navigation
+ *   de son groupe (GROUPES_DE_PAGES, dont le titre va dans la bannière), à
+ *   défaut un sommaire « Sur cette page » de ses sections, dès qu'il y en a
+ *   assez pour qu'il serve.
  *
  * `lang` (frontmatter, ex. `en`) : langue du contenu. Elle va sur <html>
  * (Base), donc sur le contenu principal et la bannière ; le fil d'Ariane, la
  * navigation de section et la rétroaction, qui sont des éléments du site,
  * restent en français.
  */
+import type { MarkdownHeading } from 'astro'
+import { texteSansAncre } from '@/lib/ancres'
 import { sansBase } from '@/lib/chemin'
 import Base from './Base.astro'
 import FilAriane from '@/components/coquille/FilAriane.astro'
 import NavigationSecondaire from '@/components/coquille/NavigationSecondaire.astro'
 import BanniereSection from '@/components/coquille/BanniereSection.astro'
 import Retroaction from '@/components/coquille/Retroaction.astro'
-import SuperHero2 from '@/components/mdx/mise-en-page/SuperHero2.astro'
-import Section from '@/components/mdx/mise-en-page/Section.astro'
-import { LANGUE_SITE, estEnFrancais, niveauDe, pageParUrl } from '@/lib/contenu'
+import { LANGUE_SITE, estEnFrancais, navigationDeGroupe, niveauDe, pageParUrl, type RacineNavigation } from '@/lib/contenu'
 
 interface Props {
   titre?: string
   description?: string
   noindex?: boolean
   niveau?: number
-  /** `size` n'est lu qu'au niveau 1 ; petit format par défaut */
-  superHero?: { imageName: string; title?: string; size?: 'default' | 'small'; cadrage?: string }
+  superHero?: { imageName: string; title?: string; cadrage?: string }
   /** Langue du contenu ; à défaut, celle du frontmatter de la page */
   lang?: string
+  /** Titres du contenu (render() d'astro:content), pour le sommaire d'une page autonome */
+  titres?: MarkdownHeading[]
 }
 
+/** En dessous, un sommaire n'apprend rien qu'un coup d'œil à la page ne donne */
+const SECTIONS_MIN_SOMMAIRE = 3
+
 const url = sansBase(Astro.url.pathname)
-const { titre, description, noindex, superHero } = Astro.props
+const { titre, description, noindex, superHero, titres = [] } = Astro.props
 // La route ne transmet pas (encore) la langue : on la lit dans la collection
 const lang = Astro.props.lang ?? (await pageParUrl(url))?.data.lang
 const langSite = estEnFrancais(lang) ? undefined : LANGUE_SITE
@@ -54,21 +62,33 @@ const estAccueil = url === '/'
 const fichierSource = (await pageParUrl(url))?.filePath ?? ''
 // Une vitrine (.yaml) est toujours une page principale
 const estPagePrincipale = estAccueil || /\.ya?ml$/.test(fichierSource) || (niveau <= 1 && /(^|\/)index\.mdx?$/.test(fichierSource))
-const section = url.split('/').filter(Boolean)[0]
-const banniereNiveau1 = niveau === 1 && superHero
+const autonome = niveau === 1 && !estPagePrincipale && fichierSource.endsWith('.md')
+const section = autonome ? undefined : url.split('/').filter(Boolean)[0]
+const groupe = autonome ? await navigationDeGroupe(url) : null
+
+// Sections de la page : les titres juste sous le h1 (le plus haut des titres)
+const plusHaut = Math.min(...titres.map((t) => t.depth))
+const sections = titres.filter((t) => t.depth === plusHaut + 1)
+const sommaire: RacineNavigation | null =
+  autonome && !groupe && sections.length >= SECTIONS_MIN_SOMMAIRE
+    ? { titre: 'Sur cette page', enfants: sections.map((t, i) => ({ titre: texteSansAncre(t.text), url: `#${t.slug}`, ordre: i, enfants: [] })) }
+    : null
+const racine = groupe ?? sommaire
+const resume = sommaire?.titre
+const nomColonne = sommaire ? 'Sommaire de la page' : 'Navigation de la section'
 ---
 
 <Base titre={titre} description={description} noindex={noindex} niveau={niveau} lang={lang}>
-  {niveau > 1 && superHero && <BanniereSection slot="avant-contenu" imageName={superHero.imageName} titre={superHero.title} cadrage={superHero.cadrage} />}
+  {(niveau > 1 || autonome) && superHero && <BanniereSection slot="avant-contenu" imageName={superHero.imageName} titre={groupe?.titre ?? superHero.title} cadrage={superHero.cadrage} />}
   {
-    niveau > 1 ? (
+    niveau > 1 || autonome ? (
       <div class="conteneur page-niveau-n">
-        <aside class="colonne-navigation" aria-label="Navigation de la section" lang={langSite}>
-          <NavigationSecondaire section={section} courante={url} />
+        <aside class="colonne-navigation" aria-label={nomColonne} lang={langSite}>
+          <NavigationSecondaire section={section} racine={racine} courante={url} />
         </aside>
         <div class="colonne-contenu">
           <FilAriane url={url} lang={langSite} />
-          <NavigationSecondaire section={section} courante={url} variante="repliable" lang={langSite} />
+          <NavigationSecondaire section={section} racine={racine} courante={url} variante="repliable" resume={resume} lang={langSite} />
           <main id="contenu-principal" tabindex="-1">
             <slot />
           </main>
@@ -78,16 +98,7 @@ const banniereNiveau1 = niveau === 1 && superHero
     ) : (
       <>
         <main id="contenu-principal" tabindex="-1">
-          {banniereNiveau1 ? (
-            <>
-              <SuperHero2 title={superHero!.title ?? titre ?? ''} imageName={superHero!.imageName} cadrage={superHero!.cadrage} size={superHero!.size ?? 'small'} />
-              <Section>
-                <slot />
-              </Section>
-            </>
-          ) : (
-            <slot />
-          )}
+          <slot />
         </main>
         {!estPagePrincipale && (
           <div class="conteneur">

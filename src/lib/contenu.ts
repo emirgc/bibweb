@@ -1,4 +1,5 @@
 import { getCollection, type CollectionEntry } from 'astro:content'
+import { GROUPES_DE_PAGES } from '@/data/navigation'
 
 /*
  * Accès au contenu partagé par les gabarits et la coquille : URL, niveau de
@@ -109,17 +110,20 @@ export async function pageParUrl(url: string) {
   return (await toutesLesPages()).find((page) => urlDePage(page) === url)
 }
 
-/** `lang` : langue du libellé, seulement si elle diffère du français */
-export type Maillon = { url: string; libelle: string; lang?: string }
+/** `lang` : langue du libellé, seulement si elle diffère du français ; sans `url` : un groupe de pages, qui n'a pas de page à lui */
+export type Maillon = { url?: string; libelle: string; lang?: string }
 
 /**
  * Fil d'Ariane d'une URL. Le maillon de l'année des nouvelles est retiré
  * (/nouvelles/2026/x/ donne Accueil › Nouvelles › x), comme dans
- * NouvelleTemplate.
+ * NouvelleTemplate. Une page d'un groupe (GROUPES_DE_PAGES) reçoit le nom
+ * du groupe avant le sien (Accueil › À propos du site › Accessibilité web).
  */
 export async function filAriane(url: string): Promise<Maillon[]> {
   const libelles = await libellesFilAriane()
   const maillons: Maillon[] = [{ url: '/', libelle: 'Accueil' }]
+  const groupe = GROUPES_DE_PAGES.find((g) => g.liens.some((l) => l.href === url))
+  if (groupe) maillons.push({ libelle: groupe.titre })
   let chemin = ''
   for (const segment of url.split('/').filter(Boolean)) {
     chemin += `/${segment}`
@@ -128,6 +132,32 @@ export async function filAriane(url: string): Promise<Maillon[]> {
     maillons.push({ url: `${chemin}/`, libelle: trouve?.libelle ?? segment, lang: trouve?.lang })
   }
   return maillons
+}
+
+/** Racine d'une navigation secondaire : sans `url` pour un groupe de pages ou un sommaire */
+export type RacineNavigation = Omit<NoeudNavigation, 'url' | 'ordre'> & { url?: string }
+
+/**
+ * Navigation du groupe (GROUPES_DE_PAGES) qui contient la page, s'il y en a
+ * un. Un lien interne vers une page absente fait échouer le build plutôt que
+ * de laisser un lien mort dans la navigation.
+ */
+export async function navigationDeGroupe(url: string): Promise<RacineNavigation | null> {
+  const groupe = GROUPES_DE_PAGES.find((g) => g.liens.some((l) => l.href === url))
+  if (!groupe) return null
+  const enfants: NoeudNavigation[] = []
+  for (const [i, lien] of groupe.liens.entries()) {
+    const page = lien.libelle ? undefined : await pageParUrl(lien.href)
+    if (!lien.libelle && !page) throw new Error(`Groupe « ${groupe.titre} » : aucune page à l’adresse ${lien.href}.`)
+    enfants.push({
+      titre: lien.libelle ?? page!.data.secondaryNav?.title ?? page!.data.title ?? lien.href,
+      lang: page && langDuLibelle(page.data.lang),
+      url: lien.href,
+      ordre: i,
+      enfants: [],
+    })
+  }
+  return { titre: groupe.titre, enfants }
 }
 
 export type NoeudNavigation = {

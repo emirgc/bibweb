@@ -32,7 +32,8 @@ const props = Astro.props as Props
 const vitrine = props.type === 'page' && estVitrine(props.entree) ? props.entree : undefined
 const texte = props.type === 'page' && !estVitrine(props.entree) ? props.entree : undefined
 const entreeRendue = props.type === 'nouvelle' ? props.entree : texte
-const Content = entreeRendue ? (await render(entreeRendue)).Content : null
+const rendu = entreeRendue ? await render(entreeRendue) : null
+const Content = rendu?.Content ?? null
 // Une page .md passe par RenduDirectives, qui rend ses directives avec les
 // composants du MDX ; un .mdx reçoit ces composants directement
 const markdown = texte?.filePath?.endsWith('.md') ?? false
@@ -58,6 +59,7 @@ const markdown = texte?.filePath?.endsWith('.md') ?? false
         niveau={texte?.data.lvl}
         superHero={texte?.data.superHero}
         lang={texte?.data.lang}
+        titres={rendu?.headings}
       >
         {markdown ? (
           <RenduDirectives>

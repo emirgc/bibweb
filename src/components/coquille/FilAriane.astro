@@ -5,6 +5,8 @@
  *
  * Le libellé d'une page dans une autre langue (frontmatter `lang`) porte son
  * lang ; `lang` sur le <nav> remet le fil en français sur une telle page.
+ * Un groupe de pages (« À propos du site ») n'a pas de page à lui : son
+ * maillon est du texte, sans lien.
  */
 import { filAriane } from '@/lib/contenu'
 
@@ -26,11 +28,15 @@ const maillons = await filAriane(Astro.props.url)
               {m.libelle}
             </span>
           </li>
-        ) : (
+        ) : m.url ? (
           <li>
             <a href={m.url} lang={m.lang}>
               {m.libelle}
             </a>
+          </li>
+        ) : (
+          <li>
+            <span lang={m.lang}>{m.libelle}</span>
           </li>
         ),
       )

@@ -150,7 +150,8 @@ export const COLONNES_PIED: { titre: string; liens: LienPied[] }[] = [
     liens: [
       { libelle: 'Site des bibliothèques', href: '/', Icone: HouseIcon },
       { libelle: 'Catalogue Sofia', href: 'https://umontreal.on.worldcat.org/discovery?lang=fr', rel: 'noopener noreferrer', Icone: MagnifyingGlassIcon },
-      { libelle: 'Base de données A-Z', href: 'https://boite-outils.bib.umontreal.ca/az.php', Icone: ListMagnifyingGlassIcon },
+      // Trait d'union insécable : « A-Z » ne se coupe pas en fin de ligne
+      { libelle: 'Base de données A‑Z', href: 'https://boite-outils.bib.umontreal.ca/az.php', Icone: ListMagnifyingGlassIcon },
     ],
   },
   {
@@ -171,13 +172,35 @@ export const RESEAUX_PIED = [
   { libelle: "Instagram de l'Université de Montréal", href: 'https://www.instagram.com/umontreal/', Icone: InstagramLogoIcon },
 ]
 
-export const URGENCE = { libelle: 'Urgence UdeM 514 343-7771', href: 'tel:+15143437771' }
+// Numéro insécable (espace et trait d'union) : il ne se coupe jamais en deux
+export const URGENCE = { libelle: 'Urgence UdeM 514\u00a0343\u20117771', href: 'tel:+15143437771' }
 
 /** Bas du pied de page, avant le bouton « Paramètres des témoins » */
 export const LIENS_QUEUE_PIED = [
   { libelle: 'Confidentialité', href: 'https://vie-privee.umontreal.ca/confidentialite/' },
   { libelle: "Conditions d'utilisation", href: '/conditions-utilisation/' },
   { libelle: 'Accessibilité', href: '/accessibilite-web/' },
+]
+
+/* ---------- Groupes de pages ---------- */
+
+/**
+ * Pages de premier niveau qui n'appartiennent à aucune section, réunies sous
+ * un titre : GabaritPage en fait leur navigation secondaire et le titre de
+ * leur bannière. Les URL ne changent pas et le fil d'Ariane suit toujours
+ * l'URL (Accueil › Accessibilité web). Une page du site prend le titre de
+ * son frontmatter (`secondaryNav.title`, sinon `title`) ; un lien externe
+ * donne son libellé.
+ */
+export const GROUPES_DE_PAGES: { titre: string; liens: { href: string; libelle?: string }[] }[] = [
+  {
+    titre: 'À propos du site',
+    liens: [
+      { href: '/accessibilite-web/' },
+      { href: '/conditions-utilisation/' },
+      { href: 'https://vie-privee.umontreal.ca/confidentialite/', libelle: "Confidentialité (site de l'UdeM)" },
+    ],
+  },
 ]
 
 /* ---------- Liens rapides ---------- */
