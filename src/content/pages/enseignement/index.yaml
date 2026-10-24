@@ -43,8 +43,8 @@ sections:
         lien: /nous-joindre/suggestion-achat/
         appel: Faire une suggestion
       - titre: Collections spéciales
-        description: Nous conservons plus de 150 000 documents anciens, rares ou précieux, qui sont entièrement à la disposition de la communauté UdeM pour la consultation et la recherche.
-        lien: /a-propos/nos-collections/nos-collections-speciales/
+        description: Nous conservons près de 175 000 documents anciens, rares ou précieux, qui sont entièrement à la disposition de la communauté UdeM pour la consultation et la recherche.
+        lien: /espaces/blrcs/
         appel: En savoir plus
 
   - type: image-texte

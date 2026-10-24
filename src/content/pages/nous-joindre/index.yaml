@@ -26,3 +26,6 @@ sections:
       - titre: Horaires et lieux
         icone: map-pin
         lien: /horaires/
+      - titre: Joindre la Bibliothèque des livres rares
+        icone: scroll
+        lien: /espaces/blrcs/#nous-joindre

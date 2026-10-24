@@ -78,7 +78,7 @@ sections:
     positionImage: droite
     bouton:
       texte: Explorer les collections spéciales
-      lien: /a-propos/nos-collections/nos-collections-speciales/
+      lien: https://collections-speciales.bib.umontreal.ca/
 
   - type: image-fond
     image: ./images/engagement-accueil.webp
