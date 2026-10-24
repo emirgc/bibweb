@@ -11,8 +11,14 @@
  * - « Besoin d'aide? » : liens à pictogramme, puis l'urgence, puis YouTube et
  *   Instagram (à gauche, sous les liens). « Nos services » : une pastille de
  *   la couleur de chaque service devant son nom, comme dans studio·bib.
- * - Barre du bas, bleue, centrée : droits, licence, puis les liens légaux et
- *   « Paramètres des témoins ». Elle passe à la ligne sur petit écran.
+ * - Barre du bas, bleue, sur une ligne dès 900 px : droits et licence à
+ *   gauche, liens légaux et « Paramètres des témoins » à droite. Sous 900 px,
+ *   droits et licence empilés, puis les liens à la suite sur une ou deux
+ *   lignes.
+ * - Sous 900 px, le pied reste court (environ la moitié de ses 1400 px
+ *   d'origine) sans rien cacher : « Besoin d'aide? » (urgence comprise) sur
+ *   toute la largeur, « Liens rapides » et « Nos services » côte à côte,
+ *   sceau réduit.
  *
  * Corrections par rapport à la source :
  * - icônes YouTube et Instagram nommées (elles n'avaient aucun texte) ;
@@ -31,7 +37,12 @@ const annee = new Date().getFullYear()
 <footer class="pied">
   <div class="local">
     <div class="interieur">
-      <h2 class="titre">Les bibliothèques de l'Université de Montréal</h2>
+      <div class="signature">
+        <a class="signature-sceau" href="/">
+          <img src="/images/logo-bib/logo-bib-sceau-bleu.svg" alt="Les bibliothèques, Université de Montréal – Accueil" width="302" height="302" loading="lazy" decoding="async" />
+        </a>
+        <h2 class="titre">Les bibliothèques de l'Université de Montréal</h2>
+      </div>
 
       <div class="colonnes">
         {
@@ -85,16 +96,14 @@ const annee = new Date().getFullYear()
 
   <div class="queue">
     <div class="interieur rangee-queue">
-      <span>{annee} – Bibliothèques de l'Université de Montréal.</span>
-      <Licence />
-      {
-        LIENS_QUEUE_PIED.map(({ libelle, href }) => (
-          <Fragment>
-                  <a href={href}>{libelle}</a>
-          </Fragment>
-        ))
-      }
-      <button type="button" class="parametres-temoins" data-parametres-temoins>Paramètres des témoins</button>
+      <div class="groupe-queue">
+        <span>© {annee} Bibliothèques de l'Université de Montréal</span>
+        <Licence />
+      </div>
+      <div class="groupe-queue liens-queue">
+        {LIENS_QUEUE_PIED.map(({ libelle, href }) => <a href={href}>{libelle}</a>)}
+        <button type="button" class="parametres-temoins" data-parametres-temoins>Paramètres des témoins</button>
+      </div>
     </div>
   </div>
 </footer>
@@ -251,9 +260,64 @@ const annee = new Date().getFullYear()
 
   .colonne-logo img {
     display: block;
-    width: 240px;
+    width: 120px;
     max-width: 100%;
     height: auto;
+  }
+
+  /* Téléphone : le sceau et le titre signent le pied en tête, puis tout
+     s'aligne à gauche dessous : « Besoin d'aide? » sur toute la largeur,
+     « Liens rapides » et « Nos services » côte à côte. Le sceau des grands
+     écrans (dans les colonnes) est masqué : un seul est rendu visible, et
+     display: none le retire aussi de l'arbre d'accessibilité. */
+  .signature-sceau {
+    flex-shrink: 0;
+  }
+
+  .signature-sceau img {
+    display: block;
+    width: 72px;
+    height: auto;
+  }
+
+  @media (width < 900px) {
+    .signature {
+      display: flex;
+      align-items: center;
+      gap: 16px;
+      margin-bottom: 32px;
+    }
+
+    .signature .titre {
+      margin: 0;
+      text-align: left;
+    }
+
+    .colonnes {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 32px 16px;
+      align-items: start;
+    }
+
+    .colonne {
+      align-items: flex-start;
+      text-align: left;
+    }
+
+    .colonne:first-child {
+      grid-column: 1 / -1;
+    }
+
+    .colonne-logo {
+      display: none;
+    }
+  }
+
+  @media (min-width: 900px) {
+    .signature-sceau {
+      display: none;
+    }
   }
 
   @media (min-width: 900px) {
@@ -291,6 +355,10 @@ const annee = new Date().getFullYear()
       padding-right: 0;
       padding-left: 16px;
     }
+
+    .colonne-logo img {
+      width: 240px;
+    }
   }
 
   /* ---- Barre du bas ---- */
@@ -301,12 +369,16 @@ const annee = new Date().getFullYear()
 
   /* Pas de traits entre les éléments : quand la barre passe à la ligne, un
      trait se retrouverait seul en bout de ligne */
-  .rangee-queue {
+  .rangee-queue,
+  .groupe-queue {
     display: flex;
     flex-wrap: wrap;
     align-items: center;
     justify-content: center;
-    gap: 4px 28px;
+    gap: 4px 24px;
+  }
+
+  .rangee-queue {
     /* Marge de chaque côté : le bouton « Retour en haut », fixé en bas à
        droite (4,5 rem du bord sur mobile, 7 rem dès 900 px, à gauche de la
        languette des liens rapides), ne recouvre jamais le texte de la barre */
@@ -317,15 +389,15 @@ const annee = new Date().getFullYear()
   }
 
   /* Cibles de 24 px de haut au moins (WCAG 2.5.8) */
-  .rangee-queue > a,
-  .rangee-queue > :global(.licence) a,
+  .groupe-queue > a,
+  .groupe-queue > :global(.licence) a,
   .rangee-queue button {
     display: inline-flex;
     align-items: center;
     min-height: 24px;
   }
 
-  .rangee-queue > span {
+  .groupe-queue > span {
     padding-block: 4px;
   }
 
@@ -351,15 +423,27 @@ const annee = new Date().getFullYear()
 
   /* Petit écran : une colonne centrée */
   @media (width < 900px) {
-    .rangee-queue {
+    .rangee-queue,
+    .groupe-queue {
       flex-direction: column;
       gap: 4px;
+    }
+
+    /* Les liens légaux à la suite, centrés, plutôt qu'un par ligne */
+    .liens-queue {
+      flex-direction: row;
+      gap: 4px 20px;
+    }
+
+    .rangee-queue {
       padding-block: 16px;
+      text-align: center;
     }
   }
 
   @media (min-width: 900px) {
     .rangee-queue {
+      justify-content: space-between;
       padding-inline: 7.5rem;
     }
 
