@@ -2,13 +2,14 @@
 title: Accessibilité web
 superHero:
   imageName: default
-  title: Accessibilité web
 ---
+## Accessibilité web
+
 Cette page concerne l'accessibilité technique du site web. Pour plus d'informations concernant les services d'accessibilité offerts par les bibliothèques, référez-vous au [Service Accessibilité](/service-accessibilite/).
 
 ### Standard gouvernemental
 
-Ce site est conforme au Standard sur Standard sur l'accessibilité des sites Web du gouvernement du Québec SGQRI 008 3.0.
+Ce site est conforme au Standard sur l'accessibilité des sites Web du gouvernement du Québec SGQRI 008 3.0.
 
 ### Outils de validation
 
@@ -26,7 +27,7 @@ Ce site est conforme au Standard sur Standard sur l'accessibilité des sites Web
 
 ### Description des icônes
 
-Voici la liste des icônes ayant un rôle fonctionnelle: 
+Voici la liste des icônes ayant un rôle fonctionnel :
 
 :::modalites
 - :icone[burger]{taille=40 couleur=neutre700} Ouvrir le menu du site
