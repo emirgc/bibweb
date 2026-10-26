@@ -98,11 +98,27 @@ const limite = typeof limiteDemandee === 'number' && limiteDemandee > 0 ? limite
       grid-auto-flow: column;
       grid-template-columns: 1fr 1fr;
       grid-template-rows: repeat(var(--rangees), auto);
-      gap: var(--espace-element) var(--espace-6);
+      /* Pas d'écart entre les rangées : le filet de chaque élément les
+         sépare déjà */
+      gap: 0 var(--espace-6);
     }
 
     .deux-colonnes > ul[hidden] {
       display: none;
+    }
+  }
+
+  /* Liste en deux colonnes (bloc formations des vitrines) : rangées plus
+     serrées. La hauteur minimale d'Element (8,75rem) sert à aligner la
+     colonne de l'accueil ; ici elle laissait un grand blanc sous chaque
+     vignette. */
+  .deux-colonnes :global(li.element) {
+    padding-block: var(--espace-element);
+  }
+
+  @media (min-width: 900px) {
+    .deux-colonnes :global(li.element.compact) {
+      min-height: 0;
     }
   }
 

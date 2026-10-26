@@ -70,11 +70,12 @@ const id = idDonne ?? idUnique('colonne-quoi-de-neuf')
     container: quoi-de-neuf / inline-size;
   }
 
-  /* Listes et messages passés en slot (ListeEvenements, etc.) */
+  /* Listes et messages passés en slot (ListeEvenements, etc.). Pas d'écart
+     entre les éléments : le filet de chacun les sépare déjà. */
   .corps :global(ul) {
     display: flex;
     flex-direction: column;
-    gap: var(--espace-element);
+    gap: 0;
     margin: 0;
     padding: 0;
   }

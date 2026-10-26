@@ -97,14 +97,22 @@ const attributsLien = Titre === 'a' ? { href, ...(externe && { target: '_blank',
     flex-shrink: 0;
   }
 
+  /* Colonnes de Quoi de neuf : marges resserrées, à toutes les largeurs */
+  @container quoi-de-neuf (min-width: 0) {
+    .compact {
+      padding-block: var(--espace-element);
+    }
+  }
+
   @media (min-width: 900px) {
     @container quoi-de-neuf (min-width: 17em) {
-      /* Hauteur minimale, pas fixe : avec l'espacement du texte agrandi
-         (WCAG 1.4.12), trois lignes de titre dépassaient la boîte et la
-         dernière était rognée au milieu */
+      /* Hauteur minimale, pas fixe : celle d'un élément à titre de deux
+         lignes, pour que les rangées restent alignées d'une colonne à
+         l'autre ; avec l'espacement du texte agrandi (WCAG 1.4.12),
+         l'élément grandit au lieu de rogner son titre. (8,75rem laissait
+         un grand blanc sous chaque vignette.) */
       .compact {
-        min-height: 8.75rem;
-        padding-bottom: 0;
+        min-height: 8.375rem;
       }
     }
   }
