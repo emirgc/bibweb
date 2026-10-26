@@ -127,7 +127,10 @@ const nomColonne = sommaire ? 'Sommaire de la page' : 'Navigation de la section'
   @media (min-width: 1200px) {
     .page-niveau-n {
       display: grid;
-      grid-template-columns: 3fr 9fr;
+      /* minmax(0, …) : une colonne en fr ne descend pas sous la largeur de
+         son contenu ; avec le texte à 200 % (WCAG 1.4.4), le fil d'Ariane et
+         les tableaux élargissaient la page au-delà de l'écran */
+      grid-template-columns: minmax(0, 3fr) minmax(0, 9fr);
       gap: var(--espace-4);
       align-items: start;
     }

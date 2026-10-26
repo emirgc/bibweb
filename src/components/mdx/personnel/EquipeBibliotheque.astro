@@ -63,10 +63,12 @@ const Titre = `h${niveauTitre}` as 'h3'
 
 <style>
   /* Deux par rangée sur un téléphone : une seule colonne allongeait la page
-     d'une vignette par personne */
+     d'une vignette par personne. Largeur minimale en rem : avec le texte
+     agrandi, une seule colonne plutôt que des noms qui débordent (WCAG
+     1.4.10) */
   .equipe {
     display: grid;
-    grid-template-columns: repeat(2, minmax(0, 1fr));
+    grid-template-columns: repeat(auto-fit, minmax(min(100%, 8rem), 1fr));
     gap: var(--espace-grille);
     margin: 0;
     padding: 0;
@@ -117,6 +119,12 @@ const Titre = `h${niveauTitre}` as 'h3'
     margin-block-end: 0.25rem;
     border-radius: var(--rayon-plein);
     object-fit: cover;
+  }
+
+  .nom,
+  .fonction {
+    max-width: 100%;
+    overflow-wrap: anywhere;
   }
 
   .nom {

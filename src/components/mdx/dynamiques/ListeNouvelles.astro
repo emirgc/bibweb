@@ -257,6 +257,9 @@ const annonce = (n: number) => `${n} ${n > 1 ? 'éléments affichés' : 'éléme
      plus récente à la plus ancienne. */
   .elements {
     display: grid;
+    /* Sans minmax(0, …), la colonne ne descend pas sous la ligne de la
+       source et de la date (texte agrandi sur 320 px) */
+    grid-template-columns: minmax(0, 1fr);
     column-gap: var(--espace-blocs);
     margin: 0;
     padding: 0;

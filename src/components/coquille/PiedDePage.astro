@@ -281,15 +281,21 @@ const annee = new Date().getFullYear()
   }
 
   @media (width < 900px) {
+    /* Le titre passe sous le sceau s'il ne tient plus à côté (texte
+       agrandi à 200 % sur 320 px, WCAG 1.4.4 et 1.4.10) */
     .signature {
       display: flex;
+      flex-wrap: wrap;
       align-items: center;
       gap: 16px;
       margin-bottom: 32px;
     }
 
     .signature .titre {
+      flex: 1 1 10rem;
+      min-width: 0;
       margin: 0;
+      overflow-wrap: break-word;
       text-align: left;
     }
 

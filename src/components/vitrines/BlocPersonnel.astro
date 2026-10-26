@@ -56,9 +56,16 @@ const { coordonnees } = bloc
 </div>
 
 <style>
+  /* minmax(0, …) et coupure des mots : une adresse courriel ou un numéro
+     ne font pas déborder la page avec le texte agrandi (WCAG 1.4.10) */
   .avec-coordonnees {
     display: grid;
+    grid-template-columns: minmax(0, 1fr);
     gap: var(--espace-blocs);
+  }
+
+  .coordonnees {
+    overflow-wrap: anywhere;
   }
 
   /* Le bloc fait l'écart ; sans la marge haute de Button */

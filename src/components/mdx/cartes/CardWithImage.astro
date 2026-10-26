@@ -85,6 +85,8 @@ const Titre = `h${niveauTitre}`
     flex-direction: column;
     flex-shrink: 0;
     width: 330px;
+    /* Jamais plus large que sa colonne (320 px, WCAG 1.4.10) */
+    max-width: 100%;
     /* Hauteur minimale (voir CardWithIcon) : la carte grandit avec le texte
        agrandi au lieu de le rogner */
     min-height: 500px;
@@ -136,6 +138,7 @@ const Titre = `h${niveauTitre}`
     font-size: 1.25rem;
     font-weight: var(--graisse-moyenne);
     line-height: 1.2;
+    overflow-wrap: break-word;
   }
 
   @media (min-width: 900px) {
