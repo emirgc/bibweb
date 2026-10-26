@@ -92,9 +92,6 @@ sections:
       - Mathieu Thomas
       - Diane Moreau
       - Marie-Josée Lapalme
-    lienTout:
-      texte: Voir tout le répertoire du personnel
-      lien: /nous-joindre/notre-equipe/
     coordonnees:
       titre: Nous joindre
       texte: |
