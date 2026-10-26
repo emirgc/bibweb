@@ -1,0 +1,416 @@
+---
+/*
+ * Recherche du haut du menu. Une liste déroulante choisit où chercher :
+ * - Sofia (par défaut) : le formulaire part vers Sofia, comme avant ;
+ * - les sites des bibliothèques : des suggestions s'ouvrent sous le champ, à
+ *   mesure qu'on tape, les plus pertinentes d'abord, toutes sources
+ *   confondues (le site, la Boîte à outils et Studio·bib, d'après l'index
+ *   réuni de recherche/moteur.ts) ; chacune nomme sa source, puis la page.
+ *   « Tous les résultats », comme Entrée sans suggestion choisie, mène à la
+ *   page de résultats (/resultats/?q=…).
+ *
+ * Motif « combobox » de l'APG (liste, aria-activedescendant) : le
+ * focus reste dans le champ, les flèches parcourent les suggestions, Entrée
+ * suit la suggestion choisie, Échap referme la liste sans fermer le menu.
+ *
+ * Sans JavaScript, la liste déroulante reste masquée et le formulaire part
+ * vers Sofia : l'étiquette le dit.
+ */
+import { CaretDownIcon } from '@phosphor-icons/react/dist/ssr/CaretDown'
+import { ACTION_SOFIA, PARAMETRES_SOFIA } from '@/lib/sofia'
+import ChampRecherche from './ChampRecherche.astro'
+
+interface Props {
+  id: string
+}
+
+const { id } = Astro.props
+---
+
+<ChampRecherche
+  id={id}
+  etiquette="Rechercher dans Sofia"
+  nom="Recherche"
+  action={ACTION_SOFIA}
+  parametre="queryString"
+  caches={Object.entries(PARAMETRES_SOFIA)}
+  placeholder="Articles, livres, films…"
+  data-recherche-sofia
+  data-recherche-menu
+>
+  <span slot="portee" class="portee" hidden data-portee-conteneur>
+    <select class="choix" aria-label="Où chercher" data-portee>
+      <option value="sofia">Sofia</option>
+      <option value="sites">Les sites des bibliothèques</option>
+    </select>
+    <CaretDownIcon size={14} weight="bold" aria-hidden="true" className="caret" />
+  </span>
+
+  <div class="suggestions" id={`${id}-suggestions`} role="listbox" aria-label="Suggestions" hidden data-suggestions></div>
+  <p class="visuellement-masque" role="status" data-statut-suggestions></p>
+</ChampRecherche>
+
+<script>
+  import type MiniSearch from 'minisearch'
+  import { chargerIndex, suggerer } from '@/components/coquille/recherche/moteur'
+  import { avecBase } from '@/lib/chemin'
+
+  // Source affichée devant la page ; les sections de l'index du site (Pages,
+  // Nouvelles, Bibliothèques, Personnel) sont toutes « Site des bibliothèques »
+  const SOURCES: Record<string, string> = { outils: 'Boîte à outils', studio: 'Studio·bib' }
+  const SOURCE_SITE = 'Site des bibliothèques'
+  const NOMBRE = 8
+  const PLACEHOLDERS = { sofia: 'Articles, livres, films…', sites: 'Services, guides, soutien informatique…' }
+  const DELAI_FRAPPE = 120
+
+  for (const formulaire of document.querySelectorAll<HTMLFormElement>('[data-recherche-menu]')) {
+    const champ = formulaire.querySelector<HTMLInputElement>('input[type=search]')!
+    const etiquette = formulaire.querySelector<HTMLLabelElement>('label')!
+    const choix = formulaire.querySelector<HTMLSelectElement>('[data-portee]')!
+    const liste = formulaire.querySelector<HTMLElement>('[data-suggestions]')!
+    const statut = formulaire.querySelector<HTMLElement>('[data-statut-suggestions]')!
+    let index: MiniSearch | null = null
+    let echec = false
+    let minuterie: ReturnType<typeof setTimeout> | undefined
+    let active = -1
+
+    // Amélioration progressive : la liste déroulante et le rôle combobox
+    // n'existent qu'avec JavaScript
+    formulaire.querySelector<HTMLElement>('[data-portee-conteneur]')!.hidden = false
+    etiquette.textContent = 'Rechercher'
+    champ.setAttribute('role', 'combobox')
+    champ.setAttribute('aria-autocomplete', 'list')
+    champ.setAttribute('aria-controls', liste.id)
+    champ.setAttribute('aria-expanded', 'false')
+
+    const sites = () => choix.value === 'sites'
+    const urlResultats = (requete: string) => avecBase(`/resultats/?q=${encodeURIComponent(requete)}`)
+    const options = () => [...liste.querySelectorAll<HTMLElement>('[role=option]')]
+
+    function majPortee() {
+      champ.placeholder = PLACEHOLDERS[sites() ? 'sites' : 'sofia']
+      champ.setAttribute('aria-label', `Rechercher dans ${choix.selectedOptions[0].text}`)
+      if (sites()) charger()
+      rendre()
+    }
+
+    function charger() {
+      if (index) return
+      echec = false
+      chargerIndex('sites')
+        .then((i) => {
+          index = i
+        })
+        .catch(() => {
+          echec = true
+        })
+        .finally(() => {
+          if (document.activeElement === champ) rendre()
+        })
+    }
+
+    function fermer() {
+      liste.hidden = true
+      champ.setAttribute('aria-expanded', 'false')
+      champ.removeAttribute('aria-activedescendant')
+      active = -1
+    }
+
+    function activer(position: number) {
+      const tous = options()
+      tous.forEach((o, i) => o.setAttribute('aria-selected', String(i === position)))
+      active = position
+      if (position < 0) {
+        champ.removeAttribute('aria-activedescendant')
+        return
+      }
+      champ.setAttribute('aria-activedescendant', tous[position].id)
+      tous[position].scrollIntoView({ block: 'nearest' })
+    }
+
+    function option(texte: string, url: string | null, source = '', externe = false) {
+      const element = document.createElement('div')
+      element.className = 'option'
+      element.id = `${liste.id}-${liste.children.length}`
+      element.setAttribute('role', 'option')
+      element.setAttribute('aria-selected', 'false')
+      if (url) element.dataset.url = url
+      if (source) {
+        // Lu « Studio·bib : Installer le VPN » ; la flèche est visuelle
+        const nom = document.createElement('span')
+        nom.className = 'option-source'
+        nom.textContent = source
+        const fleche = document.createElement('span')
+        fleche.className = 'option-fleche'
+        fleche.setAttribute('aria-hidden', 'true')
+        fleche.textContent = '→'
+        const separateur = document.createElement('span')
+        separateur.className = 'visuellement-masque'
+        separateur.textContent = ' : '
+        element.append(nom, fleche, separateur)
+      }
+      const titre = document.createElement('span')
+      titre.className = 'option-titre'
+      titre.textContent = texte
+      element.append(titre)
+      if (externe) {
+        const fleche = document.createElement('span')
+        fleche.className = 'option-externe'
+        fleche.setAttribute('aria-hidden', 'true')
+        fleche.textContent = '↗'
+        element.append(fleche)
+      }
+      return element
+    }
+
+    function rendre() {
+      const requete = champ.value.trim()
+      liste.replaceChildren()
+      active = -1
+      if (!sites() || !requete || document.activeElement !== champ) {
+        fermer()
+        statut.textContent = ''
+        return
+      }
+
+      const suggestions = index ? suggerer(index, requete).slice(0, NOMBRE) : []
+      for (const { title, url, section } of suggestions) liste.append(option(title, url, SOURCES[section] ?? SOURCE_SITE, /^https?:/.test(url)))
+      const total = suggestions.length
+
+      // Dernière ligne : tous les résultats du site, dans la boîte de recherche
+      const tout = option(`Tous les résultats pour « ${requete} »`, null)
+      tout.classList.add('option-tout')
+      liste.append(tout)
+
+      liste.hidden = false
+      champ.setAttribute('aria-expanded', 'true')
+      champ.removeAttribute('aria-activedescendant')
+      const message = total ? `${total} suggestion${total > 1 ? 's' : ''}` : index || echec ? 'Aucune suggestion' : 'Chargement des suggestions…'
+      if (statut.textContent !== message) statut.textContent = message
+    }
+
+    function suivre(element: HTMLElement) {
+      const requete = champ.value.trim()
+      fermer()
+      if (element.dataset.url) {
+        window.location.href = element.dataset.url
+        return
+      }
+      window.location.href = urlResultats(requete)
+    }
+
+    choix.addEventListener('change', majPortee)
+
+    champ.addEventListener('input', () => {
+      clearTimeout(minuterie)
+      minuterie = setTimeout(rendre, DELAI_FRAPPE)
+    })
+    champ.addEventListener('focus', () => {
+      if (sites()) {
+        charger()
+        rendre()
+      }
+    })
+
+    champ.addEventListener('keydown', (e) => {
+      if (liste.hidden) {
+        if (e.key === 'ArrowDown' && sites() && champ.value.trim()) {
+          e.preventDefault()
+          rendre()
+          activer(0)
+        }
+        return
+      }
+      const nombre = options().length
+      if (e.key === 'ArrowDown') {
+        e.preventDefault()
+        activer(active + 1 >= nombre ? 0 : active + 1)
+      } else if (e.key === 'ArrowUp') {
+        e.preventDefault()
+        activer(active - 1 < 0 ? nombre - 1 : active - 1)
+      } else if (e.key === 'Escape') {
+        // La liste se referme ; le menu, lui, reste ouvert
+        e.preventDefault()
+        e.stopPropagation()
+        fermer()
+      } else if (e.key === 'Enter' && active >= 0) {
+        e.preventDefault()
+        suivre(options()[active])
+      }
+    })
+
+    // Le clic ne doit pas retirer le focus du champ avant d'être lu
+    liste.addEventListener('mousedown', (e) => e.preventDefault())
+    liste.addEventListener('click', (e) => {
+      const element = (e.target as Element).closest<HTMLElement>('[role=option]')
+      if (element) suivre(element)
+    })
+
+    // La liste se referme quand le focus quitte le champ
+    champ.addEventListener('blur', () => fermer())
+
+    // Sites des bibliothèques : Entrée mène à la page de résultats.
+    // En capture, pour passer avant l'envoi vers Sofia (lib/sofia.ts).
+    formulaire.addEventListener(
+      'submit',
+      (e) => {
+        if (!sites()) return
+        e.preventDefault()
+        e.stopImmediatePropagation()
+        const requete = champ.value.trim()
+        if (!requete) return
+        fermer()
+        window.location.href = urlResultats(requete)
+      },
+      { capture: true },
+    )
+
+    majPortee()
+  }
+</script>
+
+<style>
+  /* Dans la barre, avant la saisie, séparé d'elle par un filet */
+  .portee {
+    position: relative;
+    display: inline-flex;
+    flex-shrink: 1;
+    align-items: center;
+    min-width: 0;
+    max-width: 50%;
+    margin-inline-start: -0.5rem;
+    padding-inline-end: var(--espace-1);
+    border-inline-end: 1px solid var(--couleur-bordure);
+  }
+
+  .portee[hidden] {
+    display: none;
+  }
+
+  /* Le select natif garde son clavier et son menu ; seule sa boîte change.
+     field-sizing : la largeur suit l'option choisie (« Sofia » reste court) ;
+     sans lui, la plus longue, plafonnée par .portee. */
+  .choix {
+    field-sizing: content;
+    min-width: 0;
+    max-width: 100%;
+    min-height: var(--taille-cible);
+    padding: 0.375rem 1.5rem 0.375rem 0.75rem;
+    overflow: hidden;
+    border: 0;
+    border-radius: var(--rayon-plein);
+    background: transparent;
+    color: var(--bleu-principal);
+    font: inherit;
+    font-size: 0.9375rem;
+    font-weight: var(--graisse-forte);
+    line-height: 1.4;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    cursor: pointer;
+    appearance: none;
+  }
+
+  .choix:hover {
+    background: var(--bleu-100);
+  }
+
+  .choix:focus-visible {
+    outline: 3px solid var(--couleur-focus);
+    outline-offset: 2px;
+  }
+
+  .portee :global(.caret) {
+    position: absolute;
+    inset-inline-end: calc(var(--espace-1) + 0.5rem);
+    color: var(--bleu-principal);
+    pointer-events: none;
+  }
+
+  /* ---- Suggestions, juste sous le champ ---- */
+  .suggestions {
+    position: absolute;
+    z-index: 2;
+    inset-inline: 0;
+    top: calc(100% + 0.375rem);
+    max-height: min(26rem, 60vh);
+    padding-block: var(--espace-1);
+    overflow-y: auto;
+    overscroll-behavior: contain;
+    border: 1px solid var(--couleur-bordure);
+    border-radius: var(--rayon-petit);
+    background: var(--couleur-surface);
+    box-shadow:
+      0 8px 10px -6px color-mix(in srgb, var(--couleur-neutre-700) 20%, transparent),
+      0 16px 24px 2px color-mix(in srgb, var(--couleur-neutre-700) 12%, transparent);
+  }
+
+  .suggestions[hidden] {
+    display: none;
+  }
+
+  /* Les lignes sont créées par le script : :global sous .suggestions */
+  .suggestions :global(.option-tout) {
+    margin-block-start: var(--espace-1);
+    padding-block-start: var(--espace-1);
+    border-block-start: 1px solid var(--couleur-bordure);
+  }
+
+  .suggestions :global(.option) {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: baseline;
+    gap: var(--espace-1);
+    min-height: var(--taille-cible);
+    padding: 0.625rem 1rem;
+    color: var(--couleur-texte);
+    cursor: pointer;
+  }
+
+  /* Source, flèche, page : la page passe sous la source si la ligne manque
+     de place, la source ne se coupe pas */
+  .suggestions :global(.option-source) {
+    flex-shrink: 0;
+    color: var(--couleur-texte-secondaire);
+    font-size: 0.875rem;
+    font-weight: var(--graisse-forte);
+  }
+
+  .suggestions :global(.option-fleche) {
+    flex-shrink: 0;
+    color: var(--couleur-texte-secondaire);
+  }
+
+  .suggestions :global(.option-titre) {
+    flex: 1 1 10rem;
+    min-width: 0;
+    overflow-wrap: anywhere;
+  }
+
+  .suggestions :global(.option-externe) {
+    flex-shrink: 0;
+    color: var(--bleu-principal);
+  }
+
+  .suggestions :global(.option-tout) {
+    color: var(--bleu-principal);
+    font-weight: var(--graisse-forte);
+  }
+
+  .suggestions :global(.option:hover),
+  .suggestions :global(.option[aria-selected='true']) {
+    background: var(--bleu-100);
+  }
+
+  /* L'option choisie au clavier ne tient pas qu'au fond : un liseré */
+  .suggestions :global(.option[aria-selected='true']) {
+    box-shadow: inset 4px 0 0 var(--bleu-principal);
+  }
+
+  @media (forced-colors: active) {
+    .suggestions :global(.option[aria-selected='true']) {
+      outline: 2px solid Highlight;
+      outline-offset: -2px;
+    }
+  }
+</style>

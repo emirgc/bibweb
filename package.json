@@ -13,6 +13,7 @@
     "preview": "astro preview",
     "verifier": "node scripts/verifier-pages.mjs",
     "verifier:seuils": "node scripts/verifier-seuils.mjs",
+    "indexer:externes": "node scripts/indexer-externes.mjs",
     "astro": "astro",
     "dev:propre": "astro dev stop; rm -f .astro/data-store.json && astro dev --background"
   },

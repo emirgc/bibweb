@@ -3,6 +3,11 @@
  * la demande (première ouverture ou survol du bouton), puis cherche et
  * regroupe les résultats par section. Rien n'est téléchargé tant que
  * personne ne cherche : l'index et MiniSearch pèsent plus que la coquille.
+ *
+ * Deux index : celui du site (la boîte de recherche) et, pour les
+ * suggestions du menu, le même réuni à celui des sites voisins, Boîte à
+ * outils et Studio·bib (voir scripts/indexer-externes.mjs) : un seul index,
+ * pour que la pertinence se compare d'une source à l'autre.
  */
 import type MiniSearch from 'minisearch'
 import { avecBase } from '@/lib/chemin'
@@ -18,11 +23,18 @@ type Document = Resultat & { id: number; section: string; words?: string }
 // l'écart sur les mots courts.
 const sansAccents = (terme: string) => terme.normalize('NFD').replace(/\p{Diacritic}/gu, '').toLowerCase()
 
-let chargement: Promise<MiniSearch<Document>> | undefined
+export type CleIndex = 'site' | 'sites'
+const FICHIERS: Record<CleIndex, string[]> = { site: ['/search-index.json'], sites: ['/search-index.json', '/search-index-externe.json'] }
 
-export function chargerIndex() {
-  chargement ??= Promise.all([import('minisearch'), fetch(avecBase('/search-index.json')).then((r) => (r.ok ? r.json() : Promise.reject(new Error(String(r.status)))))])
-    .then(([{ default: MiniSearchClasse }, donnees]: [{ default: typeof MiniSearch }, Omit<Document, 'id'>[]]) => {
+const lireJson = (fichier: string) => fetch(avecBase(fichier)).then((r) => (r.ok ? r.json() : Promise.reject(new Error(String(r.status)))))
+
+const chargements = new Map<CleIndex, Promise<MiniSearch<Document>>>()
+
+export function chargerIndex(cle: CleIndex = 'site') {
+  if (chargements.has(cle)) return chargements.get(cle)!
+  const chargement = Promise.all([import('minisearch'), Promise.all(FICHIERS[cle].map(lireJson))])
+    .then(([{ default: MiniSearchClasse }, fichiers]: [{ default: typeof MiniSearch }, Omit<Document, 'id'>[][]]) => {
+      const donnees = fichiers.flat()
       const index = new MiniSearchClasse<Document>({
         fields: ['title', 'excerpt', 'words'],
         storeFields: ['title', 'excerpt', 'url', 'section'],
@@ -40,9 +52,10 @@ export function chargerIndex() {
     })
     .catch((erreur) => {
       // On permet une nouvelle tentative à la prochaine ouverture
-      chargement = undefined
+      chargements.delete(cle)
       throw erreur
     })
+  chargements.set(cle, chargement)
   return chargement
 }
 
@@ -55,4 +68,20 @@ export function chercher(index: MiniSearch<Document>, requete: string): Groupe[]
     groupes.get(section)!.push({ title, excerpt, url })
   }
   return Array.from(groupes, ([section, items]) => ({ section, items }))
+}
+
+export type Suggestion = Resultat & { section: string }
+
+/**
+ * Suggestions sous un champ : tous les mots d'abord (« citer apa » ne
+ * propose pas chaque page qui parle de citer), sinon n'importe lequel ; pas
+ * de tolérance aux fautes sur les mots courts, où une lettre change le mot
+ * (« vpn » trouvait « van »).
+ */
+export function suggerer(index: MiniSearch<Document>, requete: string): Suggestion[] {
+  if (!requete.trim()) return []
+  const fuzzy = (terme: string) => (terme.length > 4 ? 0.2 : false)
+  let resultats = index.search(requete, { combineWith: 'AND', fuzzy })
+  if (!resultats.length) resultats = index.search(requete, { fuzzy })
+  return resultats.map(({ title, excerpt, url, section }) => ({ title, excerpt, url, section }))
 }

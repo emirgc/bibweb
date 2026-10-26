@@ -1,15 +1,18 @@
 ---
 /*
- * Champ de recherche du menu : un vrai formulaire GET (repère « recherche »
- * nommé, étiquette visible, champ et bouton loupe). Sert à la recherche
- * Sofia en tête du menu mobile et à la recherche de chaque service (Studio·bib,
- * Boîte à outils, site principal) dans l'aperçu et les accordéons du menu.
+ * Champ de recherche : un vrai formulaire GET (repère « recherche » nommé,
+ * étiquette visible, champ et bouton loupe). Sert à la recherche du haut du
+ * menu (RechercheMenu) et à la page de résultats (/resultats/).
  *
  * Sans JavaScript, le formulaire part vers `action` avec ses champs cachés.
- * Les scripts qui l'enrichissent (lib/sofia.ts, PanneauMenu) le repèrent par
- * les attributs data-* transmis au <form>.
+ * Les scripts qui l'enrichissent (lib/sofia.ts, RechercheMenu) le repèrent
+ * par les attributs data-* transmis au <form>.
  *
  * Texte du champ à 16 px au moins : iOS ne zoome pas la page à la saisie.
+ *
+ * Emplacements : `portee` dans la barre, avant la saisie (choix de
+ * l'endroit où chercher), le défaut sous le champ (suggestions) ; voir
+ * RechercheMenu.
  */
 import { MagnifyingGlassIcon } from '@phosphor-icons/react/dist/ssr/MagnifyingGlass'
 
@@ -34,14 +37,20 @@ const { id, etiquette, nom, action, parametre, caches = [], placeholder, class: 
   {caches.map(([cle, valeur]) => <input type="hidden" name={cle} value={valeur} />)}
   <label class="etiquette" for={id}>{etiquette}</label>
   <div class="champ">
+    <slot name="portee" />
     <input id={id} class="saisie" type="search" name={parametre} placeholder={placeholder} required autocomplete="off" enterkeyhint="search" />
     <button type="submit" class="bouton" aria-label="Chercher">
       <MagnifyingGlassIcon size={22} weight="bold" aria-hidden="true" />
     </button>
   </div>
+  <slot />
 </form>
 
 <style>
+  .recherche {
+    position: relative;
+  }
+
   .etiquette {
     display: block;
     margin: 0 0 var(--espace-1);

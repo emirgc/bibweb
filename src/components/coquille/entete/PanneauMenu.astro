@@ -7,6 +7,7 @@
  *
  * Contenu (les items de SideNavContent.jsx, réagencés par usage) :
  * 1. Recherche Sofia, l'action principale du site (tout en haut, partout),
+ *    ou dans les sites des bibliothèques, avec suggestions (RechercheMenu),
  *    avec à côté la suite du parcours : Mon dossier, Obtenir un document ;
  * 2. Explorer : Accueil et les pages principales, en grand (sous 1200 px
  *    seulement ; la barre de bureau les montre déjà) ;
@@ -58,9 +59,9 @@ import { ArrowUpRightIcon } from '@phosphor-icons/react/dist/ssr/ArrowUpRight'
 import { CaretDownIcon } from '@phosphor-icons/react/dist/ssr/CaretDown'
 import { MagnifyingGlassIcon } from '@phosphor-icons/react/dist/ssr/MagnifyingGlass'
 import { CARTES, LIENS_MENU, LIENS_SOFIA, PAGES_PRINCIPALES, estCourante, estExterne } from '@/data/navigation'
-import { ACTION_SOFIA, PARAMETRES_SOFIA } from '@/lib/sofia'
 import { formulairePortee } from '@/components/coquille/recherche/portees'
 import ChampRecherche from './ChampRecherche.astro'
+import RechercheMenu from './RechercheMenu.astro'
 
 interface Props {
   id: string
@@ -80,16 +81,7 @@ const courante = (url: string) => (url === '/' ? chemin === '/' : estCourante(ch
   <div class="feuille">
     <div class="grille">
       <div class="groupe sofia" style="--i: 0">
-        <ChampRecherche
-          id={`${id}-sofia`}
-          etiquette="Rechercher dans Sofia"
-          nom="Sofia"
-          action={ACTION_SOFIA}
-          parametre="queryString"
-          caches={Object.entries(PARAMETRES_SOFIA)}
-          placeholder="Articles, livres, films…"
-          data-recherche-sofia
-        />
+        <RechercheMenu id={`${id}-sofia`} />
         <ul class="sofia-liens" aria-label="Sofia : suite du parcours">
           {
             LIENS_SOFIA.map(({ libelle, href, Icone }) => (
@@ -555,6 +547,12 @@ const courante = (url: string) => (url === '/' ? chemin === '/' : estCourante(ch
   }
 
   /* ---- Suite du parcours Sofia : liens sous le champ (à côté dès 900 px) ---- */
+  /* Élément de grille : sans min-width, la barre de recherche (liste
+     déroulante comprise) l'élargirait au-delà de l'écran à 320 px */
+  .sofia {
+    min-width: 0;
+  }
+
   .sofia-liens {
     display: flex;
     flex-wrap: wrap;

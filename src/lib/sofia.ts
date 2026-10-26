@@ -20,6 +20,17 @@ export const PARAMETRES_SOFIA = {
   overrideStickyFacetDefault: 'true',
 }
 
+/**
+ * Adresse des résultats Sofia pour une requête, avec le préfixe « kw: » de la
+ * source (page de résultats des sites des bibliothèques)
+ */
+export function urlSofia(requete: string) {
+  const url = new URL(ACTION_SOFIA)
+  for (const [nom, valeur] of Object.entries(PARAMETRES_SOFIA)) url.searchParams.set(nom, valeur)
+  // URLSearchParams encoderait « : » ; on garde l'URL de la source
+  return `${url}&queryString=kw:${encodeURIComponent(requete)}`
+}
+
 /** Branche les formulaires [data-recherche-sofia] (côté client) */
 export function brancherRechercheSofia() {
   // Appelée par chaque composant qui a un formulaire : un seul branchement

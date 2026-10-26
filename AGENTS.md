@@ -12,6 +12,7 @@ Avant tout travail, lisez **`docs/CONVENTIONS.md`** : arborescence, styles, comp
 | `npm run dev:fond` | Le même, en arrière-plan (`astro dev --background`) |
 | `npm run dev:arreter` | Arrête le serveur en arrière-plan ; à faire après un déplacement de fichiers ou la modification d'un plugin |
 | `npm run verifier` | Contrôle toutes les pages sur le serveur de dev : statut, pied de page, titres, « [object Object] », débordements (option `-- --ids=fichier.json`) |
+| `npm run indexer:externes` | Relève les pages de Studio·bib et de la Boîte à outils (`src/data/recherche/`) pour les suggestions de la recherche du menu ; à relancer quand ces sites changent |
 | `npm run build` | Build statique dans `dist/` |
 | `npm run preview` | Sert `dist/` |
 
