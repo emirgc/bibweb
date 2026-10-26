@@ -12,6 +12,13 @@
  * 1200 px (raccourcie d'autant en dessous, sous la barre compacte opaque), et
  * une marge basse de 5rem - (4 | 6 | 8rem) reproduit le même chevauchement.
  * Plus de mesure ni de saut au chargement.
+ *
+ * En `size="small"` sans `cadrage`, la photo est recadrée au build en 5:2
+ * (centre gardé) : la bannière fait de 1,6 à 5 fois sa hauteur en largeur,
+ * et les deux tiers d'une photo 3:2 étaient téléchargés pour être rognés.
+ * Sous 600 px, où la bannière est plus étroite que 5:2, la photo déborde en
+ * largeur (jusqu'à 1,6 fois l'écran) : `sizes` le dit au navigateur. Avec
+ * un `cadrage`, la photo reste entière, pour ne pas déplacer la partie gardée.
  */
 import { Picture } from 'astro:assets'
 import RenduJsx from '@/components/partage/RenduJsx.astro'
@@ -41,6 +48,8 @@ if (size !== 'default' && size !== 'small') throw new Error('SuperHero2 : `size`
 const image = imageBanniere(imageName)
 const aSousTitre = subTitle !== undefined || Astro.slots.has('subTitle')
 const aEnfants = Astro.slots.has('default')
+const recadree = size === 'small' && !cadrage
+const recadrage = recadree ? { width: image.width, height: Math.round(image.width / 2.5), fit: 'cover' as const, position: 'center' } : {}
 ---
 
 <div class:list={['super-hero-2', `taille-${size}`, classes(classe, className)]} style={fusionnerStyles(cadrage && { '--cadrage': cadrage }, style)} {...reste}>
@@ -48,7 +57,8 @@ const aEnfants = Astro.slots.has('default')
     src={image}
     formats={['avif', 'webp']} fallbackFormat="webp"
     widths={largeursPour(image)}
-    sizes="100vw"
+    sizes={recadree ? '(max-width: 599px) 160vw, 100vw' : '100vw'}
+    {...recadrage}
     alt={alt}
     loading="eager"
     fetchpriority="high"
