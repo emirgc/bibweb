@@ -55,22 +55,6 @@ export const PORTEES: Portee[] = [
   },
 ]
 
-/**
- * Formulaire GET équivalent à une portée, pour un champ hors de la boîte
- * (menu) : sans JavaScript, la recherche part quand même. Site principal :
- * l'accueil avec la boîte ouverte (?search=1&sq=…) ; autres portées : la
- * page de résultats du site externe, dont l'adresse se termine par le
- * paramètre de la requête.
- */
-export function formulairePortee(cle: ClePortee) {
-  const p = PORTEES.find((portee) => portee.cle === cle)
-  if (!p?.recherche) return { action: '/', nom: 'sq', caches: [['search', '1']] as [string, string][] }
-  const url = new URL(p.recherche)
-  const parametres = [...url.searchParams]
-  const [nom] = parametres.pop() ?? ['q']
-  return { action: `${url.origin}${url.pathname}`, nom, caches: parametres }
-}
-
 /** Consigne du champ, reprise par le placeholder et par la description du champ */
 export function consigne(portee: Portee) {
   return portee.recherche ? `Rechercher dans ${portee.libelle}, puis appuyez sur Entrée` : 'Rechercher dans le site des bibliothèques'
