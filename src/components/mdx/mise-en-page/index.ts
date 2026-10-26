@@ -6,6 +6,7 @@
 export { default as Section } from './Section.astro'
 export { default as SuperHero } from './SuperHero.astro'
 export { default as SuperHero2 } from './SuperHero2.astro'
+export { default as FilArianePage } from './FilArianePage.astro'
 export { default as HeroWithImage } from './HeroWithImage.astro'
 export { default as HeroWithText } from './HeroWithText.astro'
 export { default as HeroWithText2 } from './HeroWithText2.astro'
