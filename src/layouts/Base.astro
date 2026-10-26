@@ -79,6 +79,8 @@ const attributsCoquille = langPage === LANGUE_SITE ? {} : { lang: LANGUE_SITE, s
     <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
     <link rel="icon" href="/favicon.ico" sizes="32x32" />
     <link rel="manifest" href="/manifest.webmanifest" />
+    {/* Fil des nouvelles, repérable par les lecteurs RSS depuis n'importe quelle page */}
+    <link rel="alternate" type="application/rss+xml" title="Nouvelles des Bibliothèques de l’UdeM" href="/nouvelles/rss.xml" />
     <link rel="apple-touch-icon" sizes="180x180" href="/icons/icon-192x192.png" />
     <meta name="theme-color" content="#0b113a" />
     <slot name="head" />
