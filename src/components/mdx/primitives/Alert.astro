@@ -52,8 +52,13 @@ const { Icone, libelle } = SEVERITES[severite]
 </div>
 
 <style>
+  /* La boîte épouse son texte : le message s'arrête à la largeur de lecture
+     (--mesure-texte, global.css), la boîte aussi, au lieu d'un grand vide à
+     droite ; jamais plus large que la colonne. */
   .alerte {
     display: flex;
+    width: fit-content;
+    max-width: 100%;
     margin-block: var(--espace-element);
     padding: 0;
     border: 1px solid var(--couleur-bordure);

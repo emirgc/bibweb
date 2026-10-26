@@ -153,13 +153,16 @@ const { liens } = Astro.props
     list-style: none;
   }
 
+  /* Intitulé centré dans sa case, sur une ou deux lignes */
   .panneau a {
     display: flex;
     align-items: center;
+    justify-content: center;
     min-height: 2.75rem;
     padding: 0.5rem 0.75rem;
     border-radius: var(--rayon-tres-petit);
     color: var(--bleu-fonce);
+    text-align: center;
     text-decoration: none;
     transition: background-color var(--duree-courte-4) var(--courbe-standard);
   }
