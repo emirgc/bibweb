@@ -239,7 +239,9 @@ export default function CarteLeaflet({ lieux, idsVisibles, filtre, position, cib
       }
       const { fill, contour } = couleurs(montres)
       marqueur.setStyle({ fillColor: fill, color: contour })
-      marqueur.getElement()?.setAttribute('aria-label', libelle(groupe, montres))
+      // Rôle, focus et nom : à la création, la carte n'a pas encore de vue et
+      // Leaflet n'a pas dessiné le cercle (getElement() vide) ; il l'est ici
+      rendreFocalisable(marqueur, libelle(groupe, montres))
       visibles.push(groupe)
     }
     cadrer(carte, visibles, position ? [[position.lat, position.lng]] : [], filtre === 'all')
