@@ -15,6 +15,9 @@
  *   changement de bibliothèque est annoncé sans déplacer le focus, mais le
  *   remplissage au chargement ne l'est pas (sinon, une annonce à chaque page). Le texte dit l'état ; la pastille de
  *   couleur ne fait que le doubler.
+ * - Au défilement, il s'estompe à mesure qu'il passe sous l'en-tête
+ *   collant (opacité liée au défilement) et revient en remontant ; il
+ *   reste affiché si le focus y est.
  * - Placement : rangée ordinaire sous l'en-tête. Dès 1200 px, sur une page
  *   à grande bannière (qui glisse sous l'en-tête transparent), il se pose sur
  *   le haut de la photo sans pousser la page (position absolue à sa place
@@ -77,6 +80,34 @@ const bibliotheques = lieux
   const bandeau = document.querySelector<HTMLElement>('[data-bandeau-horaires]')
 
   if (bandeau) {
+    // Au défilement, le bandeau s'estompe au lieu de glisser sous l'en-tête
+    // collant : son opacité suit la part passée sous l'en-tête, et il est
+    // effacé quand il en est aux trois quarts couvert (FONDU). Lié au défilement, le
+    // fondu suit le geste, dans un sens comme dans l'autre. Il reste affiché
+    // tant que le focus y est (WCAG 2.4.7). Opacité seule : il garde sa
+    // place, la page ne bouge pas.
+    const FONDU = 0.75
+    const entete = document.querySelector<HTMLElement>('[data-entete]')
+    let enAttente = false
+    const majVisibilite = () => {
+      enAttente = false
+      const sous = entete ? entete.getBoundingClientRect().bottom : 0
+      const { top, height } = bandeau.getBoundingClientRect()
+      const couvert = Math.min(1, Math.max(0, (sous - top) / (height * FONDU)))
+      const opacite = bandeau.contains(document.activeElement) ? 1 : 1 - couvert
+      bandeau.style.opacity = opacite < 1 ? String(opacite) : ''
+      bandeau.toggleAttribute('data-masque', opacite === 0)
+    }
+    const planifier = () => {
+      if (enAttente) return
+      enAttente = true
+      requestAnimationFrame(majVisibilite)
+    }
+    majVisibilite()
+    window.addEventListener('scroll', planifier, { passive: true })
+    window.addEventListener('resize', planifier, { passive: true })
+    bandeau.addEventListener('focusout', planifier)
+
     const choix = bandeau.querySelector<HTMLSelectElement>('[data-choix]')!
     const texte = bandeau.querySelector<HTMLElement>('[data-texte]')!
     const pastille = bandeau.querySelector<HTMLElement>('[data-pastille]')!
@@ -127,6 +158,13 @@ const bibliotheques = lieux
     background-color: var(--bleu-fonce);
     color: var(--couleur-surface);
     --couleur-focus: var(--couleur-surface);
+  }
+
+  /* Tout à fait effacé au défilement (voir le script : l'opacité suit le
+     défilement) ; visibility le retire aussi du clavier et des lecteurs
+     d'écran pendant qu'il est invisible */
+  .bandeau[data-masque] {
+    visibility: hidden;
   }
 
   .rangee {
