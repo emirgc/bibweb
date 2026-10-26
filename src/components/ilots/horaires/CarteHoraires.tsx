@@ -225,7 +225,10 @@ export default function CarteHoraires({ lieux, images }: Props) {
     setCibleCarte({ id })
   }, [])
 
-  const extraDe = (lieu: Lieu) => (maintenant && horaires && lieu.codeBib ? autresServicesDuJour(lieu, horaires, maintenant) : null)
+  // Les autres services (Référence…) suivent la bibliothèque : fermée, ils
+  // le sont aussi, et « Référence : fermé » sous « Fermé » ne dirait rien de
+  // plus. On ne les montre que si le lieu est ouvert.
+  const extraDe = (lieu: Lieu) => (maintenant && horaires && lieu.codeBib && estOuvert(statutDu(lieu)) ? autresServicesDuJour(lieu, horaires, maintenant) : null)
 
   const propsHoraires = {
     horaires,
