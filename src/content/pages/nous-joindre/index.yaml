@@ -8,24 +8,23 @@ banniere:
   taille: petite
 
 sections:
-  - type: cartes-liens
-    fond: bleu100
-    cartes:
+  - type: liste-liens
+    liens:
       - titre: Nous écrire
-        icone: pencil-simple
+        description: Posez votre question par formulaire, notre équipe vous répond.
         lien: /nous-joindre/nous-ecrire/
       - titre: Clavarder
-        icone: chat
+        description: Discutez en direct avec un membre de l'équipe, selon l'horaire du service.
         lien: /nous-joindre/clavarder/
       - titre: Consulter le répertoire
-        icone: users-four
+        description: Trouvez les coordonnées du personnel et votre bibliothécaire disciplinaire.
         lien: /nous-joindre/notre-equipe/
       - titre: Faire une suggestion d'achat
-        icone: book-open-text
+        description: Proposez un document à ajouter à nos collections.
         lien: /nous-joindre/suggestion-achat/
       - titre: Horaires et lieux
-        icone: map-pin
+        description: Consultez les heures d'ouverture et l'adresse de chaque bibliothèque.
         lien: /horaires/
       - titre: Joindre la Bibliothèque des livres rares
-        icone: scroll
+        description: Coordonnées de la Bibliothèque des livres rares et collections spéciales.
         lien: /espaces/blrcs/#nous-joindre
