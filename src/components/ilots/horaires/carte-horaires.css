@@ -867,7 +867,7 @@
 
 .ch-volet-caret {
   flex: 0 0 auto;
-  transition: transform var(--duree-courte-4) var(--courbe-standard);
+  transition: transform var(--duree-moyenne-1) var(--courbe-emphase);
 }
 
 .ch-volet[open] .ch-volet-caret {
@@ -876,6 +876,31 @@
 
 .ch-volet-contenu {
   padding-bottom: 1rem;
+}
+
+/* Ouverture et fermeture animées, comme les accordéons du site
+   (Accordion.astro) : hauteur et opacité, --duree-moyenne-1, --courbe-emphase.
+   Sans prise en charge (::details-content, interpolate-size), le volet
+   s'ouvre d'un coup ; le mouvement réduit coupe la transition (global.css). */
+@supports (interpolate-size: allow-keywords) and selector(::details-content) {
+  .ch-volet {
+    interpolate-size: allow-keywords;
+  }
+
+  .ch-volet::details-content {
+    block-size: 0;
+    overflow-y: clip;
+    opacity: 0;
+    transition:
+      block-size var(--duree-moyenne-1) var(--courbe-emphase),
+      opacity var(--duree-moyenne-1) var(--courbe-emphase),
+      content-visibility var(--duree-moyenne-1) allow-discrete;
+  }
+
+  .ch-volet[open]::details-content {
+    block-size: auto;
+    opacity: 1;
+  }
 }
 
 .ch-contacts {
