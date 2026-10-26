@@ -89,7 +89,7 @@ const nomColonne = sommaire ? 'Sommaire de la page' : 'Navigation de la section'
         <div class="colonne-contenu">
           <FilAriane url={url} lang={langSite} />
           <NavigationSecondaire section={section} racine={racine} courante={url} variante="repliable" resume={resume} lang={langSite} />
-          <main id="contenu-principal" tabindex="-1">
+          <main id="contenu-principal">
             <slot />
           </main>
           <Retroaction lang={langSite} />
@@ -97,7 +97,7 @@ const nomColonne = sommaire ? 'Sommaire de la page' : 'Navigation de la section'
       </div>
     ) : (
       <>
-        <main id="contenu-principal" tabindex="-1">
+        <main id="contenu-principal">
           <slot />
         </main>
         {!estPagePrincipale && (

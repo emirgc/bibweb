@@ -87,7 +87,7 @@ const attributsCoquille = langPage === LANGUE_SITE ? {} : { lang: LANGUE_SITE, s
     <a class="lien-evitement" href="#contenu-principal" lang={langPage === LANGUE_SITE ? undefined : LANGUE_SITE}>Aller au contenu principal</a>
     {
       vierge ? (
-        <main id="contenu-principal" class="conteneur" tabindex="-1">
+        <main id="contenu-principal" class="conteneur">
           <slot />
         </main>
       ) : (
@@ -121,6 +121,17 @@ const attributsCoquille = langPage === LANGUE_SITE ? {} : { lang: LANGUE_SITE, s
         HTML. Il ne masque que ce qui est sous la ligne de flottaison. */}
     <script>
       import '@/lib/animations'
+    </script>
+    {/* Lien d'évitement : le focus passe au contenu principal, pour que
+        Tab reparte de là et que les lecteurs d'écran le lisent. Sans
+        JavaScript, l'ancre suffit dans les navigateurs actuels. */}
+    <script>
+      import { focaliserTemporairement } from '@/lib/focus'
+
+      document.querySelector('.lien-evitement')?.addEventListener('click', () => {
+        const principal = document.getElementById('contenu-principal')
+        if (principal) focaliserTemporairement(principal, { preventScroll: true })
+      })
     </script>
   </body>
 </html>

@@ -125,7 +125,7 @@ const ids = { q: `repertoire-q-${n}`, bib: `repertoire-bib-${n}`, disc: `reperto
 
   <p class="compte" role="status" data-statut>{total} personnes</p>
 
-  <ul class="fiches" aria-label="Membres du personnel" tabindex="-1" data-liste>
+  <ul class="fiches" aria-label="Membres du personnel" data-liste>
     {
       fiches.map((p) => (
         <li class="fiche" data-texte={p.texte} data-bibliotheque={p.bibliotheques.map((b) => cle(b)).join(SEPARATEUR)} data-discipline={p.disciplines.map((d) => cle(d)).join(SEPARATEUR)}>
@@ -206,6 +206,7 @@ const ids = { q: `repertoire-q-${n}`, bib: `repertoire-bib-${n}`, disc: `reperto
 
 <script>
   import { normaliserMots, cle, SEPARATEUR } from './normaliser'
+  import { focaliserTemporairement } from '@/lib/focus'
 
   const PAR_PAGE = 8
   // Délai avant d'annoncer le nombre de résultats pendant la frappe : une
@@ -370,7 +371,7 @@ const ids = { q: `repertoire-q-${n}`, bib: `repertoire-bib-${n}`, disc: `reperto
       rendre()
       // Le focus passe au début de la nouvelle page de résultats
       racine.scrollIntoView({ block: 'start' })
-      liste.focus({ preventScroll: true })
+      focaliserTemporairement(liste, { preventScroll: true })
     }
 
     function rendre(annonceDifferee = false) {

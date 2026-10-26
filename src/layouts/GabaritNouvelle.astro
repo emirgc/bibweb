@@ -39,7 +39,7 @@ const jsonLd = {
   <script slot="head" type="application/ld+json" set:html={JSON.stringify(jsonLd)} />
   <div class="conteneur nouvelle">
     <FilAriane url={sansBase(Astro.url.pathname)} />
-    <main id="contenu-principal" tabindex="-1">
+    <main id="contenu-principal">
       <article>
         <header class="entete-article">
           <h1>{titreAffiche ?? title}</h1>
