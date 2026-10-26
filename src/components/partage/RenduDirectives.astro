@@ -37,6 +37,7 @@ import Section from '@/components/mdx/mise-en-page/Section.astro'
 import HeroWithImage from '@/components/mdx/mise-en-page/HeroWithImage.astro'
 import RichList from '@/components/mdx/mise-en-page/RichList.astro'
 import RichListItemWithLink from '@/components/mdx/mise-en-page/RichListItemWithLink.astro'
+import Chiffres from '@/components/mdx/mise-en-page/Chiffres.astro'
 import Card2 from '@/components/mdx/cartes/Card2.astro'
 import CardWithIcon from '@/components/mdx/cartes/CardWithIcon.astro'
 import CardWithImage from '@/components/mdx/cartes/CardWithImage.astro'
@@ -310,6 +311,8 @@ const TAILLE_CARTE = { xs: 12, sm: 6, md: 4 }
           </div>
         )
       }
+      case 'chiffres':
+        return <Chiffres forme={a.forme} groupes={a.groupes} />
       case 'encadres':
         return (
           <div class="encadres" style={{ '--_fond-encadre': couleurPalette(a.fond) }}>

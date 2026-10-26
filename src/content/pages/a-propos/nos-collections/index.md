@@ -15,15 +15,25 @@ Les bibliothèques développent et maintiennent d'importantes collections, afin 
 
 ### La collection en chiffres
 
-- 36 302 Périodiques imprimés
-- 150 829 Périodiques électroniques
-- 299 Bases de données
-- 1 475 637 Livres imprimés
-- 1 477 335 livres électroniques
-- 32 398 documents Papyrus
-- 42 572 objets numérique Calypso
-- 226 jeux de données Borealis
-- 10 revues hébergées OJS
+:::chiffres
+#### Livres
+
+- 1 475 637 imprimés
+- 1 477 335 électroniques
+
+#### Périodiques
+
+- 36 302 imprimés
+- 150 829 électroniques
+:::
+
+:::chiffres{forme=tuiles}
+- 299 bases de données
+- 42 572 objets numériques dans Calypso
+- 32 398 documents dans Papyrus
+- 226 jeux de données dans Borealis
+- 10 revues hébergées sur OJS
+:::
 
 ### Évaluation des collections de périodiques
 

@@ -46,6 +46,7 @@ export const VOCABULAIRE = {
   accordeon: { genre: 'containerDirective', syntaxe: ':::accordeon (un titre ### par volet)', attributs: {} },
   alerte: { genre: 'containerDirective', syntaxe: ':::alerte{type=info}', attributs: { type: { valeurs: ALERTES }, titre: {} } },
   cartes: { genre: 'containerDirective', syntaxe: ':::cartes (liste de - :icone[nom] [Titre](/lien/))', attributs: { couleur: { valeurs: ['bleuPrincipal', 'vertFonce', 'rose300', 'jaune'] } } },
+  chiffres: { genre: 'containerDirective', syntaxe: ':::chiffres (un titre #### par groupe, suivi d’une liste de 2 ou 3 éléments - 1 234 libellé) ou :::chiffres{forme=tuiles} (une liste seule)', attributs: { forme: { valeurs: ['barres', 'tuiles'] } } },
   citation: { genre: 'containerDirective', syntaxe: ':::citation{source="Nom, fonction"}', attributs: { source: {} } },
   encadres: { genre: 'containerDirective', syntaxe: ':::encadres{fond=rose300} (un titre #### par encadré, suivi au besoin de :icone[nom])', attributs: { fond: { valeurs: FONDS_ENCADRES } } },
   galerie: { genre: 'containerDirective', syntaxe: ':::galerie (liste de - ![](./images/photo.jpg) Légende)', attributs: {} },
@@ -338,6 +339,46 @@ function encadres(noeud, attributs, fichier) {
   marquer(noeud, 'encadres', { fond: attributs.fond ?? 'rose300' })
 }
 
+/*
+ * :::chiffres : chiffres clés, chaque élément de liste commence par un nombre
+ * (« 1 475 637 livres imprimés »).
+ * - forme=barres (par défaut) : un titre par groupe, puis 2 ou 3 éléments,
+ *   rendus en barre de répartition (Chiffres.astro) ;
+ * - forme=tuiles : une liste seule, une tuile par chiffre.
+ * Le contenu devient des attributs : le composant dessine tout lui-même.
+ */
+const NOMBRE = /^(\d{1,3}(?:[ \u00a0\u202f]\d{3})+|\d+)\s+(\S[\s\S]*)$/
+const PARTS_MAX = 3
+
+function elementsChiffres(elements, fichier, exemple) {
+  return elements.map((element) => {
+    const contenu = paragrapheSeul(element, fichier, `Un élément de :::chiffres est un nombre suivi de son libellé, sur une ligne. ${exemple}`)
+    if (contenu.some((enfant) => enfant.type !== 'text')) fichier.fail('Un élément de :::chiffres est du texte simple, sans lien ni mise en forme.', element)
+    const trouve = texteDe({ children: contenu }).replace(/\s+/g, ' ').trim().match(NOMBRE)
+    if (!trouve) fichier.fail(`Un élément de :::chiffres commence par un nombre (chiffres groupés par trois, séparés par une espace). ${exemple}`, element)
+    return { valeur: Number(trouve[1].replace(/\D/g, '')), libelle: trouve[2] }
+  })
+}
+
+function chiffres(noeud, attributs, fichier) {
+  const forme = attributs.forme ?? 'barres'
+  let groupes
+  if (forme === 'tuiles') {
+    const exemple = 'Exemple :\n:::chiffres{forme=tuiles}\n- 299 bases de données\n- 10 revues hébergées\n:::'
+    groupes = [{ elements: elementsChiffres(listeSeule(noeud, fichier, `Le bloc :::chiffres{forme=tuiles} contient seulement une liste à puces. ${exemple}`), fichier, exemple) }]
+  } else {
+    const exemple = 'Exemple :\n:::chiffres\n#### Livres\n- 1 475 637 imprimés\n- 1 477 335 électroniques\n:::'
+    groupes = decouperParTitres(noeud, fichier, 'chiffres').map((volet) => {
+      const [titre, liste, ...reste] = volet.children
+      if (liste?.type !== 'list' || reste.length) fichier.fail(`Dans :::chiffres, chaque titre est suivi d’une seule liste à puces. ${exemple}`, titre)
+      if (liste.children.length < 2 || liste.children.length > PARTS_MAX) fichier.fail(`Un groupe de :::chiffres a 2 ou ${PARTS_MAX} éléments : ce sont les parts d’une même barre.`, liste)
+      return { titre: texteDe(titre).trim(), elements: elementsChiffres(liste.children, fichier, exemple) }
+    })
+  }
+  noeud.children = []
+  marquer(noeud, 'chiffres', { forme, groupes })
+}
+
 // Ancre fixe d'un titre : « ### Titre {#ancre} », pour garder une ancre
 // publique que le texte du titre ne donne plus
 function ancreTitre(noeud, fichier) {
@@ -404,6 +445,7 @@ export function remarkDirectivesBib() {
           else if (noeud.name === 'encadres') encadres(noeud, attributs, fichier)
           else if (noeud.name === 'accordeon') accordeon(noeud, fichier)
           else if (noeud.name === 'tableau') tableau(noeud, attributs, fichier)
+          else if (noeud.name === 'chiffres') chiffres(noeud, attributs, fichier)
           else if (noeud.name === 'citation') marquer(noeud, 'citation', { source: attributs.source })
           else if (noeud.name === 'alerte') marquer(noeud, 'alerte', { type: attributs.type ?? 'info', titre: attributs.titre })
           else if (noeud.name === 'section') marquer(noeud, 'section', { fond: attributs.fond, id: attributs.id })
