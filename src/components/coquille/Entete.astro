@@ -23,14 +23,12 @@ import { ArrowRightIcon } from '@phosphor-icons/react/dist/ssr/ArrowRight'
 import { MagnifyingGlassIcon } from '@phosphor-icons/react/dist/ssr/MagnifyingGlass'
 import { XIcon } from '@phosphor-icons/react/dist/ssr/X'
 import PanneauMenu from './entete/PanneauMenu.astro'
+import BurgerIcon from '@/components/icones/BurgerIcon.astro'
 import { PAGES_PRINCIPALES, estCourante } from '@/data/navigation'
 import logoUdem from '@/components/icones/logo-udem.svg'
 import logoUdemNoir from '@/components/icones/logo-udem-noir.svg'
 
 const chemin = sansBase(Astro.url.pathname)
-// Icône burger.svg de la source (BurgerIcon)
-const BURGER =
-  'M224 128a8 8 0 0 1-8 8H40a8 8 0 1 1 0-16h176a8 8 0 0 1 8 8zM86 72h132c3.314 0 6-3.582 6-8s-2.686-8-6-8H86c-3.314 0-6 3.582-6 8s2.686 8 6 8zm132 112H86c-3.314 0-6 3.582-6 8s-2.686 8-6 8h132c3.314 0 6-3.582 6-8s-2.686-8-6-8z'
 ---
 
 <header class="entete" data-entete>
@@ -72,7 +70,7 @@ const BURGER =
         <button type="button" class="bouton-icone bouton-menu" aria-label="Menu" aria-expanded="false" aria-controls="menu-principal" data-bouton-menu>
           <span class="libelle-menu" aria-hidden="true"><span class="si-ferme">Menu</span><span class="si-ouvert">Fermer</span></span>
           <span class="si-ferme">
-            <svg viewBox="0 0 256 256" width="34" height="34" fill="currentColor" aria-hidden="true" focusable="false"><path d={BURGER}></path></svg>
+            <BurgerIcon size={34} color="currentColor" />
           </span>
           <span class="si-ouvert"><XIcon size={34} weight="bold" aria-hidden="true" /></span>
         </button>
@@ -92,7 +90,7 @@ const BURGER =
         </button>
         <button type="button" class="bouton-icone bouton-menu" aria-label="Menu" aria-expanded="false" aria-controls="menu-principal" data-bouton-menu>
           <span class="si-ferme">
-            <svg viewBox="0 0 256 256" width="34" height="34" fill="currentColor" aria-hidden="true" focusable="false"><path d={BURGER}></path></svg>
+            <BurgerIcon size={34} color="currentColor" />
           </span>
           <span class="si-ouvert"><XIcon size={34} weight="bold" aria-hidden="true" /></span>
         </button>
