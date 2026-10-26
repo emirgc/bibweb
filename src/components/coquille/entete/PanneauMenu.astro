@@ -10,13 +10,16 @@
  *    avec à côté la suite du parcours : Mon dossier, Obtenir un document ;
  * 2. Explorer : Accueil et les pages principales, en grand (sous 1200 px
  *    seulement ; la barre de bureau les montre déjà) ;
- * 3. Accès rapide : les tâches courantes (LIENS_MENU) en tuiles ;
+ * 3. Accès rapide : les tâches courantes (LIENS_MENU) en tuiles, puis « À
+ *    propos des Bibliothèques », à part : une carte claire bordée, avec une
+ *    ligne de description (l'institution, pas une tâche) ;
  * 4. Studio·bib, Boîte à outils, Ressources : repliables sous 1200 px
  *    (<details name>, un seul ouvert à la fois) ; au-delà, un catalogue
  *    avec aperçu (onglets de l'APG : les services en rangée en haut, près
  *    du bouton Menu, l'aperçu du service choisi dessous) ;
- * 5. Sous 1200 px, un pied collé au bas de la feuille : « Je donne » (absent
- *    de la barre compacte) et la poignée de fermeture.
+ * 5. Sous 1200 px, « Je donne » (absent de la barre compacte) termine le
+ *    menu, dans le défilement, puis un pied collé au bas de la feuille ne
+ *    porte que la poignée de fermeture.
  *
  * La poignée est un bouton « Fermer le menu » ; au doigt, on peut aussi la
  * glisser vers le haut : la feuille suit le doigt et se referme passé le
@@ -202,6 +205,13 @@ const courante = (url: string) => (url === '/' ? chemin === '/' : estCourante(ch
             ))
           }
         </ul>
+        <a class="a-propos" href="/a-propos/" aria-current={courante('/a-propos/') ? 'page' : undefined}>
+          <span class="a-propos-texte">
+            <span class="a-propos-titre">À propos des Bibliothèques</span>
+            <span class="a-propos-description">Organisation, collections, rapports annuels</span>
+          </span>
+          <ArrowRightIcon size={18} aria-hidden="true" className="a-propos-fleche" />
+        </a>
       </div>
 
       <ul class="groupe cartes-pliables" style="--i: 3" aria-label="Services et ressources">
@@ -244,13 +254,15 @@ const courante = (url: string) => (url === '/' ? chemin === '/' : estCourante(ch
         }
       </ul>
 
+      <div class="donner">
+        <a class="je-donne" href="/nous-soutenir/">
+          Je donne
+          <ArrowRightIcon size={22} aria-hidden="true" />
+        </a>
+      </div>
     </div>
 
     <div class="pied">
-      <a class="je-donne" href="/nous-soutenir/">
-        Je donne
-        <ArrowRightIcon size={22} aria-hidden="true" />
-      </a>
       <button type="button" class="poignee" aria-label="Fermer le menu" data-poignee-menu>
         <span class="poignee-trait" aria-hidden="true"></span>
       </button>
@@ -631,6 +643,78 @@ const courante = (url: string) => (url === '/' ? chemin === '/' : estCourante(ch
     overflow-wrap: anywhere;
   }
 
+  /* ---- À propos : carte claire bordée, à part des tuiles pleines ---- */
+  .a-propos {
+    display: flex;
+    align-items: center;
+    gap: var(--espace-2);
+    min-height: 4rem;
+    margin-top: var(--espace-1);
+    padding: 0.75rem 1rem;
+    border: 1px solid var(--couleur-bordure);
+    border-radius: var(--rayon-tres-petit);
+    background-color: var(--bleu-100);
+    color: var(--bleu-fonce);
+    text-decoration: none;
+    transition:
+      border-color var(--duree-courte-4) var(--courbe-standard),
+      scale var(--duree-courte-2) var(--courbe-standard);
+  }
+
+  .a-propos:active {
+    scale: 0.98;
+  }
+
+  .a-propos:hover {
+    border-color: var(--bleu-principal);
+    color: var(--bleu-fonce);
+  }
+
+  .a-propos:hover .a-propos-titre {
+    text-decoration: underline;
+    text-underline-offset: 0.2em;
+  }
+
+  .a-propos :global(.a-propos-fleche) {
+    flex-shrink: 0;
+    color: var(--bleu-principal);
+  }
+
+  .a-propos :global(.a-propos-fleche) {
+    margin-inline-start: auto;
+    transition: translate var(--duree-courte-4) var(--courbe-standard);
+  }
+
+  @media (hover: hover) and (pointer: fine) {
+    .a-propos:hover :global(.a-propos-fleche) {
+      translate: 0.25rem 0;
+    }
+  }
+
+  .a-propos-texte {
+    display: grid;
+    gap: 0.125rem;
+    min-width: 0;
+    overflow-wrap: anywhere;
+  }
+
+  .a-propos-titre {
+    font-weight: var(--graisse-forte);
+    line-height: 1.3;
+  }
+
+  /* Texte secondaire sur bleu 100 : 6,9:1 ; titre en bleu foncé : 15,7:1 */
+  .a-propos-description {
+    color: var(--couleur-texte-secondaire);
+    font-size: 0.875rem;
+    line-height: 1.35;
+  }
+
+  .a-propos[aria-current='page'] {
+    border-color: var(--bleu-principal);
+    box-shadow: inset 3px 0 0 var(--bleu-principal);
+  }
+
   /* ---- Cartes repliables (< 900 px) ---- */
   .cartes-pliables {
     display: grid;
@@ -915,7 +999,12 @@ const courante = (url: string) => (url === '/' ? chemin === '/' : estCourante(ch
     outline-offset: 3px;
   }
 
-  /* ---- Je donne ---- */
+  /* ---- Je donne : dernier élément du menu, pas collé ---- */
+  .donner {
+    display: grid;
+    grid-column: 1 / -1;
+  }
+
   .je-donne {
     display: flex;
     align-items: center;
@@ -943,13 +1032,13 @@ const courante = (url: string) => (url === '/' ? chemin === '/' : estCourante(ch
     outline-offset: 3px;
   }
 
-  /* ---- Pied collé au bas de la feuille (< 1200 px) ---- */
+  /* ---- Pied collé au bas de la feuille (< 1200 px) : la poignée ---- */
   .pied {
     position: sticky;
     bottom: 0;
     display: grid;
     gap: 0.25rem;
-    padding: var(--espace-2) 16px 0;
+    padding: 0 16px;
     /* Hors de la barre des gestes et du bord arrondi des téléphones */
     padding-bottom: env(safe-area-inset-bottom, 0px);
     border-top: 1px solid var(--couleur-bordure);
@@ -1072,6 +1161,7 @@ const courante = (url: string) => (url === '/' ? chemin === '/' : estCourante(ch
 
     .explorer,
     .cartes-pliables,
+    .donner,
     .pied {
       display: none;
     }
