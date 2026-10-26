@@ -15,10 +15,12 @@
  *   gauche, liens légaux et « Paramètres des témoins » à droite. Sous 900 px,
  *   droits et licence empilés, puis les liens à la suite sur une ou deux
  *   lignes.
- * - Sous 900 px, le pied reste court (environ la moitié de ses 1400 px
- *   d'origine) sans rien cacher : « Besoin d'aide? » (urgence comprise) sur
- *   toute la largeur, « Liens rapides » et « Nos services » côte à côte,
- *   sceau réduit.
+ * - Sous 900 px, le pied reste court : « Besoin d'aide? » (urgence et
+ *   réseaux compris) reste ouvert ; « Liens rapides » et « Nos services »
+ *   deviennent des volets repliés (motif Disclosure de l'APG : le h3 porte
+ *   un bouton aria-expanded qui montre ou cache sa liste). Le bouton n'est
+ *   ajouté que par le script, sous 900 px : sans JS ou sur grand écran, les
+ *   listes sont visibles et les titres restent de simples titres.
  *
  * Corrections par rapport à la source :
  * - icônes YouTube et Instagram nommées (elles n'avaient aucun texte) ;
@@ -27,6 +29,7 @@
  * - les pastilles de couleur sont décoratives (aria-hidden) : le nom du
  *   service porte le sens.
  */
+import { CaretDownIcon } from '@phosphor-icons/react/dist/ssr/CaretDown'
 import { SirenIcon } from '@phosphor-icons/react/dist/ssr/Siren'
 import { COLONNES_PIED, LIENS_QUEUE_PIED, RESEAUX_PIED, URGENCE } from '@/data/navigation'
 import Licence from './pied/Licence.astro'
@@ -47,9 +50,9 @@ const annee = new Date().getFullYear()
       <div class="colonnes">
         {
           COLONNES_PIED.map(({ titre, liens }, i) => (
-            <div class="colonne">
+            <div class="colonne" data-pliable-pied={i > 0 ? '' : undefined}>
               <h3 class="sous-titre">{titre}</h3>
-              <ul class="liste">
+              <ul class="liste" id={`pied-liste-${i}`}>
                 {liens.map(({ libelle, href, rel, Icone, point }) => (
                   <li>
                     <a href={href} rel={rel}>
@@ -85,6 +88,10 @@ const annee = new Date().getFullYear()
           ))
         }
 
+        <template data-chevron-pied>
+          <CaretDownIcon class="chevron" size={18} weight="bold" aria-hidden="true" />
+        </template>
+
         <div class="colonne colonne-logo">
           <a href="/">
             <img src="/images/logo-bib/logo-bib-sceau-bleu.svg" alt="Les bibliothèques, Université de Montréal – Accueil" width="302" height="302" loading="lazy" decoding="async" />
@@ -109,6 +116,40 @@ const annee = new Date().getFullYear()
 </footer>
 
 <script>
+  // Volets repliables sous 900 px (voir l'en-tête du composant)
+  const etroit = window.matchMedia('(width < 900px)')
+  const chevron = document.querySelector<HTMLTemplateElement>('[data-chevron-pied]')
+
+  function preparerVolets() {
+    for (const colonne of document.querySelectorAll<HTMLElement>('[data-pliable-pied]')) {
+      const titre = colonne.querySelector('.sous-titre')!
+      const liste = colonne.querySelector<HTMLElement>('.liste')!
+      const bouton = titre.querySelector('button')
+      if (etroit.matches && !bouton) {
+        const nouveau = document.createElement('button')
+        nouveau.type = 'button'
+        nouveau.className = 'bascule'
+        nouveau.setAttribute('aria-expanded', 'false')
+        nouveau.setAttribute('aria-controls', liste.id)
+        nouveau.append(...titre.childNodes)
+        if (chevron) nouveau.append(chevron.content.cloneNode(true))
+        nouveau.addEventListener('click', () => {
+          const ouvert = nouveau.getAttribute('aria-expanded') !== 'true'
+          nouveau.setAttribute('aria-expanded', String(ouvert))
+          liste.hidden = !ouvert
+        })
+        titre.append(nouveau)
+        liste.hidden = true
+      } else if (!etroit.matches && bouton) {
+        bouton.querySelector('.chevron')?.remove()
+        titre.replaceChildren(...bouton.childNodes)
+        liste.hidden = false
+      }
+    }
+  }
+  preparerVolets()
+  etroit.addEventListener('change', preparerVolets)
+
   document.querySelector('[data-parametres-temoins]')?.addEventListener('click', (e) => {
     e.preventDefault()
     ;(document.querySelector('bib-consent') as (HTMLElement & { showPreferences?: () => void }) | null)?.showPreferences?.()
@@ -145,8 +186,10 @@ const annee = new Date().getFullYear()
     text-underline-offset: 0.2em;
   }
 
-  /* Le bleu du focus global se perd sur les fonds bleus du pied de page */
-  .pied :focus-visible {
+  /* Le bleu du focus global se perd sur les fonds bleus du pied de page
+     (:global : les boutons des volets sont créés par le script, sans
+     l'attribut de portée d'Astro) */
+  .pied :global(:focus-visible) {
     outline-color: var(--couleur-surface);
   }
 
@@ -299,20 +342,73 @@ const annee = new Date().getFullYear()
       text-align: left;
     }
 
+    /* « Besoin d'aide? » ouvert, puis les deux volets empilés, séparés par
+       un filet */
     .colonnes {
       display: grid;
-      grid-template-columns: repeat(2, minmax(0, 1fr));
-      gap: 32px 16px;
-      align-items: start;
+      grid-template-columns: minmax(0, 1fr);
+      gap: 0;
+    }
+
+    .colonne:first-child {
+      margin-bottom: 24px;
+    }
+
+    .colonne[data-pliable-pied] {
+      align-items: stretch;
+      border-top: 1px solid color-mix(in srgb, var(--couleur-surface) 25%, transparent);
+    }
+
+    [data-pliable-pied]:last-of-type {
+      border-bottom: 1px solid color-mix(in srgb, var(--couleur-surface) 25%, transparent);
+    }
+
+    [data-pliable-pied] .sous-titre {
+      margin: 0;
+    }
+
+    /* Tout le titre est la cible (48 px de haut, WCAG 2.5.8) */
+    .sous-titre :global(.bascule) {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 1rem;
+      width: 100%;
+      min-height: 3rem;
+      padding: 0;
+      border: 0;
+      background: none;
+      color: inherit;
+      font: inherit;
+      text-align: start;
+      cursor: pointer;
+    }
+
+    .sous-titre :global(.chevron) {
+      flex-shrink: 0;
+      transition: rotate var(--duree-courte-4) var(--courbe-standard);
+    }
+
+    .sous-titre :global([aria-expanded='true'] .chevron) {
+      rotate: 180deg;
+    }
+
+    [data-pliable-pied] .liste {
+      padding-bottom: 16px;
+    }
+
+    /* display: flex de .liste l'emporterait sur l'attribut hidden */
+    [data-pliable-pied] .liste[hidden] {
+      display: none;
+    }
+
+    .colonne a {
+      overflow-wrap: anywhere;
     }
 
     .colonne {
       align-items: flex-start;
       text-align: left;
-    }
-
-    .colonne:first-child {
-      grid-column: 1 / -1;
     }
 
     .colonne-logo {
