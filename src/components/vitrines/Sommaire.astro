@@ -151,6 +151,40 @@ const { liens } = Astro.props
     background-color: var(--couleur-surface);
     box-shadow: var(--ombre-2);
     list-style: none;
+    transform-origin: top left;
+    /* Fermeture : plus brève, même chemin (comme le menu) */
+    transition:
+      opacity var(--duree-courte-4) var(--courbe-standard),
+      translate var(--duree-courte-4) var(--courbe-standard),
+      scale var(--duree-courte-4) var(--courbe-standard);
+  }
+
+  /* Le panneau glisse depuis la pastille en apparaissant */
+  details:not([open]) .panneau {
+    opacity: 0;
+    translate: 0 -0.5rem;
+    scale: 0.98;
+  }
+
+  details[open] .panneau {
+    transition-duration: var(--duree-moyenne-1);
+    transition-timing-function: var(--courbe-emphase-deceleree);
+  }
+
+  @starting-style {
+    details[open] .panneau {
+      opacity: 0;
+      translate: 0 -0.5rem;
+      scale: 0.98;
+    }
+  }
+
+  /* Le contenu du <details> reste affiché le temps du fondu de fermeture
+     (sans ::details-content, le panneau disparaît d'un coup) */
+  @supports selector(::details-content) {
+    details::details-content {
+      transition: content-visibility var(--duree-courte-4) allow-discrete;
+    }
   }
 
   /* Intitulé centré dans sa case, sur une ou deux lignes */
