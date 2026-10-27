@@ -91,8 +91,15 @@ function grouperBoutons(liste: Noeud[]) {
 if (noeuds) noeuds = grouperBoutons(noeuds)
 
 // Images du contenu, chargées à la demande. Le plugin a déjà vérifié que le
-// fichier existe et donne son chemin depuis la racine du projet.
-const IMAGES = import.meta.glob<{ default: ImageMetadata }>('/src/content/**/*.{jpg,jpeg,png,webp,avif,gif,svg,JPG,JPEG,PNG,WEBP}')
+// fichier existe et donne son chemin depuis la racine du projet. Sans les
+// bannières ni les photos du personnel : lib/bannieres.ts et
+// mdx/personnel/photos.ts les importent déjà toutes, et Vite avertissait à
+// chaque build d'un import à la demande sans effet (INEFFECTIVE_DYNAMIC_IMPORT).
+const IMAGES = import.meta.glob<{ default: ImageMetadata }>([
+  '/src/content/**/*.{jpg,jpeg,png,webp,avif,gif,svg,JPG,JPEG,PNG,WEBP}',
+  '!/src/content/pages/images/super-heroes/**',
+  '!/src/content/personnel/photos/**',
+])
 
 async function chargerImage(src: string) {
   const charger = IMAGES[src]

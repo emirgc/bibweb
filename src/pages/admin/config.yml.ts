@@ -186,7 +186,7 @@ export const GET: APIRoute = async () => {
     locale: 'fr',
     // Page de connexion et en-tête ; chemin relatif à /admin/, pour
     // fonctionner aussi dans un sous-dossier (/bibweb/admin/)
-    logo: { src: '../images/logo-udem-bib.png', show_in_header: true },
+    logo: { src: '../images/logo-bib/logo-bib-horizontal.svg', show_in_header: true },
     backend: {
       name: 'github',
       repo: DEPOT,
