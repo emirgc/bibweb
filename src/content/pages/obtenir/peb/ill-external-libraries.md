@@ -75,8 +75,7 @@ Here are the fees for one loan or copy request:
 | --- | ---: | ---: |
 | Non-profit Canadian Libraries (except agreements) | $25.00 | $15.00 |
 | Other Canadian Libraries (except agreements) | $35.00 | $35.00 |
-| OCUL/COPPUL/CBUA-CAUL/BCI Agreement<br>Medical/Hospital Libraries affiliated with the UdeM RUISS | Free according to agreement | Free according to agreement |
-| Medical/Hospital Libraries not affiliated with the UdeM RUISS | $5.00 | $5.00 |
+| OCUL/COPPUL/CBUA-CAUL/BCI Agreement<br>Medical/Hospital Libraries of Health and Social Services Institutions Members of the Université de Montréal RUISSS Electronic Resources Consortium | Free according to agreement | Free according to agreement |
 :::
 
 #### Outside Canada

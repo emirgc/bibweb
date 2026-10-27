@@ -76,8 +76,7 @@ Ces tarifs s’appliquent pour chaque demande de prêt ou de copie.
 | --- | ---: | ---: |
 | Bibliothèques et établissements à but non lucratif<br>(à moins d'ententes particulières) | 25,00 $ | 15,00 $ |
 | Bibliothèques et établissements à but lucratif<br>(à moins d'ententes particulières) | 35,00 $ | 35,00 $ |
-| Entente OCUL/COPPUL/CBUA-CAUL/BCI<br>Bibliothèques d’établissements de santé associées au RUISS UdeM | Gratuit selon entente | Gratuit selon entente |
-| Bibliothèques d’établissements de santé hors RUISS UdeM | 5,00 $ | 5,00 $ |
+| Entente OCUL/COPPUL/CBUA-CAUL/BCI<br>Bibliothèques des établissements de santé et de services sociaux membres du Consortium des ressources électroniques du RUISSS de l’Université de Montréal | Gratuit selon entente | Gratuit selon entente |
 :::
 
 #### Hors Canada
