@@ -76,9 +76,12 @@ sections:
     texte: Nos collections spéciales forment de véritables laboratoires de recherche et de découverte. Parcourir les différents fonds, c’est découvrir le passé à travers nos livres rares et anciens, nos artefacts et nos collections d’images.
     image: ./images/collections-speciales-montage.webp
     positionImage: droite
-    bouton:
-      texte: Explorer les collections spéciales
-      lien: https://collections-speciales.bib.umontreal.ca/
+    boutons:
+      - texte: Explorer les collections spéciales
+        lien: https://collections-speciales.bib.umontreal.ca/
+      - texte: Découvrir la Bibliothèque des livres rares et collections spéciales
+        lien: /espaces/blrcs/
+        contour: true
 
   - type: image-fond
     image: ./images/engagement-accueil.webp
