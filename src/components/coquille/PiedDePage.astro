@@ -136,6 +136,8 @@ const annee = new Date().getFullYear()
         nouveau.addEventListener('click', () => {
           const ouvert = nouveau.getAttribute('aria-expanded') !== 'true'
           nouveau.setAttribute('aria-expanded', String(ouvert))
+          // L'ouverture s'anime après un clic seulement, jamais au chargement
+          liste.dataset.anime = ''
           liste.hidden = !ouvert
         })
         titre.append(nouveau)
@@ -143,6 +145,7 @@ const annee = new Date().getFullYear()
       } else if (!etroit.matches && bouton) {
         bouton.querySelector('.chevron')?.remove()
         titre.replaceChildren(...bouton.childNodes)
+        delete liste.dataset.anime
         liste.hidden = false
       }
     }
@@ -400,6 +403,34 @@ const annee = new Date().getFullYear()
     /* display: flex de .liste l'emporterait sur l'attribut hidden */
     [data-pliable-pied] .liste[hidden] {
       display: none;
+    }
+
+    /* Ouverture en hauteur, comme les accordéons du contenu ; display en
+       allow-discrete : la liste reste visible jusqu'à la fin de la fermeture */
+    @supports (interpolate-size: allow-keywords) {
+      [data-pliable-pied] .liste[data-anime] {
+        interpolate-size: allow-keywords;
+        overflow-y: clip;
+        transition:
+          block-size var(--duree-moyenne-1) var(--courbe-emphase),
+          padding-bottom var(--duree-moyenne-1) var(--courbe-emphase),
+          opacity var(--duree-moyenne-1) var(--courbe-emphase),
+          display var(--duree-moyenne-1) allow-discrete;
+      }
+
+      [data-pliable-pied] .liste[data-anime][hidden] {
+        block-size: 0;
+        padding-bottom: 0;
+        opacity: 0;
+      }
+
+      @starting-style {
+        [data-pliable-pied] .liste[data-anime]:not([hidden]) {
+          block-size: 0;
+          padding-bottom: 0;
+          opacity: 0;
+        }
+      }
     }
 
     .colonne a {

@@ -464,4 +464,11 @@ main a:not(.sans-icone-pdf, .no-pdf-icon)[href*='.pdf?']::after {
     transition-duration: 0.01ms !important;
     scroll-behavior: auto !important;
   }
+  /* Ni ::details-content (volets des accordéons) : à part, car un sélecteur
+     inconnu d'un navigateur invaliderait toute la liste ci-dessus */
+  @supports selector(::details-content) {
+    *::details-content {
+      transition-duration: 0.01ms !important;
+    }
+  }
 }

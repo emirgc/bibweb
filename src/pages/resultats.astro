@@ -216,6 +216,10 @@ const SOURCES = [
     font-size: 0.9375rem;
     font-weight: var(--graisse-moyenne);
     cursor: pointer;
+    transition:
+      background-color var(--duree-courte-4) var(--courbe-standard),
+      border-color var(--duree-courte-4) var(--courbe-standard),
+      color var(--duree-courte-4) var(--courbe-standard);
   }
 
   /* Le bouton radio couvre la pastille : clavier et lecteurs d'écran natifs */
@@ -227,6 +231,10 @@ const SOURCES = [
     margin: 0;
     opacity: 0;
     cursor: pointer;
+  }
+
+  .source:hover {
+    background: var(--bleu-100);
   }
 
   .source:has(input:checked) {
