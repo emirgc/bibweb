@@ -5,18 +5,18 @@
  * src/data/navigation.ts.
  *
  * - Titre centré en Figtree, puis trois colonnes de liens séparées par un
- *   filet (« Besoin d'aide? », « Liens rapides », « Nos services ») et le
+ *   filet (« Besoin d'aide? », « Liens rapides », « Sites connexes ») et le
  *   sceau des bibliothèques à droite. Sous 900 px : tout est centré et
  *   empilé, le sceau en dernier.
  * - « Besoin d'aide? » : liens à pictogramme, puis l'urgence, puis YouTube et
- *   Instagram (à gauche, sous les liens). « Nos services » : une pastille de
+ *   Instagram (à gauche, sous les liens). « Sites connexes » : une pastille de
  *   la couleur de chaque service devant son nom, comme dans studio·bib.
  * - Barre du bas, bleue, sur une ligne dès 900 px : droits et licence à
  *   gauche, liens légaux et « Paramètres des témoins » à droite. Sous 900 px,
  *   droits et licence empilés, puis les liens à la suite sur une ou deux
  *   lignes.
  * - Sous 900 px, le pied reste court : « Besoin d'aide? » (urgence et
- *   réseaux compris) reste ouvert ; « Liens rapides » et « Nos services »
+ *   réseaux compris) reste ouvert ; « Liens rapides » et « Sites connexes »
  *   deviennent des volets repliés (motif Disclosure de l'APG : le h3 porte
  *   un bouton aria-expanded qui montre ou cache sa liste). Le bouton n'est
  *   ajouté que par le script, sous 900 px : sans JS ou sur grand écran, les
@@ -310,7 +310,7 @@ const annee = new Date().getFullYear()
 
   /* Téléphone : le sceau et le titre signent le pied en tête, puis tout
      s'aligne à gauche dessous : « Besoin d'aide? » sur toute la largeur,
-     « Liens rapides » et « Nos services » côte à côte. Le sceau des grands
+     « Liens rapides » et « Sites connexes » côte à côte. Le sceau des grands
      écrans (dans les colonnes) est masqué : un seul est rendu visible, et
      display: none le retire aussi de l'arbre d'accessibilité. */
   .signature-sceau {

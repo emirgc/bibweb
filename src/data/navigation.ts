@@ -110,12 +110,12 @@ export const CARTES: Carte[] = [
     image: autresRessources,
     titre: 'Ressources',
     portee: 'site',
-    description: "Sofia, le dépôt Papyrus, les données géospatiales et les collections numériques des bibliothèques.",
+    description: "Sofia, le dépôt Papyrus, les données géospatiales et les collections spéciales des bibliothèques.",
     liens: [
       { libelle: 'Outil de recherche Sofia', href: 'https://umontreal.on.worldcat.org/discovery?lang=fr' },
       { libelle: 'Papyrus – dépôt institutionnel', href: 'https://umontreal.scholaris.ca/' },
       { libelle: 'GéoIndex – Données géospatiales', href: 'https://geoapp.bibl.ulaval.ca/' },
-      { libelle: 'Calypso – Objets numériques', href: 'https://calypso.bib.umontreal.ca/' },
+      { libelle: 'Collections spéciales', href: 'https://collections-speciales.bib.umontreal.ca/' },
       { libelle: 'Service Accessibilité', href: '/service-accessibilite/' },
     ],
     couleur: 'var(--vert-pale)',
@@ -132,9 +132,9 @@ export const CARTES: Carte[] = [
 type LienPied = { libelle: string; href: string; rel?: string; Icone?: typeof InfoIcon; point?: string }
 
 /**
- * Trois colonnes de liens, chacune avec son titre. Corrections par rapport à
- * la source : paramètres de suivi Google Analytics (_gl=…) retirés des liens
- * A-Z et Calypso.
+ * Trois colonnes de liens, chacune avec son titre. Correction par rapport à
+ * la source : paramètres de suivi Google Analytics (_gl=…) retirés du lien
+ * A-Z.
  */
 export const COLONNES_PIED: { titre: string; liens: LienPied[] }[] = [
   {
@@ -155,13 +155,13 @@ export const COLONNES_PIED: { titre: string; liens: LienPied[] }[] = [
     ],
   },
   {
-    titre: 'Nos services',
+    titre: 'Sites connexes',
     liens: [
       { libelle: 'Boîte à outils', href: 'https://boite-outils.bib.umontreal.ca/', point: 'var(--rouge-orange)' },
       { libelle: 'Studio·bib', href: 'https://studio.bib.umontreal.ca/', point: 'var(--jaune)' },
       { libelle: 'Papyrus', href: 'https://umontreal.scholaris.ca/', point: 'var(--vert-fonce)' },
       { libelle: 'GéoIndex', href: 'https://geoapp.bibl.ulaval.ca/', rel: 'noopener noreferrer', point: 'var(--bleu-200)' },
-      { libelle: 'Calypso', href: 'https://calypso.bib.umontreal.ca/', point: 'var(--rose-300)' },
+      { libelle: 'Collections spéciales', href: 'https://collections-speciales.bib.umontreal.ca/', point: 'var(--rose-300)' },
     ],
   },
 ]
