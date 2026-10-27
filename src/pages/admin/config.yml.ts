@@ -23,8 +23,9 @@ import { SUJETS } from '@/data/sujets'
  * - En ligne, chaque enregistrement ouvre une pull request (editorial_workflow).
  *   En développement (npm run cms:local), Decap écrit directement dans les
  *   fichiers, sans branche : on voit le résultat dans le serveur de dev.
- * - DECAP_AUTH_URL : adresse du relais OAuth GitHub (n8n), sans barre finale.
- *   DECAP_AUTH_ENDPOINT : son chemin (par défaut « auth »).
+ * - Connexion : Decap ouvre admin/connexion.html sur le site même
+ *   (DECAP_ORIGINE, ex. https://emirgc.github.io), qui passe au relais OAuth
+ *   GitHub (DECAP_AUTH_URL, n8n). Voir connexion.html.ts.
  *
  * JSON.stringify suffit : un document JSON est un document YAML valide.
  */
@@ -39,6 +40,13 @@ const bannieres = readdirSync(DOSSIER_BANNIERES)
   .filter((fichier) => /\.(webp|jpe?g|png|avif)$/i.test(fichier))
   .map((fichier) => fichier.replace(/\.[^.]+$/, ''))
   .sort((a, b) => a.localeCompare(b, 'fr'))
+
+// Fenêtre de connexion (connexion.html.ts), chemin sans barre initiale
+// sous le sous-dossier de publication : « bibweb/admin/connexion.html »
+const pageConnexion = [process.env.BASE_PATH, 'admin/connexion.html']
+  .map((partie) => partie?.replace(/^\/+|\/+$/g, ''))
+  .filter(Boolean)
+  .join('/')
 
 // Images d'une page ou d'une nouvelle : dossier images/ à côté du fichier
 const imagesACote = { media_folder: 'images', public_folder: './images' }
@@ -156,7 +164,8 @@ export const GET: APIRoute = async () => {
       name: 'github',
       repo: DEPOT,
       branch: 'main',
-      ...(process.env.DECAP_AUTH_URL ? { base_url: process.env.DECAP_AUTH_URL, auth_endpoint: process.env.DECAP_AUTH_ENDPOINT || 'auth' } : {}),
+      // Decap n'accepte le jeton que d'une fenêtre de l'origine base_url
+      ...(process.env.DECAP_ORIGINE ? { base_url: process.env.DECAP_ORIGINE, auth_endpoint: pageConnexion } : {}),
       commit_messages: {
         create: 'Création de {{collection}} « {{slug}} »',
         update: 'Modification de {{collection}} « {{slug}} »',
