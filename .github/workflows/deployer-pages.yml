@@ -55,6 +55,9 @@ jobs:
         env:
           SITE_ENV: preprod
           BASE_PATH: ${{ steps.pages.outputs.base_path }}
+          # Relais de connexion GitHub de Decap CMS (workflow n8n « Decap CMS : connexion GitHub » sur ordo.bib.umontreal.ca)
+          DECAP_AUTH_URL: https://ordo.bib.umontreal.ca
+          DECAP_AUTH_ENDPOINT: webhook/decap/auth
 
       - name: Téléverser le site construit
         uses: actions/upload-pages-artifact@v3
