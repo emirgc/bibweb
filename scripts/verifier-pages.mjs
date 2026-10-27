@@ -54,7 +54,7 @@ function urlDePage(fichier) {
 // Les nouvelles prennent le `slug:` du frontmatter (casse conservée), sinon
 // le nom de fichier passé dans slugify.
 function urlDeNouvelle(fichier) {
-  const segments = relative(join(RACINE, 'src/content/nouvelles'), fichier).replace(/\.mdx$/, '').split('/')
+  const segments = relative(join(RACINE, 'src/content/nouvelles'), fichier).replace(/\.mdx?$/, '').split('/')
   const nom = segments.pop()
   const slug = readFileSync(fichier, 'utf8').match(/^slug:\s*['"]?([^'"\n]+?)['"]?\s*$/m)?.[1] ?? slugify(nom)
   return `/nouvelles/${[...segments, slug].join('/')}/`
@@ -64,7 +64,7 @@ const urls = [
   ...fichiersContenu(join(RACINE, 'src/content/pages'))
     .filter((f) => !relative(join(RACINE, 'src/content/pages'), f).startsWith('dev/'))
     .map(urlDePage),
-  ...fichiersContenu(join(RACINE, 'src/content/nouvelles'), /\.mdx$/).map(urlDeNouvelle),
+  ...fichiersContenu(join(RACINE, 'src/content/nouvelles'), /\.mdx?$/).map(urlDeNouvelle),
 ]
   .filter((url) => !args.seulement || url.includes(args.seulement))
   .sort()

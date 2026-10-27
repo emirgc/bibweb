@@ -34,9 +34,9 @@ const texte = props.type === 'page' && !estVitrine(props.entree) ? props.entree 
 const entreeRendue = props.type === 'nouvelle' ? props.entree : texte
 const rendu = entreeRendue ? await render(entreeRendue) : null
 const Content = rendu?.Content ?? null
-// Une page .md passe par RenduDirectives, qui rend ses directives avec les
-// composants du MDX ; un .mdx reçoit ces composants directement
-const markdown = texte?.filePath?.endsWith('.md') ?? false
+// Une page ou une nouvelle .md passe par RenduDirectives, qui rend ses
+// directives avec les composants du MDX ; un .mdx reçoit ces composants directement
+const markdown = entreeRendue?.filePath?.endsWith('.md') ?? false
 ---
 
 {
@@ -44,7 +44,13 @@ const markdown = texte?.filePath?.endsWith('.md') ?? false
     <GabaritVitrine vitrine={vitrine} />
   ) : Content && props.type === 'nouvelle' ? (
     <GabaritNouvelle nouvelle={props.entree}>
-      <Content components={composantsMdx} />
+      {markdown ? (
+        <RenduDirectives>
+          <Content />
+        </RenduDirectives>
+      ) : (
+        <Content components={composantsMdx} />
+      )}
     </GabaritNouvelle>
   ) : Content && texte?.data.template === 'blank' ? (
     <Base titre={texte.data.title} vierge>

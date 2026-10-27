@@ -107,7 +107,7 @@ const sujets = z.array(z.enum(IDS_SUJETS)).default([])
 const nouvelles = defineCollection({
   loader: glob({
     base: './src/content/nouvelles',
-    pattern: '**/*.mdx',
+    pattern: '**/*.{md,mdx}',
     generateId: ({ entry, data }) => {
       const segments = entry.replace(/\.mdx?$/i, '').split('/')
       const nom = segments.pop() ?? ''

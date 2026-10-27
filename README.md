@@ -69,7 +69,7 @@ Ce document a deux parties :
 | La place ou le libellé d'une page dans le menu de gauche de sa section | En-tête : `secondaryNav` (`title`, `order`, `hidden`) | Voir `docs/REDACTION.md`, § 2.1. |
 | Cacher une page des moteurs et de la recherche du site | En-tête : `noindex: true` | Demandez aussi à un développeur de l'exclure du plan du site (voir [Redirections, sitemap et robots.txt](#redirections-sitemap-et-robotstxt)). |
 | Une alerte, un encadré, un bouton, un tableau, des cartes, un accordéon dans une page | Dans le texte de la page `.md` | Une **directive** (`:::alerte`, `::bouton`, `:::cartes`…). Voir `docs/REDACTION.md`, § 2.3. |
-| Une nouvelle | `src/content/nouvelles/<année>/<nom>.mdx` | Voir [Les nouvelles](#les-nouvelles-et-la-revue-de-presse). |
+| Une nouvelle | `src/content/nouvelles/<année>/<nom>.md` | Voir [Les nouvelles](#les-nouvelles-et-la-revue-de-presse). |
 | Un article de la revue de presse | `src/content/revue-de-presse/articles.json` | Ajouter `title`, `date`, `source`, `url`. |
 | Une image dans une page | Dossier `images/` à côté de la page | Voir [Images, bannières et PDF](#images-bannières-et-pdf). |
 | La photo d'une bannière | En-tête `superHero.imageName` (page de texte) ou `banniere.image` (vitrine) ; les photos sont dans `src/content/pages/images/super-heroes/` | Le nom de la photo, sans extension (`recherche`, `obtenir`…). |
@@ -150,7 +150,7 @@ Détail : `docs/REDACTION.md`, § 3.
 
 ## Les nouvelles et la revue de presse
 
-**Une nouvelle** est un fichier `.mdx` dans `src/content/nouvelles/<année>/`, avec ses images dans `src/content/nouvelles/<année>/images/` :
+**Une nouvelle** est un fichier `.md` dans `src/content/nouvelles/<année>/`, avec ses images dans `src/content/nouvelles/<année>/images/` :
 
 ```md
 ---
@@ -162,7 +162,7 @@ newsImage:
   alt: Description de la photo
 source: Bibliothèques
 ---
-Le texte de la nouvelle, en Markdown.
+Le texte de la nouvelle, en Markdown, avec les mêmes directives que les pages (`::bouton`, `:::alerte`…).
 ```
 
 - L'adresse est `/nouvelles/<année>/<slug>/`. Sans `slug`, c'est le nom du fichier.
@@ -292,7 +292,7 @@ Plusieurs personnes ou agents peuvent travailler dans le même dossier avec un s
 | :-- | :-- | :-- | :-- |
 | `pages` | `src/content/pages/**/*.{md,mdx}` | `glob` | `GabaritPage` |
 | `vitrines` | `src/content/pages/**/*.yaml` | `glob` | `GabaritVitrine` |
-| `nouvelles` | `src/content/nouvelles/**/*.mdx` | `glob` | `GabaritNouvelle` |
+| `nouvelles` | `src/content/nouvelles/**/*.{md,mdx}` | `glob` | `GabaritNouvelle` |
 | `revueDePresse` | `src/content/revue-de-presse/articles.json` | `file` | listes d'actualités seulement (pas de page) |
 
 **Identifiants = URL de la source.**
@@ -336,8 +336,8 @@ Les gabarits, dans `src/layouts/` :
 
 `astro.config.mjs` définit **deux processeurs** (`unified` de `@astrojs/markdown-remark`, `smartypants` désactivé car le contenu est déjà typographique) :
 
-- **MDX** (pages `.mdx` et nouvelles) : `rehype-ancres-titres`, puis `rehype-titre-principal`.
-- **Markdown** (pages `.md`) : `remark-directive` et `remarkDirectivesBib`, puis les deux mêmes plugins rehype, puis `rehypeDirectivesBib` en dernier. Les directives n'existent pas dans le MDX, où un « voir:ici » reste du texte.
+- **MDX** (pages `.mdx`) : `rehype-ancres-titres`, puis `rehype-titre-principal`.
+- **Markdown** (pages et nouvelles `.md`) : `remark-directive` et `remarkDirectivesBib`, puis les deux mêmes plugins rehype, puis `rehypeDirectivesBib` en dernier. Les directives n'existent pas dans le MDX, où un « voir:ici » reste du texte.
 
 Les plugins, dans `src/plugins/` :
 
