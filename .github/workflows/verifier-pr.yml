@@ -35,6 +35,15 @@ jobs:
       - name: Installer les dépendances
         run: npm ci
 
+      # Images optimisées du dernier déploiement (deployer-pages.yml), en
+      # lecture seule : une PR ne remplace pas le cache de main
+      - name: Récupérer les images optimisées
+        uses: actions/cache/restore@v4
+        with:
+          path: node_modules/.astro/assets
+          key: images-${{ hashFiles('src/**/*.jpg', 'src/**/*.jpeg', 'src/**/*.png', 'src/**/*.webp', 'src/**/*.avif', 'src/**/*.gif', 'astro.config.mjs') }}
+          restore-keys: images-
+
       - name: Construire le site
         run: npm run build
         env:

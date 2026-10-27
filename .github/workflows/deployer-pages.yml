@@ -45,6 +45,18 @@ jobs:
       - name: Installer les dépendances
         run: npm ci
 
+      # Images déjà optimisées par Astro (avif, webp aux largeurs du site) :
+      # sans ce cache, chaque build les reconvertit toutes. Après npm ci, qui
+      # vide node_modules. Nouvelle clé quand une image ou la configuration
+      # change ; restore-keys reprend alors le cache précédent, et seules les
+      # nouvelles images sont converties.
+      - name: Récupérer les images optimisées
+        uses: actions/cache@v4
+        with:
+          path: node_modules/.astro/assets
+          key: images-${{ hashFiles('src/**/*.jpg', 'src/**/*.jpeg', 'src/**/*.png', 'src/**/*.webp', 'src/**/*.avif', 'src/**/*.gif', 'astro.config.mjs') }}
+          restore-keys: images-
+
       # Donne le sous-dossier de publication (/bibweb pour emirgc/bibweb)
       - name: Préparer GitHub Pages
         id: pages
