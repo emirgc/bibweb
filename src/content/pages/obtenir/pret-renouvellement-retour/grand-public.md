@@ -40,5 +40,6 @@ La consultation des ressources électroniques est possible sur les ordinateurs p
 | --- | ---: |
 | Livres, partitions | 30 jours |
 | Documents d'accompagnement d'un livre (cédéroms, DVD, autre) | 30 jours |
-| Réserve de cours: 3 documents permis, consultation sur place | Livres et partitions: 3 heures<br>Audiovisuel: 6 heures |
+| Réserve de cours, livres et partitions (3 documents permis, consultation sur place) | 3 heures |
+| Réserve de cours, audiovisuel (3 documents permis, consultation sur place) | 6 heures |
 :::

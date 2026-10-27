@@ -37,7 +37,8 @@ En tant que membre de la communauté UdeM, vous avez accès aux ressources élec
 | Type de document | Durée du prêt |
 | --- | ---: |
 | Livres, partitions, documents audiovisuels | 30 jours |
-| Réserve de cours : 3 documents permis, consultation sur place | Livres et partition: 3 heures<br>Audiovisuel: 6 heures |
+| Réserve de cours, livres et partitions (3 documents permis, consultation sur place) | 3 heures |
+| Réserve de cours, audiovisuel (3 documents permis, consultation sur place) | 6 heures |
 | Référence en prêt de 3 jours | 3 jours |
 | Périodiques | 7 jours |
 :::
