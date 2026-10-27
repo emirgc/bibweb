@@ -2,6 +2,7 @@ import type { APIRoute } from 'astro'
 import { readdirSync } from 'node:fs'
 import { toutesLesPages, estVitrine, type PageTexte } from '@/lib/contenu'
 import { SUJETS } from '@/data/sujets'
+import { champsVitrine } from './_vitrines'
 
 /*
  * Configuration de Decap CMS (/admin/config.yml), lue par public/admin/index.html.
@@ -16,7 +17,8 @@ import { SUJETS } from '@/data/sujets'
  * Choix :
  * - Le corps des pages et des nouvelles s'édite en Markdown brut : un éditeur
  *   visuel réécrirait les directives (:::tableau, ::bouton…) à l'enregistrement.
- * - Les vitrines (.yaml) et les pages .mdx ne sont pas encore modifiables.
+ * - Les vitrines (.yaml) ont leurs champs dans _vitrines.ts. Les pages .mdx ne
+ *   sont pas encore modifiables.
  * - Decap réécrit l'en-tête (frontmatter) à l'enregistrement : ordre des champs
  *   de ce fichier, dates sans guillemets, listes à la ligne. Le corps n'est
  *   pas touché.
@@ -157,6 +159,28 @@ export const GET: APIRoute = async () => {
       })),
     }))
 
+  // Vitrines (.yaml), l'accueil d'abord puis par titre
+  const vitrines = pages
+    .filter(estVitrine)
+    .sort((a, b) => (a.id === 'index' ? -1 : b.id === 'index' ? 1 : (a.data.title ?? '').localeCompare(b.data.title ?? '', 'fr')))
+  const collectionVitrines = {
+    name: 'vitrines',
+    label: 'Vitrines (accueil et sections)',
+    label_singular: 'Vitrine',
+    // Format de public/admin/format-vitrine.js : celui de Decap réécrirait
+    // tout le fichier (commentaires, lignes vides, textes coupés à 80 colonnes)
+    format: 'yaml-vitrine',
+    extension: 'yaml',
+    files: vitrines.map((vitrine) => ({
+      name: vitrine.id.replaceAll('/', '--'),
+      label: vitrine.id === 'index' ? 'Accueil' : (vitrine.data.crumbLabel ?? vitrine.data.title ?? vitrine.id),
+      file: vitrine.filePath,
+      media_folder: 'images',
+      public_folder: 'images',
+      fields: champsVitrine(bannieres),
+    })),
+  }
+
   const developpement = import.meta.env.DEV
   const config = {
     locale: 'fr',
@@ -202,6 +226,7 @@ export const GET: APIRoute = async () => {
         ...imagesACote,
         fields: champsNouvelle,
       },
+      collectionVitrines,
       ...collectionsPages,
     ],
   }
