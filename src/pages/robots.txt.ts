@@ -7,14 +7,14 @@ import type { APIRoute } from 'astro'
  * être forcé au build.
  *
  * - production : tout est permis sauf /consent/ (le serveur de
- *   consentements chargé en iframe) ;
+ *   consentements chargé en iframe) et /admin/ (Decap CMS) ;
  * - preprod (bib-pp) : rien n'est indexé, ni sitemap ni Host.
  */
 export const GET: APIRoute = ({ site }) => {
   const racine = (site ?? new URL('https://bib.umontreal.ca')).origin
   const contenu =
     process.env.SITE_ENV === 'production'
-      ? ['User-agent: *', 'Allow: /', 'Disallow: /consent/', `Sitemap: ${racine}/sitemap-index.xml`, `Host: ${racine}`]
+      ? ['User-agent: *', 'Allow: /', 'Disallow: /consent/', 'Disallow: /admin/', `Sitemap: ${racine}/sitemap-index.xml`, `Host: ${racine}`]
       : ['User-agent: *', 'Disallow: /']
   return new Response(contenu.join('\n') + '\n', {
     headers: { 'Content-Type': 'text/plain; charset=utf-8' },

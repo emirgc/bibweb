@@ -15,7 +15,8 @@
     "verifier:seuils": "node scripts/verifier-seuils.mjs",
     "indexer:externes": "node scripts/indexer-externes.mjs",
     "astro": "astro",
-    "dev:propre": "astro dev stop; rm -f .astro/data-store.json && astro dev --background"
+    "dev:propre": "astro dev stop; rm -f .astro/data-store.json && astro dev --background",
+    "cms:local": "npx --yes decap-server@3.11.3"
   },
   "dependencies": {
     "@astrojs/markdown-remark": "^7.3.3",

@@ -41,7 +41,8 @@ Ce document a deux parties :
 25. [Vérifier son travail](#vérifier-son-travail)
 26. [Le cache de contenu](#le-cache-de-contenu)
 27. [Construire et déployer](#construire-et-déployer)
-28. [Documentation](#documentation)
+28. [Interface de rédaction (Decap CMS)](#interface-de-rédaction-decap-cms)
+29. [Documentation](#documentation)
 
 ---
 
@@ -55,6 +56,7 @@ Ce document a deux parties :
 - Une adresse = un seul fichier. Changer le nom d'un fichier change l'adresse de la page et casse les liens qui y mènent : demandez d'abord à l'équipe Web.
 - Les fichiers `.mdx` (forme technique, pendant la transition) et tout ce qui est hors de `src/content/` et `public/` se modifient **avec un développeur**. Les fichiers de `src/data/` sont du code TypeScript : on peut y changer un texte ou une adresse entre guillemets, mais faites relire la modification.
 - Une erreur (champ mal nommé, icône ou image introuvable) empêche le site de se construire et donne le fichier fautif. Rien de faux ne peut être mis en ligne.
+- **Sans outils de développement** : les nouvelles et les pages de texte (`.md`) se modifient aussi dans l'interface de rédaction, `/admin/` (voir [Interface de rédaction (Decap CMS)](#interface-de-rédaction-decap-cms)).
 - En cas de doute : **l'équipe Web**.
 
 ## Je veux changer… : le tableau
@@ -276,6 +278,7 @@ Les règles détaillées sont dans **`docs/CONVENTIONS.md`**, à lire avant tout
 | `npm run dev:arreter` | Arrête le serveur en arrière-plan (`astro dev stop`). Nécessaire après un déplacement de fichiers ou la modification d'un plugin. |
 | `npm run dev:propre` | Arrête le serveur, supprime le cache de contenu (`.astro/data-store.json`) et relance en arrière-plan |
 | `npm run verifier` | Contrôle toutes les pages sur le serveur de dev (voir [Vérifier son travail](#vérifier-son-travail)) |
+| `npm run cms:local` | Serveur local de Decap CMS (port 8081), pour essayer `/admin/` sans GitHub (voir [Interface de rédaction](#interface-de-rédaction-decap-cms)) |
 | `npm run build` | Build statique dans `dist/` |
 | `npm run preview` | Sert `dist/` |
 | `npm run astro -- …` | Toute autre commande de la CLI d'Astro |
@@ -468,6 +471,19 @@ Points d'attention :
 - Construit avec `SITE_ENV=preprod` : non indexable, adresses canoniques vers `bib.umontreal.ca`.
 - GitHub Pages n'applique pas `_redirects` ; les redirections d'`astro.config.mjs` (pages de redirection générées) fonctionnent.
 - Les API (horaires, formations) peuvent refuser l'origine `emirgc.github.io` : les blocs dynamiques affichent alors leur état d'erreur.
+
+## Interface de rédaction (Decap CMS)
+
+[Decap CMS](https://decapcms.org/) donne aux rédacteurs des formulaires dans le navigateur, à l'adresse `/admin/`. Il n'a ni serveur ni base de données : il lit et écrit les fichiers du dépôt par l'API GitHub, avec le compte GitHub de la personne.
+
+- **`public/admin/index.html`** charge Decap (version fixée, depuis unpkg).
+- **`src/pages/admin/config.yml.ts`** génère la configuration à partir du contenu : une fiche par page `.md` (regroupées par section), la collection des nouvelles, les sujets (`src/data/sujets.ts`) et les bannières (`src/content/pages/images/super-heroes/`). Une nouvelle page `.md` y apparaît d'elle-même. Les vitrines et les pages `.mdx` ne sont pas encore modifiables.
+- **Corps en Markdown brut** : un éditeur visuel réécrirait les directives. L'en-tête est réécrit à l'enregistrement (ordre des champs de la configuration, dates sans guillemets, listes à la ligne), sans effet sur le site.
+- **Publication** : en ligne, chaque enregistrement ouvre une branche et une pull request (`editorial_workflow`) ; `.github/workflows/verifier-pr.yml` construit le site sur chaque PR, et le responsable fusionne. Rien n'est publié sans cette fusion.
+- **Connexion** : Decap passe par une application OAuth GitHub et un relais qui garde son secret. L'adresse du relais se donne au build : `DECAP_AUTH_URL` (sans barre finale) et `DECAP_AUTH_ENDPOINT` (par défaut `auth`). Sans elles, la connexion en ligne ne fonctionne pas.
+- **Accès** : chaque rédacteur a un compte GitHub avec le rôle *Write* sur le dépôt ; la branche `main` est protégée (PR et approbation obligatoires).
+
+Essai local, sans GitHub ni relais : `npm run dev:fond`, puis `npm run cms:local`, puis http://localhost:4321/admin/index.html et « Se connecter ». En développement, Decap écrit directement dans les fichiers (pas de branche ni de PR) : `git diff` montre ce qu'il a changé.
 
 ## Documentation
 
