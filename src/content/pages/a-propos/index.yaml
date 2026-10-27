@@ -30,3 +30,6 @@ sections:
       - titre: Carrière
         description: Accédez aux opportunités de carrière.
         lien: /a-propos/carriere/
+      - titre: Nous soutenir
+        description: Contribuez au rayonnement des bibliothèques par un don.
+        lien: /nous-soutenir/
