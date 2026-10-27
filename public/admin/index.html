@@ -13,6 +13,17 @@
     <title>Rédaction | Les bibliothèques / UdeM</title>
   </head>
   <body>
+    <!-- Démarrage manuel : le format des vitrines doit être enregistré avant -->
+    <script>
+      window.CMS_MANUAL_INIT = true
+    </script>
     <script src="https://unpkg.com/decap-cms@3.16.3/dist/decap-cms.js"></script>
+    <script type="module">
+      import YAML from 'https://unpkg.com/yaml@2.8.1/browser/index.js'
+      import { formatVitrine } from './format-vitrine.js'
+
+      CMS.registerCustomFormat('yaml-vitrine', 'yaml', formatVitrine(YAML))
+      CMS.init()
+    </script>
   </body>
 </html>
