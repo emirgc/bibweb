@@ -81,6 +81,6 @@ Pour en savoir plus sur la réutilisation : la capsule vidéo de l’Association
 
 #### Conditions d’utilisation des autres plateformes des bibliothèques UdeM
 
-- [Calypso](https://vie-privee.umontreal.ca/conditions-dutilisation/)
+- [Collections spéciales](https://vie-privee.umontreal.ca/conditions-dutilisation/)
 - [Papyrus](https://vie-privee.umontreal.ca/conditions-dutilisation/)
 - [Sofia](https://www.oclc.org/content/dam/ext-ref/worldcat-org/terms.html)

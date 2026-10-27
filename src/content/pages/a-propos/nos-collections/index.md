@@ -29,7 +29,7 @@ Les bibliothèques développent et maintiennent d'importantes collections, afin 
 
 :::chiffres{forme=tuiles}
 - 299 bases de données
-- 42 572 objets numériques dans Calypso
+- 42 572 objets numériques dans Collections spéciales
 - 32 398 documents dans Papyrus
 - 226 jeux de données dans Borealis
 - 10 revues hébergées sur OJS

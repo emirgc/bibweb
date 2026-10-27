@@ -380,13 +380,6 @@ div.so-details.so-details {
   }
 }
 
-.so-logo-calypso {
-  display: block;
-  width: 60%;
-  height: auto;
-  margin-inline: auto;
-}
-
 /* ---- Participation ouverte des acteurs de la société ---- */
 .so-participation {
   display: grid;

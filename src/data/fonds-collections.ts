@@ -36,7 +36,7 @@ export type Fonds = {
   periodes: Periode[]
   /** Recherche des documents du fonds dans Sofia */
   sofia?: string
-  /** Documents numérisés (Calypso, Collections spéciales…) */
+  /** Documents numérisés (Collections spéciales…) */
   numerisations?: string
 }
 
