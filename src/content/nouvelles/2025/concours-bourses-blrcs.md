@@ -12,23 +12,23 @@ La Bibliothèque des livres rares et collections spéciales (BLRCS) de l'Univers
 
 La fin du concours pour les trois bourses est le **6 décembre 2025**.
 
-<Typography component='h2' variant='h3'>Bourse Geneviève-Bazin (2000 $)</Typography>
+## Bourse Geneviève-Bazin (2000 $)
 
 La bourse Geneviève-Bazin est ouverte à tous. Elle a été créée par Mme Marie Bazin à la mémoire de sa sœur Geneviève Bazin, première chef du Service des collections spéciales.
 
-<Button primary href='/nouvelles/2025-10-17-concours-bourses-blrcs/bourse-Genevieve-Bazin-automne-2025.pdf' style={{ marginBottom: '2rem' }}>Fiche d’information pour la bourse Geneviève-Bazin</Button>
+::bouton[Fiche d’information pour la bourse Geneviève-Bazin]{lien=/nouvelles/2025-10-17-concours-bourses-blrcs/bourse-Genevieve-Bazin-automne-2025.pdf}
 
-<Typography component='h2' variant='h3'>Bourse Charles S. N.-Parent (2000 $)</Typography>
+## Bourse Charles S. N.-Parent (2000 $)
 
 La bourse Charles S. N.-Parent est réservée aux étudiantes et aux étudiants inscrits au Département d’histoire de l'Université de Montréal qui s’intéressent à l’histoire des Amériques (Amérique du Nord, Amérique centrale et Amérique du Sud). Elle a été créée par M. Charles S. N. Parent, homme d’affaires et mécène bien connu dans le milieu des arts et du patrimoine au Québec.
 
-<Button primary href='/nouvelles/2025-10-17-concours-bourses-blrcs/bourse-Charles-Parent-automne-2025.pdf' style={{ marginBottom: '2rem' }}>Fiche d’information pour la bourse Charles S.N.-Parent</Button>
+::bouton[Fiche d’information pour la bourse Charles S.N.-Parent]{lien=/nouvelles/2025-10-17-concours-bourses-blrcs/bourse-Charles-Parent-automne-2025.pdf}
 
-<Typography component='h2' variant='h3'>Bourse Réjean-Hébert de l’Université de Montréal (3 500 $)</Typography>
+## Bourse Réjean-Hébert de l’Université de Montréal (3 500 $)
 
 La bourse Réjean-Hébert de l’Université de Montréal a été créée à la suite du don du Docteur Réjean Hébert, figure bien connue du domaine de la santé. Ses travaux en tant que professeur spécialisé dans les questions liées à la gérontologie et au vieillissement ont eu un impact significatif sur l’organisation des services de santé des personnes âgées au Québec. Doyen de la Faculté de médecine et des sciences de la santé de l’Université de Sherbrooke de 2004 à 2010 et de l’École de santé publique de l’Université de Montréal de 2017 à 2019, il a été ministre de la Santé et des Services sociaux ainsi que des aînés de 2012 à 2014. 
 
 En 2024, il a fait don aux Bibliothèques de l’Université de Montréal d’une soixante d’ouvrages traitant du vieillissement et des maladies liées à l’âge, constituant ainsi le Fonds documentaire Réjean-Hébert sur le vieillissement.
 
-<Button primary href='/nouvelles/2025-10-17-concours-bourses-blrcs/bourse-Rejean-Hebert-automne-2025.pdf' style={{ marginBottom: '2rem' }}>Fiche d’information pour la bourse Réjean-Hébert</Button>
+::bouton[Fiche d’information pour la bourse Réjean-Hébert]{lien=/nouvelles/2025-10-17-concours-bourses-blrcs/bourse-Rejean-Hebert-automne-2025.pdf}
 

@@ -18,4 +18,4 @@ Le projet s’inscrit dans la volonté des bibliothèques de l’UdeM de faire �
 
 En raison du changement d’hébergeur, l’URL de Papyrus changera pour [https://umontreal.scholaris.ca](https://umontreal.scholaris.ca). Des redirections seront mises en place pour minimiser tout inconvénient lié à ce changement. Pour les personnes pointant vers des documents dans Papyrus, par exemple, sur un site, un CV ou une bibliographie, il pourrait être avantageux de les remplacer dès maintenant par les permaliens disponibles en haut des notices Papyrus. Les fils RSS devront être paramétrés de nouveau. 
 
-Pour obtenir du soutien sur Papyrus, les permaliens et la veille, <a href="https://bib.umontreal.ca/nous-joindre">contactez l’équipe des bibliothèques</a>. 
+Pour obtenir du soutien sur Papyrus, les permaliens et la veille, [contactez l’équipe des bibliothèques](https://bib.umontreal.ca/nous-joindre). 

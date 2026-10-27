@@ -14,11 +14,11 @@ Mais c’est la première fois qu’elles ajoutent la vidéo: une étape presque
 
 Après l’enregistrement, l’équipe salue la qualité de l’expérience: le studio, situé à la Bibliothèque des lettres et sciences humaines (BLSH), offre une excellente insonorisation et un aménagement qui favorise la fluidité des échanges. Le fonctionnement est simple: il suffit de lancer l’enregistrement, puis de récupérer les fichiers à la fin de la séance. Le système conçoit automatiquement un montage audio et vidéo dynamique, alternant entre les caméras selon la personne qui parle. 
 
-<Typography component='h2' variant='h3'>«Les lucioles»: une quatrième saison éclairante</Typography>
+## «Les lucioles»: une quatrième saison éclairante
 
 Retrouvez sur vos plateformes d’écoute préférées et sur le [site des Lucioles](https://www.lesluciolespodcast.com/) les épisodes de la quatrième saison ainsi que les précédents. Parmi les thèmes explorés cette saison: la géographie, les forêts québécoises et le projet de loi no 97 sur la réforme du régime forestier, l’écoanxiété et l’agronomie.  
 
-<Typography component='h2' variant='h3'>Enregistrer son balado aux bibliothèques de l’UdeM</Typography>
+## Enregistrer son balado aux bibliothèques de l’UdeM
 
 Les studios sont réservés à l’enregistrement des projets issus de la communauté universitaire. Que vous soyez aux études, membre d’une équipe de recherche ou du personnel enseignant, ces lieux de création professionnels sont accessibles gratuitement. 
 
@@ -26,4 +26,4 @@ Entièrement réaménagé, le [studio balado vidéo](https://studio.bib.umontrea
 
 Toute l’offre numérique des bibliothèques est à découvrir sur [studio.bib.umontreal.ca](https://studio.bib.umontreal.ca/).
 
-<small>Source: [https://nouvelles.umontreal.ca/annonce/2025/10/27/a-vos-micros-un-nouveau-studio-pour-donner-vie-a-vos-balados](https://nouvelles.umontreal.ca/annonce/2025/10/27/a-vos-micros-un-nouveau-studio-pour-donner-vie-a-vos-balados])</small>
+Source : [https://nouvelles.umontreal.ca/annonce/2025/10/27/a-vos-micros-un-nouveau-studio-pour-donner-vie-a-vos-balados](https://nouvelles.umontreal.ca/annonce/2025/10/27/a-vos-micros-un-nouveau-studio-pour-donner-vie-a-vos-balados)

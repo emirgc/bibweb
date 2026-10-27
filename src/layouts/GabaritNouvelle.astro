@@ -95,6 +95,22 @@ const jsonLd = {
     }
   }
 
+  /* Intertitres (## du Markdown) : h2 pour la structure, taille h3 comme le
+     faisait la source (Typography component="h2" variant="h3") ; à la taille
+     h2, ils dépassaient le titre de l'article */
+  .corps-article :global(h2) {
+    font-size: 1.5rem;
+    font-weight: 700;
+    line-height: 1.2;
+  }
+
+  @media (min-width: 900px) {
+    .corps-article :global(h2) {
+      font-size: 2.25rem;
+      font-weight: var(--graisse-forte);
+    }
+  }
+
   .date {
     color: var(--rouge-orange-texte);
     font-size: 0.875rem;
