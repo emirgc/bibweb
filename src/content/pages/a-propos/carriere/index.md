@@ -17,8 +17,7 @@ superHero:
 
 ### Affichage en cours
 
-- [**Bibliothécaire**](/a-propos/carriere/Aff_bibliothecaire_0127_0210.pdf)
-Date d'affichage : du 27/01/26 au 10/02/26
+Aucun poste n'est affiché pour le moment.
 
 ### Candidatures spontanées
 
