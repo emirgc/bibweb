@@ -16,6 +16,7 @@
  * Sans JavaScript, la liste déroulante reste masquée et le formulaire part
  * vers Sofia : l'étiquette le dit.
  */
+import { ArrowUpRightIcon } from '@phosphor-icons/react/dist/ssr/ArrowUpRight'
 import { CaretDownIcon } from '@phosphor-icons/react/dist/ssr/CaretDown'
 import { ACTION_SOFIA, PARAMETRES_SOFIA } from '@/lib/sofia'
 import ChampRecherche from './ChampRecherche.astro'
@@ -39,14 +40,25 @@ const { id } = Astro.props
   data-recherche-menu
 >
   <span slot="portee" class="portee" hidden data-portee-conteneur>
+    {/* Ce qu'on voit du choix : un libellé court sur petit écran. Le select,
+        transparent par-dessus, garde le libellé complet pour sa liste et pour
+        les lecteurs d'écran. */}
+    <span class="affiche" aria-hidden="true" data-affiche>
+      <span class="long">Sofia</span><span class="court">Sofia</span>
+    </span>
     <select class="choix" aria-label="Où chercher" data-portee>
-      <option value="sofia">Sofia</option>
-      <option value="sites">Les sites des bibliothèques</option>
+      <option value="sofia" data-court="Sofia">Sofia</option>
+      <option value="sites" data-court="Nos sites">Les sites des bibliothèques</option>
     </select>
     <CaretDownIcon size={14} weight="bold" aria-hidden="true" className="caret" />
   </span>
 
   <div class="suggestions" id={`${id}-suggestions`} role="listbox" aria-label="Suggestions" hidden data-suggestions></div>
+  {/* Icône des liens externes, copiée dans les suggestions : le caractère ↗
+      s'affiche en emoji sur iOS */}
+  <template data-icone-externe>
+    <ArrowUpRightIcon size={16} weight="bold" aria-hidden="true" className="option-externe" />
+  </template>
   <p class="visuellement-masque" role="status" data-statut-suggestions></p>
 </ChampRecherche>
 
@@ -69,6 +81,7 @@ const { id } = Astro.props
     const choix = formulaire.querySelector<HTMLSelectElement>('[data-portee]')!
     const liste = formulaire.querySelector<HTMLElement>('[data-suggestions]')!
     const statut = formulaire.querySelector<HTMLElement>('[data-statut-suggestions]')!
+    const iconeExterne = formulaire.querySelector<HTMLTemplateElement>('[data-icone-externe]')!
     let index: MiniSearch | null = null
     let echec = false
     let minuterie: ReturnType<typeof setTimeout> | undefined
@@ -87,9 +100,14 @@ const { id } = Astro.props
     const urlResultats = (requete: string) => avecBase(`/resultats/?q=${encodeURIComponent(requete)}`)
     const options = () => [...liste.querySelectorAll<HTMLElement>('[role=option]')]
 
+    const affiche = formulaire.querySelector<HTMLElement>('[data-affiche]')!
+
     function majPortee() {
+      const option = choix.selectedOptions[0]
+      affiche.querySelector('.long')!.textContent = option.text
+      affiche.querySelector('.court')!.textContent = option.dataset.court ?? option.text
       champ.placeholder = PLACEHOLDERS[sites() ? 'sites' : 'sofia']
-      champ.setAttribute('aria-label', `Rechercher dans ${choix.selectedOptions[0].text}`)
+      champ.setAttribute('aria-label', `Rechercher dans ${option.text}`)
       if (sites()) charger()
       rendre()
     }
@@ -153,13 +171,7 @@ const { id } = Astro.props
       titre.className = 'option-titre'
       titre.textContent = texte
       element.append(titre)
-      if (externe) {
-        const fleche = document.createElement('span')
-        fleche.className = 'option-externe'
-        fleche.setAttribute('aria-hidden', 'true')
-        fleche.textContent = '↗'
-        element.append(fleche)
-      }
+      if (externe) element.append(iconeExterne.content.cloneNode(true))
       return element
     }
 
@@ -274,7 +286,7 @@ const { id } = Astro.props
   .portee {
     position: relative;
     display: inline-flex;
-    flex-shrink: 1;
+    flex-shrink: 0;
     align-items: center;
     min-width: 0;
     max-width: 50%;
@@ -287,35 +299,65 @@ const { id } = Astro.props
     display: none;
   }
 
-  /* Le select natif garde son clavier et son menu ; seule sa boîte change.
-     field-sizing : la largeur suit l'option choisie (« Sofia » reste court) ;
-     sans lui, la plus longue, plafonnée par .portee. */
-  .choix {
-    field-sizing: content;
+  /* Le libellé visible donne sa largeur au choix */
+  .affiche {
+    display: flex;
+    align-items: center;
     min-width: 0;
-    max-width: 100%;
     min-height: var(--taille-cible);
     padding: 0.375rem 1.5rem 0.375rem 0.75rem;
-    overflow: hidden;
-    border: 0;
     border-radius: var(--rayon-plein);
-    background: transparent;
     color: var(--bleu-principal);
-    font: inherit;
     font-size: 0.9375rem;
     font-weight: var(--graisse-forte);
     line-height: 1.4;
-    text-overflow: ellipsis;
     white-space: nowrap;
+  }
+
+  .affiche span {
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+
+  .affiche .long {
+    display: none;
+  }
+
+  @media (min-width: 900px) {
+    .affiche .long {
+      display: inline;
+    }
+
+    .affiche .court {
+      display: none;
+    }
+  }
+
+  /* Le select natif, transparent, couvre le libellé : son clavier et sa
+     liste restent ceux du système. 1rem : iOS n'agrandit pas la page au focus. */
+  .choix {
+    position: absolute;
+    inset: 0;
+    inset-inline-end: var(--espace-1);
+    width: auto;
+    margin: 0;
+    padding: 0;
+    border: 0;
+    border-radius: var(--rayon-plein);
+    background: transparent;
+    color: transparent;
+    font: inherit;
+    font-size: 1rem;
+    opacity: 0;
     cursor: pointer;
     appearance: none;
   }
 
-  .choix:hover {
+  .portee:hover .affiche {
     background: var(--bleu-100);
   }
 
-  .choix:focus-visible {
+  .portee:has(.choix:focus-visible) .affiche {
     outline: 3px solid var(--couleur-focus);
     outline-offset: 2px;
   }
@@ -334,8 +376,10 @@ const { id } = Astro.props
     inset-inline: 0;
     top: calc(100% + 0.375rem);
     max-height: min(26rem, 60vh);
-    padding-block: var(--espace-1);
+    padding-block-start: var(--espace-1);
     overflow-y: auto;
+    /* Au clavier, l'option choisie ne passe pas sous « Tous les résultats » */
+    scroll-padding-block-end: 4rem;
     overscroll-behavior: contain;
     border: 1px solid var(--couleur-bordure);
     border-radius: var(--rayon-petit);
@@ -349,11 +393,15 @@ const { id } = Astro.props
     display: none;
   }
 
-  /* Les lignes sont créées par le script : :global sous .suggestions */
+  /* Les lignes sont créées par le script : :global sous .suggestions.
+     « Tous les résultats » reste collé au bas de la liste : visible sans
+     la faire défiler. */
   .suggestions :global(.option-tout) {
+    position: sticky;
+    bottom: 0;
     margin-block-start: var(--espace-1);
-    padding-block-start: var(--espace-1);
     border-block-start: 1px solid var(--couleur-bordure);
+    background: var(--couleur-surface);
   }
 
   .suggestions :global(.option) {
@@ -389,6 +437,7 @@ const { id } = Astro.props
 
   .suggestions :global(.option-externe) {
     flex-shrink: 0;
+    align-self: center;
     color: var(--bleu-principal);
   }
 
