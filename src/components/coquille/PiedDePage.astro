@@ -89,7 +89,9 @@ const annee = new Date().getFullYear()
         }
 
         <template data-chevron-pied>
-          <CaretDownIcon class="chevron" size={18} weight="bold" aria-hidden="true" />
+          {/* className : icône React, `class` n'atteindrait pas le svg (ni la
+              rotation ni le retrait au retour sur grand écran ne le trouvaient) */}
+          <CaretDownIcon className="chevron" size={18} weight="bold" aria-hidden="true" />
         </template>
 
         <div class="colonne colonne-logo">
