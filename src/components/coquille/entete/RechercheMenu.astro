@@ -1,6 +1,7 @@
 ---
 /*
- * Recherche du haut du menu. Une liste déroulante choisit où chercher :
+ * Recherche du haut du menu. Un sélecteur à deux segments, dans la barre,
+ * choisit où chercher (une pastille glisse vers le choix actif) :
  * - Sofia (par défaut) : le formulaire part vers Sofia, comme avant ;
  * - les sites des bibliothèques : des suggestions s'ouvrent sous le champ, à
  *   mesure qu'on tape, les plus pertinentes d'abord, toutes sources
@@ -13,11 +14,14 @@
  * focus reste dans le champ, les flèches parcourent les suggestions, Entrée
  * suit la suggestion choisie, Échap referme la liste sans fermer le menu.
  *
- * Sans JavaScript, la liste déroulante reste masquée et le formulaire part
- * vers Sofia : l'étiquette le dit.
+ * Le sélecteur est un groupe de boutons radio natifs (flèches du clavier,
+ * annonce « 1 sur 2 »). Leur attribut `form` ne désigne aucun formulaire :
+ * ils ne partent pas avec la requête vers Sofia.
+ *
+ * Sans JavaScript, le sélecteur reste masqué et le formulaire part vers
+ * Sofia : l'étiquette le dit.
  */
 import { ArrowUpRightIcon } from '@phosphor-icons/react/dist/ssr/ArrowUpRight'
-import { CaretDownIcon } from '@phosphor-icons/react/dist/ssr/CaretDown'
 import { ACTION_SOFIA, PARAMETRES_SOFIA } from '@/lib/sofia'
 import ChampRecherche from './ChampRecherche.astro'
 
@@ -40,17 +44,22 @@ const { id } = Astro.props
   data-recherche-menu
 >
   <span slot="portee" class="portee" hidden data-portee-conteneur>
-    {/* Ce qu'on voit du choix : un libellé court sur petit écran. Le select,
-        transparent par-dessus, garde le libellé complet pour sa liste et pour
-        les lecteurs d'écran. */}
-    <span class="affiche" aria-hidden="true" data-affiche>
-      <span class="long">Sofia</span><span class="court">Sofia</span>
+    {/* Libellé court sous 900 px (« Nos sites ») : la saisie garde sa place */}
+    <span class="segments" role="radiogroup" aria-label="Où chercher" data-segments>
+      <span class="indicateur" aria-hidden="true" data-indicateur></span>
+      {
+        [
+          ['sofia', 'Sofia', 'Sofia'],
+          ['sites', 'Les sites des bibliothèques', 'Nos sites'],
+        ].map(([valeur, long, court], i) => (
+          <label class="segment">
+            <input type="radio" class="visuellement-masque" name={`${id}-portee`} form={`${id}-portee`} value={valeur} checked={i === 0} data-texte={long} data-portee />
+            <span class="long">{long}</span>
+            <span class="court">{court}</span>
+          </label>
+        ))
+      }
     </span>
-    <select class="choix" aria-label="Où chercher" data-portee>
-      <option value="sofia" data-court="Sofia">Sofia</option>
-      <option value="sites" data-court="Nos sites">Les sites des bibliothèques</option>
-    </select>
-    <CaretDownIcon size={14} weight="bold" aria-hidden="true" className="caret" />
   </span>
 
   <div class="suggestions" id={`${id}-suggestions`} role="listbox" aria-label="Suggestions" hidden data-suggestions></div>
@@ -78,7 +87,9 @@ const { id } = Astro.props
   for (const formulaire of document.querySelectorAll<HTMLFormElement>('[data-recherche-menu]')) {
     const champ = formulaire.querySelector<HTMLInputElement>('input[type=search]')!
     const etiquette = formulaire.querySelector<HTMLLabelElement>('label')!
-    const choix = formulaire.querySelector<HTMLSelectElement>('[data-portee]')!
+    const choix = [...formulaire.querySelectorAll<HTMLInputElement>('[data-portee]')]
+    const segments = formulaire.querySelector<HTMLElement>('[data-segments]')!
+    const indicateur = formulaire.querySelector<HTMLElement>('[data-indicateur]')!
     const liste = formulaire.querySelector<HTMLElement>('[data-suggestions]')!
     const statut = formulaire.querySelector<HTMLElement>('[data-statut-suggestions]')!
     const iconeExterne = formulaire.querySelector<HTMLTemplateElement>('[data-icone-externe]')!
@@ -87,7 +98,7 @@ const { id } = Astro.props
     let minuterie: ReturnType<typeof setTimeout> | undefined
     let active = -1
 
-    // Amélioration progressive : la liste déroulante et le rôle combobox
+    // Amélioration progressive : le sélecteur et le rôle combobox
     // n'existent qu'avec JavaScript
     formulaire.querySelector<HTMLElement>('[data-portee-conteneur]')!.hidden = false
     etiquette.textContent = 'Rechercher'
@@ -96,18 +107,30 @@ const { id } = Astro.props
     champ.setAttribute('aria-controls', liste.id)
     champ.setAttribute('aria-expanded', 'false')
 
-    const sites = () => choix.value === 'sites'
+    const choisi = () => choix.find((c) => c.checked) ?? choix[0]
+    const sites = () => choisi().value === 'sites'
     const urlResultats = (requete: string) => avecBase(`/resultats/?q=${encodeURIComponent(requete)}`)
     const options = () => [...liste.querySelectorAll<HTMLElement>('[role=option]')]
 
-    const affiche = formulaire.querySelector<HTMLElement>('[data-affiche]')!
+    // La pastille prend la place et la largeur du segment choisi ; elle
+    // glisse (transition CSS) quand le choix change. Recalculée quand le
+    // libellé change de longueur (court ou long, menu ouvert, texte agrandi).
+    function placerIndicateur() {
+      const segment = choisi().closest('label')!
+      if (!segment.offsetWidth) return
+      indicateur.style.width = `${segment.offsetWidth}px`
+      indicateur.style.translate = `${segment.offsetLeft}px 0`
+    }
+    new ResizeObserver(() => {
+      placerIndicateur()
+      // Pas de glissement à la première mise en place
+      requestAnimationFrame(() => segments.classList.add('pret'))
+    }).observe(segments)
 
     function majPortee() {
-      const option = choix.selectedOptions[0]
-      affiche.querySelector('.long')!.textContent = option.text
-      affiche.querySelector('.court')!.textContent = option.dataset.court ?? option.text
       champ.placeholder = PLACEHOLDERS[sites() ? 'sites' : 'sofia']
-      champ.setAttribute('aria-label', `Rechercher dans ${option.text}`)
+      champ.setAttribute('aria-label', `Rechercher dans ${choisi().dataset.texte}`)
+      placerIndicateur()
       if (sites()) charger()
       rendre()
     }
@@ -211,7 +234,7 @@ const { id } = Astro.props
       window.location.href = urlResultats(requete)
     }
 
-    choix.addEventListener('change', majPortee)
+    for (const c of choix) c.addEventListener('change', majPortee)
 
     champ.addEventListener('input', () => {
       clearTimeout(minuterie)
@@ -282,91 +305,148 @@ const { id } = Astro.props
 </script>
 
 <style>
-  /* Dans la barre, avant la saisie, séparé d'elle par un filet */
+  /* Dans la barre, avant la saisie */
   .portee {
-    position: relative;
     display: inline-flex;
     flex-shrink: 0;
     align-items: center;
     min-width: 0;
-    max-width: 50%;
-    margin-inline-start: -0.5rem;
+    max-width: 60%;
+    margin-inline-start: -0.625rem;
     padding-inline-end: var(--espace-1);
-    border-inline-end: 1px solid var(--couleur-bordure);
   }
 
   .portee[hidden] {
     display: none;
   }
 
-  /* Le libellé visible donne sa largeur au choix */
-  .affiche {
+  /* Rail clair, deux segments ; la pastille bleu foncé marque le choix */
+  .segments {
+    position: relative;
+    display: inline-flex;
+    min-width: 0;
+    padding: 3px;
+    border-radius: var(--rayon-plein);
+    background: var(--bleu-100);
+  }
+
+  .indicateur {
+    position: absolute;
+    top: 3px;
+    bottom: 3px;
+    left: 0;
+    border-radius: var(--rayon-plein);
+    background: var(--bleu-fonce);
+    box-shadow: 0 1px 2px color-mix(in srgb, var(--bleu-fonce) 30%, transparent);
+  }
+
+  .pret .indicateur {
+    transition:
+      translate var(--duree-moyenne-2) var(--courbe-emphase-deceleree),
+      width var(--duree-moyenne-2) var(--courbe-emphase-deceleree);
+  }
+
+  .segment {
+    position: relative;
     display: flex;
     align-items: center;
     min-width: 0;
-    min-height: var(--taille-cible);
-    padding: 0.375rem 1.5rem 0.375rem 0.75rem;
+    min-height: 2.5rem;
+    padding: 0.25rem 0.75rem;
     border-radius: var(--rayon-plein);
     color: var(--bleu-principal);
-    font-size: 0.9375rem;
+    font-size: 0.875rem;
     font-weight: var(--graisse-forte);
-    line-height: 1.4;
+    line-height: 1.2;
     white-space: nowrap;
+    cursor: pointer;
+    transition: color var(--duree-moyenne-2) var(--courbe-standard);
   }
 
-  .affiche span {
+  .segment span {
     overflow: hidden;
     text-overflow: ellipsis;
   }
 
-  .affiche .long {
-    display: none;
+  .segment:has(:checked) {
+    color: var(--couleur-surface);
+    cursor: default;
   }
 
-  @media (min-width: 900px) {
-    .affiche .long {
-      display: inline;
-    }
-
-    .affiche .court {
-      display: none;
+  @media (hover: hover) and (pointer: fine) {
+    .segment:not(:has(:checked)):hover {
+      color: var(--bleu-fonce);
     }
   }
 
-  /* Le select natif, transparent, couvre le libellé : son clavier et sa
-     liste restent ceux du système. 1rem : iOS n'agrandit pas la page au focus. */
-  .choix {
-    position: absolute;
-    inset: 0;
-    inset-inline-end: var(--espace-1);
-    width: auto;
-    margin: 0;
-    padding: 0;
-    border: 0;
-    border-radius: var(--rayon-plein);
-    background: transparent;
-    color: transparent;
-    font: inherit;
-    font-size: 1rem;
-    opacity: 0;
-    cursor: pointer;
-    appearance: none;
-  }
-
-  .portee:hover .affiche {
-    background: var(--bleu-100);
-  }
-
-  .portee:has(.choix:focus-visible) .affiche {
+  .segment:has(:focus-visible) {
     outline: 3px solid var(--couleur-focus);
     outline-offset: 2px;
   }
 
-  .portee :global(.caret) {
-    position: absolute;
-    inset-inline-end: calc(var(--espace-1) + 0.5rem);
-    color: var(--bleu-principal);
-    pointer-events: none;
+  .segment .long {
+    display: none;
+  }
+
+  @media (min-width: 900px) {
+    .segment {
+      padding-inline: 1rem;
+      font-size: 0.9375rem;
+    }
+
+    .segment .long {
+      display: inline;
+    }
+
+    .segment .court {
+      display: none;
+    }
+  }
+
+  /* Sous 600 px, deux rangées dans le même cadre : le sélecteur sur toute la
+     largeur (deux moitiés), puis la saisie et le bouton. Sur une rangée, à
+     320 px, les libellés étaient coupés et la saisie faisait 56 px. */
+  @media (width < 600px) {
+    :global([data-recherche-menu] .champ:has(> [data-portee-conteneur]:not([hidden]))) {
+      flex-wrap: wrap;
+      row-gap: 0.25rem;
+      padding-block: 0.375rem 0.25rem;
+      border-radius: var(--rayon-moyen);
+    }
+
+    .portee {
+      flex: 1 0 calc(100% + 0.625rem);
+      max-width: none;
+      padding-inline-end: 0;
+    }
+
+    .segments {
+      flex: 1 1 auto;
+    }
+
+    .segment {
+      flex: 1 1 0;
+      justify-content: center;
+    }
+  }
+
+  /* Couleurs forcées : le fond de la pastille disparaît ; un contour
+     marque le choix */
+  @media (forced-colors: active) {
+    .segments {
+      border: 1px solid CanvasText;
+    }
+
+    .segment:has(:checked) {
+      outline: 2px solid Highlight;
+      outline-offset: -2px;
+      color: CanvasText;
+    }
+
+    .segment:has(:focus-visible) {
+      outline-color: Highlight;
+      outline-offset: 2px;
+    }
   }
 
   /* ---- Suggestions, juste sous le champ ---- */
