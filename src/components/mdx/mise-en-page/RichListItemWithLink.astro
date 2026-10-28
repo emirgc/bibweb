@@ -55,7 +55,7 @@ const Titre = `h${niveauTitre}`
   </div>
   {
     linkText ? (
-      <span class="bouton" aria-hidden="true">
+      <span class:list={['bouton', { externe: !interne }]} aria-hidden="true">
         {linkText}
         <Fleche size={24} aria-hidden="true" focusable="false" />
       </span>
@@ -83,10 +83,7 @@ const Titre = `h${niveauTitre}`
     padding: var(--espace-element) 1.25rem;
     border-radius: var(--rayon-moyen);
     background-color: var(--carte-fond);
-    transition:
-      background-color var(--duree-courte-4) var(--courbe-standard),
-      box-shadow var(--duree-courte-4) var(--courbe-standard),
-      translate var(--duree-courte-4) var(--courbe-standard-deceleree);
+    transition: background-color var(--duree-courte-4) var(--courbe-standard);
   }
 
   /* Espace entre les cartes, et sous le texte d'introduction */
@@ -144,12 +141,11 @@ const Titre = `h${niveauTitre}`
     outline-offset: -3px;
   }
 
-  /* Survol et focus : la carte se soulève (titre non souligné) */
+  /* Survol et focus : le fond fonce (titre non souligné). Pas de carte qui
+     se soulève (déplacement et ombre) : effet retiré à la demande. */
   @media (hover: hover) and (pointer: fine) {
     .element-riche:hover {
-      translate: 0 -2px;
       background-color: var(--carte-fond-survol);
-      box-shadow: var(--ombre-2);
     }
   }
 
