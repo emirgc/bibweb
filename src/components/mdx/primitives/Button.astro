@@ -5,9 +5,9 @@
  *
  * - primary (par défaut) : plein bleu foncé ; secondary : texte bleu.
  * - Avec href : flèche de fin ArrowRight (famille Bibliothèques) ou
- *   ArrowUpRight (externe), 24 px. Un PDF s'ouvre dans un nouvel onglet,
- *   sans l'icône PDF du CSS global, comme dans la source ; les deux sont
- *   annoncés en texte masqué.
+ *   ArrowUpRight (externe), 24 px, qui avance d'un cran au survol et au
+ *   focus. Un PDF s'ouvre dans un nouvel onglet, sans l'icône PDF du CSS
+ *   global, comme dans la source ; les deux sont annoncés en texte masqué.
  * - `light` (inopérant dans la source) : variante pour fond foncé.
  * - Corrigé : `rel` fourni n'est plus écrasé, et une adresse absolue d'un
  *   sous-domaine des Bibliothèques reste un lien ordinaire.
@@ -79,7 +79,7 @@ const listeClasses = ['bouton', `variante-${variante}`, `couleur-${couleur}`, `t
     <a href={href} target={cible} rel={relFinal} class:list={listeClasses} style={fusionnerStyles(style)} {...reste}>
       <span class="libelle"><slot /></span>
       {annonce && <span class="visuellement-masque">{annonce}</span>}
-      {IconeFin && <IconeFin size={24} aria-hidden="true" focusable="false" className="icone-fin" />}
+      {IconeFin && <IconeFin size={24} aria-hidden="true" focusable="false" className={interne ? 'icone-fin' : 'icone-fin icone-externe'} />}
     </a>
   ) : (
     <button type={type} class:list={listeClasses} style={fusionnerStyles(style)} {...reste}>
@@ -144,13 +144,39 @@ const listeClasses = ['bouton', `variante-${variante}`, `couleur-${couleur}`, `t
     flex-shrink: 0;
     margin-inline-end: -4px;
     fill: currentColor;
+    transition: transform var(--duree-courte-4) var(--courbe-standard-deceleree);
+  }
+
+  /* Survol et focus : la flèche avance d'un cran vers sa destination (→ vers
+     la droite, ↗ en diagonale), comme dans Quoi de neuf et les listes de
+     liens. Survol réservé aux pointeurs fins : au toucher, il resterait
+     après le tapotement. */
+  @media (hover: hover) and (pointer: fine) {
+    .bouton:hover > :global(.icone-fin) {
+      transform: translateX(3px);
+    }
+
+    .bouton:hover > :global(.icone-externe) {
+      transform: translate(2px, -2px);
+    }
+  }
+
+  .bouton:focus-visible > :global(.icone-fin) {
+    transform: translateX(3px);
+  }
+
+  .bouton:focus-visible > :global(.icone-externe) {
+    transform: translate(2px, -2px);
   }
 
   /* ---- Plein ---- */
+  /* Survol : bleu principal, comme les boutons des listes de liens. Le
+     bleu foncé survol de la source (presque noir) se distinguait à peine.
+     Blanc sur bleu principal : 7,10:1. */
   .variante-contained {
     --bouton-fond: var(--bleu-fonce);
     --bouton-texte: var(--couleur-surface);
-    --bouton-fond-survol: var(--bleu-fonce-survol);
+    --bouton-fond-survol: var(--bleu-principal);
   }
 
   .variante-contained.couleur-bleuPrincipal,
