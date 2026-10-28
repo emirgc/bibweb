@@ -15,8 +15,12 @@
  * les deux barres : il suit le bouton visible dans l'ordre de tabulation.
  * Corrigé : TopAppBarSm imbriquait deux boutons ; il n'en reste qu'un.
  *
- * La loupe ne fait que déclencher la boîte de recherche (Recherche.astro),
- * qui écoute [data-ouvrir-recherche] et tient aria-expanded à jour.
+ * La loupe ouvre le même rideau en mode « recherche » : seule la recherche
+ * du haut du menu (Sofia ou les sites, Mon dossier, Obtenir un document),
+ * le focus dans le champ, et dessous « Afficher le menu », qui déplie le
+ * reste (événement « menu:deplier » de PanneauMenu). Le mode est posé sur
+ * le rideau (data-mode) ; la loupe devient un X tant qu'il est ouvert en
+ * mode recherche, le bouton Menu une fois le menu entier affiché.
  */
 import { sansBase } from '@/lib/chemin'
 import { ArrowRightIcon } from '@phosphor-icons/react/dist/ssr/ArrowRight'
@@ -64,8 +68,9 @@ const chemin = sansBase(Astro.url.pathname)
       </a>
 
       <div class="outils">
-        <button type="button" class="bouton-icone" aria-label="Rechercher dans le site" aria-haspopup="dialog" aria-expanded="false" data-ouvrir-recherche>
-          <MagnifyingGlassIcon size={24} weight="bold" aria-hidden="true" />
+        <button type="button" class="bouton-icone bouton-recherche" aria-label="Rechercher" aria-expanded="false" aria-controls="menu-principal" data-bouton-recherche>
+          <span class="si-ferme"><MagnifyingGlassIcon size={24} weight="bold" aria-hidden="true" /></span>
+          <span class="si-ouvert"><XIcon size={26} weight="bold" aria-hidden="true" /></span>
         </button>
         <button type="button" class="bouton-icone bouton-menu" aria-label="Menu" aria-expanded="false" aria-controls="menu-principal" data-bouton-menu>
           <span class="libelle-menu" aria-hidden="true"><span class="si-ferme">Menu</span><span class="si-ouvert">Fermer</span></span>
@@ -85,8 +90,9 @@ const chemin = sansBase(Astro.url.pathname)
         <span>Les bibliothèques<span class="visuellement-masque"> – Accueil</span></span>
       </a>
       <div class="outils">
-        <button type="button" class="bouton-icone recherche-compacte" aria-label="Rechercher dans le site" aria-haspopup="dialog" aria-expanded="false" data-ouvrir-recherche>
-          <MagnifyingGlassIcon size={24} weight="bold" aria-hidden="true" />
+        <button type="button" class="bouton-icone bouton-recherche recherche-compacte" aria-label="Rechercher" aria-expanded="false" aria-controls="menu-principal" data-bouton-recherche>
+          <span class="si-ferme"><MagnifyingGlassIcon size={24} weight="bold" aria-hidden="true" /></span>
+          <span class="si-ouvert"><XIcon size={26} weight="bold" aria-hidden="true" /></span>
         </button>
         <button type="button" class="bouton-icone bouton-menu" aria-label="Menu" aria-expanded="false" aria-controls="menu-principal" data-bouton-menu>
           <span class="si-ferme">
@@ -124,40 +130,152 @@ const chemin = sansBase(Astro.url.pathname)
     }).observe(entete)
 
     const boutons = [...entete.querySelectorAll<HTMLButtonElement>('[data-bouton-menu]')]
-    const panneauDe = (bouton: HTMLButtonElement) => document.getElementById(bouton.getAttribute('aria-controls') ?? '')
+    const loupes = [...entete.querySelectorAll<HTMLButtonElement>('[data-bouton-recherche]')]
+    const panneau = document.getElementById('menu-principal')
+    type Mode = 'recherche' | 'complet'
+    // Bouton qui a ouvert le rideau (il reprend le focus à la fermeture)
     let ouvert: HTMLButtonElement | null = null
+    let mode: Mode = 'complet'
+
+    // État des boutons : la loupe est « ouverte » en mode recherche, le
+    // bouton Menu en mode complet ; chacun montre alors un X
+    function majBoutons() {
+      for (const b of boutons) {
+        const actif = !!ouvert && mode === 'complet'
+        b.setAttribute('aria-expanded', String(actif))
+        // Le nom suit le libellé visible « Fermer » de la barre de bureau (WCAG 2.5.3)
+        b.setAttribute('aria-label', actif ? 'Fermer le menu' : 'Menu')
+      }
+      for (const l of loupes) {
+        const actif = !!ouvert && mode === 'recherche'
+        l.setAttribute('aria-expanded', String(actif))
+        l.setAttribute('aria-label', actif ? 'Fermer la recherche' : 'Rechercher')
+      }
+    }
 
     function fermer({ rendreFocus = false } = {}) {
       if (!ouvert) return
       const bouton = ouvert
-      bouton.setAttribute('aria-expanded', 'false')
-      bouton.setAttribute('aria-label', 'Menu')
-      panneauDe(bouton)?.setAttribute('hidden', '')
+      panneau?.setAttribute('hidden', '')
       entete!.removeAttribute('data-menu-ouvert')
-      majDefilement()
       ouvert = null
+      majBoutons()
+      majDefilement()
       if (rendreFocus) bouton.focus()
     }
 
-    function ouvrir(bouton: HTMLButtonElement) {
+    function changerMode(nouveau: Mode) {
+      mode = nouveau
+      if (panneau) panneau.dataset.mode = nouveau
+      // La poignée du bas (mobile) ferme ce qui est ouvert
+      panneau?.querySelector('[data-poignee-menu]')?.setAttribute('aria-label', nouveau === 'recherche' ? 'Fermer la recherche' : 'Fermer le menu')
+      majBoutons()
+    }
+
+    function ouvrir(bouton: HTMLButtonElement, nouveau: Mode) {
       fermer()
-      bouton.setAttribute('aria-expanded', 'true')
-      // Le nom suit le libellé visible « Fermer » de la barre de bureau (WCAG 2.5.3)
-      bouton.setAttribute('aria-label', 'Fermer le menu')
-      const panneau = panneauDe(bouton)
       // Le rideau remplit la fenêtre sous l'en-tête, où qu'il soit (bandeau
       // d'urgence au-dessus, page défilée ou non)
       panneau?.style.setProperty('--haut-menu', `${Math.max(0, entete!.getBoundingClientRect().bottom)}px`)
+      ouvert = bouton
+      changerMode(nouveau)
       panneau?.removeAttribute('hidden')
       entete!.setAttribute('data-menu-ouvert', '')
       majDefilement()
+      if (nouveau === 'recherche') panneau?.querySelector<HTMLInputElement>('input[type=search]')?.focus({ preventScroll: true })
+    }
+
+    // Passage d'un mode à l'autre, animé. Repli (loupe, menu entier
+    // ouvert) : le reste du menu s'efface en remontant, puis la feuille se
+    // rétracte jusqu'à la recherche. Dépliage (Menu ou « Afficher le
+    // menu ») : la feuille s'allonge et le reste du menu apparaît en
+    // descendant, en léger décalage. La poignée, collée au bas de la
+    // feuille, suit. Sans animation si le mouvement réduit est demandé.
+    const COURBE_ENTREE = 'cubic-bezier(0.05, 0.7, 0.1, 1)'
+    const COURBE_SORTIE = 'cubic-bezier(0.3, 0, 1, 1)'
+    let animation = false
+    const reduit = () => window.matchMedia('(prefers-reduced-motion: reduce)').matches
+    const feuille = () => panneau?.querySelector<HTMLElement>('.feuille')
+    const autresGroupes = () => [...(feuille()?.querySelectorAll<HTMLElement>('.grille > :not(.sofia, .deplier)') ?? [])].filter((e) => e.offsetParent)
+
+    // Hauteur de la feuille animée de sa valeur actuelle à celle du mode
+    // suivant
+    async function changerHauteur(f: HTMLElement, avant: number) {
+      f.style.height = ''
+      const apres = f.getBoundingClientRect().height
+      // Pas de barre de défilement le temps de l'agrandissement
+      f.style.overflowY = 'hidden'
+      await f.animate([{ height: `${avant}px` }, { height: `${apres}px` }], { duration: 300, easing: COURBE_ENTREE }).finished.catch(() => {})
+      f.style.overflowY = ''
+    }
+
+    async function replier() {
+      const f = feuille()
+      const champ = panneau?.querySelector<HTMLInputElement>('input[type=search]')
+      if (!f || reduit() || animation) {
+        changerMode('recherche')
+        f?.scrollTo({ top: 0 })
+        champ?.focus({ preventScroll: true })
+        return
+      }
+      animation = true
+      const autres = autresGroupes()
+      const avant = f.getBoundingClientRect().height
+      f.style.height = `${avant}px`
+      f.scrollTo({ top: 0, behavior: 'smooth' })
+      await Promise.all(
+        autres.map((e) => e.animate([{ opacity: 1, translate: '0 0' }, { opacity: 0, translate: '0 -1rem' }], { duration: 150, easing: COURBE_SORTIE, fill: 'forwards' }).finished),
+      )
+      changerMode('recherche')
+      for (const e of autres) e.getAnimations().forEach((a) => a.cancel())
+      champ?.focus({ preventScroll: true })
+      await changerHauteur(f, avant)
+      animation = false
+    }
+
+    async function deplier(bouton: HTMLButtonElement) {
       ouvert = bouton
+      const f = feuille()
+      if (!f || reduit() || animation) {
+        changerMode('complet')
+        return
+      }
+      animation = true
+      const avant = f.getBoundingClientRect().height
+      f.style.height = `${avant}px`
+      changerMode('complet')
+      const autres = autresGroupes()
+      autres.forEach((e, i) =>
+        e.animate([{ opacity: 0, translate: '0 -1rem' }, { opacity: 1, translate: '0 0' }], { duration: 300, delay: 60 + i * 50, easing: COURBE_ENTREE, fill: 'backwards' }),
+      )
+      await changerHauteur(f, avant)
+      animation = false
     }
 
     for (const bouton of boutons) {
-      bouton.addEventListener('click', () => (ouvert === bouton ? fermer() : ouvrir(bouton)))
+      bouton.addEventListener('click', () => {
+        if (ouvert && mode === 'complet') fermer()
+        // Ouvert en mode recherche : le menu se déplie sans se refermer
+        else if (ouvert) deplier(bouton)
+        else ouvrir(bouton, 'complet')
+      })
     }
-
+    for (const loupe of loupes) {
+      loupe.addEventListener('click', () => {
+        if (ouvert && mode === 'recherche') fermer()
+        // Menu entier ouvert : il se replie sur la recherche seule, et la
+        // loupe prend le X
+        else if (ouvert) {
+          ouvert = loupe
+          replier()
+        } else ouvrir(loupe, 'recherche')
+      })
+    }
+    // « Afficher le menu », sous la recherche (PanneauMenu)
+    document.addEventListener('menu:deplier', () => {
+      if (!ouvert) return
+      deplier(boutons.find((b) => b.offsetParent) ?? ouvert)
+    })
     entete.querySelector('[data-voile-menu]')?.addEventListener('click', () => fermer())
 
     // Poignée du rideau (tapotement ou glissé vers le haut, PanneauMenu)
@@ -176,14 +294,11 @@ const chemin = sansBase(Astro.url.pathname)
       if (!ouvert) return
       const suivant = e.relatedTarget as Node | null
       if (!suivant) return
-      if (ouvert.contains(suivant) || panneauDe(ouvert)?.contains(suivant)) return
+      // Les boutons Menu et loupe restent dans le parcours (on passe de l'un à l'autre)
+      if ([...boutons, ...loupes].some((b) => b.contains(suivant)) || panneau?.contains(suivant)) return
       fermer()
     })
 
-    // La recherche s'ouvre par-dessus : le menu se referme d'abord
-    document.addEventListener('click', (e) => {
-      if ((e.target as Element | null)?.closest?.('[data-ouvrir-recherche]')) fermer()
-    })
   }
 </script>
 
@@ -267,11 +382,14 @@ const chemin = sansBase(Astro.url.pathname)
   }
 
   .bouton-menu .si-ouvert,
-  .bouton-menu[aria-expanded='true'] .si-ferme {
+  .bouton-menu[aria-expanded='true'] .si-ferme,
+  .bouton-recherche .si-ouvert,
+  .bouton-recherche[aria-expanded='true'] .si-ferme {
     display: none;
   }
 
-  .bouton-menu[aria-expanded='true'] .si-ouvert {
+  .bouton-menu[aria-expanded='true'] .si-ouvert,
+  .bouton-recherche[aria-expanded='true'] .si-ouvert {
     display: inline;
   }
 

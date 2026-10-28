@@ -22,6 +22,13 @@
  *    menu, dans le défilement, puis un pied collé au bas de la feuille ne
  *    porte que la poignée de fermeture.
  *
+ * Mode « recherche » (data-mode, posé par Entete.astro quand la loupe
+ * ouvre le rideau) : la feuille ne montre que le groupe 1, puis, centré
+ * dessous, « Afficher le menu », puis la poignée (sous 1200 px). Le bouton
+ * émet « menu:deplier », Entete.astro repasse en mode complet et le reste
+ * du menu apparaît (même entrée en décalage que les groupes). Le focus va
+ * alors au premier lien apparu. La loupe, menu entier ouvert, le replie.
+ *
  * La poignée est un bouton « Fermer le menu » ; au doigt, on peut aussi la
  * glisser vers le haut : la feuille suit le doigt et se referme passé le
  * quart de sa hauteur ou sur un geste vif, sinon elle revient en place. Le
@@ -90,6 +97,14 @@ const courante = (url: string) => (url === '/' ? chemin === '/' : estCourante(ch
             ))
           }
         </ul>
+      </div>
+
+      {/* Mode recherche seulement (voir plus haut) */}
+      <div class="deplier">
+        <button type="button" class="deplier-bouton" data-deplier-menu>
+          Afficher le menu
+          <CaretDownIcon size={22} weight="bold" aria-hidden="true" className="deplier-fleche" />
+        </button>
       </div>
 
       <div class="groupe explorer" style="--i: 1">
@@ -237,6 +252,19 @@ const courante = (url: string) => (url === '/' ? chemin === '/' : estCourante(ch
   import { brancherRechercheSofia } from '@/lib/sofia'
 
   brancherRechercheSofia()
+
+  // « Afficher le menu » (mode recherche) : Entete.astro déplie le menu ;
+  // le focus passe au premier lien apparu, le bouton disparaissant
+  for (const bouton of document.querySelectorAll<HTMLButtonElement>('[data-deplier-menu]')) {
+    bouton.addEventListener('click', () => {
+      document.dispatchEvent(new CustomEvent('menu:deplier'))
+      const grille = bouton.closest('.grille')
+      requestAnimationFrame(() => {
+        const premier = [...(grille?.querySelectorAll<HTMLElement>('a[href], button, summary') ?? [])].find((e) => !e.closest('.sofia, .deplier') && e.offsetParent)
+        premier?.focus({ preventScroll: true })
+      })
+    })
+  }
 
   // Poignée : un tapotement ferme ; un glissé vers le haut entraîne la feuille
   const SEUIL_DEPART = 8 // px avant de considérer le geste comme un glissé
@@ -990,6 +1018,76 @@ const courante = (url: string) => (url === '/' ? chemin === '/' : estCourante(ch
 
   .je-donne:focus-visible {
     outline-offset: 3px;
+  }
+
+  /* ---- Mode recherche : la recherche seule, puis « Afficher le menu » ---- */
+  .deplier {
+    display: none;
+  }
+
+  /* La poignée du bas reste (sous 1200 px) : on ferme la recherche comme
+     le menu, d'un tapotement ou d'un glissé vers le haut */
+  .rideau[data-mode='recherche'] .grille > :not(.sofia, .deplier) {
+    display: none;
+  }
+
+  /* La feuille prend la hauteur de la recherche ; le passage d'un mode à
+     l'autre est animé par Entete.astro (hauteur, groupes) */
+  .rideau[data-mode='recherche'] .feuille {
+    height: auto;
+  }
+
+  /* Les suggestions, posées par-dessus le contenu, dépassent de la feuille
+     courte : ni le rideau ni la feuille ne rognent en mode recherche (la
+     liste flotte sur le voile, la page n'est pas blanchie). La feuille
+     sort toujours de derrière l'en-tête, qui la couvre en glissant. */
+  .rideau[data-mode='recherche'],
+  .rideau[data-mode='recherche'] .feuille {
+    overflow: visible;
+  }
+
+  .rideau[data-mode='recherche'] .deplier {
+    display: flex;
+    grid-column: 1 / -1;
+    justify-content: center;
+    margin-top: calc(-1 * var(--espace-2));
+  }
+
+  .deplier-bouton {
+    display: inline-flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 0.125rem;
+    min-height: var(--taille-cible);
+    padding: 0.375rem 1.25rem;
+    border: 0;
+    border-radius: var(--rayon-plein);
+    background: transparent;
+    color: var(--bleu-principal);
+    font: inherit;
+    font-size: 0.9375rem;
+    font-weight: var(--graisse-forte);
+    cursor: pointer;
+    transition: background-color var(--duree-courte-4) var(--courbe-standard);
+  }
+
+  /* La flèche invite à descendre : elle avance d'un cran au survol */
+  .deplier-bouton :global(.deplier-fleche) {
+    transition: transform var(--duree-courte-4) var(--courbe-standard-deceleree);
+  }
+
+  @media (hover: hover) and (pointer: fine) {
+    .deplier-bouton:hover {
+      background-color: var(--bleu-100);
+    }
+
+    .deplier-bouton:hover :global(.deplier-fleche) {
+      transform: translateY(3px);
+    }
+  }
+
+  .deplier-bouton:focus-visible :global(.deplier-fleche) {
+    transform: translateY(3px);
   }
 
   /* ---- Pied collé au bas de la feuille (< 1200 px) : la poignée ---- */
