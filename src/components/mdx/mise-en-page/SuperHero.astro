@@ -8,7 +8,7 @@
  * hauteur - 5rem (sous 600 px) ou - 8rem. Comme SuperHero2, elle est ici dans
  * le flux : glissée de 5rem sous l'en-tête transparent dès 1200 px, et une
  * marge basse règle l'écart avec le contenu suivant (2rem sous 600 px,
- * puis -3rem de chevauchement).
+ * aucune au-delà : la marge de la bande suivante suffit).
  * Dès 1200 px, elle prend toute la fenêtre (100svh, sans chevauchement) :
  * le contenu suivant commence sous le pli.
  */
@@ -96,10 +96,13 @@ const aEnfants = Astro.slots.has('default')
     --couleur-focus: var(--couleur-surface);
   }
 
+  /* Plus de chevauchement de 3rem (8rem de retrait, comme la source) : sur
+     iPad, il mangeait la marge de la bande suivante et le titre du Quoi de
+     neuf touchait presque la photo */
   @media (min-width: 600px) {
     .super-hero {
       --hauteur: 95vh;
-      --retrait: 8rem;
+      --retrait: 5rem;
     }
   }
 

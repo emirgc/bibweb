@@ -17,6 +17,7 @@
  *   groupe focalisable ;
  * - le titre monte par transform (la source animait top et bottom), avec les
  *   durées et les courbes des jetons ; le mouvement réduit les coupe.
+ * La carte elle-même ne se soulève pas au survol (effet retiré à la demande).
  * Contrastes : blanc 7,10:1 sur bleu principal, 11,26:1 sur vert foncé ;
  * bleu foncé 15,2:1 sur rose 300. Les liens de la description prennent la
  * couleur du texte sur les fonds foncés (le bleu du lien y serait invisible).
@@ -83,7 +84,6 @@ const Titre = `h${niveauTitre}`
     border-radius: var(--rayon-carte);
     background-color: var(--_fond);
     color: var(--_encre);
-    transition: transform var(--duree-moyenne-4) var(--courbe-emphase-deceleree);
   }
 
   @media (min-width: 600px) {
@@ -116,18 +116,6 @@ const Titre = `h${niveauTitre}`
     --_fond: var(--rose-300);
     --_encre: var(--couleur-texte);
     --_icone: var(--rouge-orange);
-  }
-
-  /* Soulèvement au survol réservé aux pointeurs fins : au toucher, la
-     carte resterait soulevée après le tapotement */
-  @media (hover: hover) and (pointer: fine) {
-    .carte:hover {
-      transform: translateY(-3px);
-    }
-  }
-
-  .carte:focus-within {
-    transform: translateY(-3px);
   }
 
   .icone {

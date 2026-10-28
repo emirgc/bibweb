@@ -56,6 +56,12 @@ const id = idDonne ?? idUnique('colonne-quoi-de-neuf')
     height: 100%;
   }
 
+  /* Bouton « Tous nos… » : fond de survol sans fondu, comme les titres des
+     éléments (animation réduite au minimum dans Quoi de neuf) */
+  .plus :global(.bouton) {
+    transition: none;
+  }
+
   .titre-colonne {
     margin: 0;
     font-size: 1.75rem;

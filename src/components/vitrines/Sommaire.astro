@@ -92,8 +92,10 @@ const { liens } = Astro.props
     padding: 0.25rem 1rem 0.25rem 1.125rem;
     border: 1.5px solid var(--couleur-surface);
     border-radius: var(--rayon-plein);
-    background-color: transparent;
-    color: var(--couleur-surface);
+    /* Blanc d'office : plus visible sur la photo de la bannière que le
+       contour seul. Survol et sommaire ouvert : bleu pâle, changement léger */
+    background-color: var(--couleur-surface);
+    color: var(--bleu-fonce);
     font-size: 0.9375rem;
     font-weight: var(--graisse-moyenne);
     line-height: 1.2;
@@ -101,7 +103,7 @@ const { liens } = Astro.props
     list-style: none;
     transition:
       background-color var(--duree-courte-4) var(--courbe-standard),
-      color var(--duree-courte-4) var(--courbe-standard);
+      border-color var(--duree-courte-4) var(--courbe-standard);
   }
 
   summary::-webkit-details-marker {
@@ -114,8 +116,8 @@ const { liens } = Astro.props
   }
 
   details[open] summary {
-    background-color: var(--couleur-surface);
-    color: var(--bleu-fonce);
+    border-color: var(--bleu-100);
+    background-color: var(--bleu-100);
   }
 
   details[open] summary :global(svg) {
@@ -124,8 +126,8 @@ const { liens } = Astro.props
 
   @media (hover: hover) and (pointer: fine) {
     summary:hover {
-      background-color: var(--couleur-surface);
-      color: var(--bleu-fonce);
+      border-color: var(--bleu-100);
+      background-color: var(--bleu-100);
     }
   }
 
@@ -201,10 +203,9 @@ const { liens } = Astro.props
     transition: background-color var(--duree-courte-4) var(--courbe-standard);
   }
 
+  /* Survol : le fond seul, sans soulignement */
   .panneau a:hover {
     background-color: var(--bleu-100);
-    text-decoration: underline;
-    text-underline-offset: 0.2em;
   }
 
   .panneau a:focus-visible {

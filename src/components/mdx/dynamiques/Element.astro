@@ -187,7 +187,8 @@ const attributsLien = Titre === 'a' ? { href, ...(externe && { target: '_blank',
     line-height: 1.5;
     text-decoration: none;
     overflow-wrap: break-word;
-    transition: color var(--duree-courte-4) var(--courbe-emphase);
+    /* Pas de fondu : la couleur change d'un coup au survol (animation
+       réduite au minimum dans Quoi de neuf) */
   }
 
   @media (min-width: 900px) {
@@ -231,6 +232,28 @@ const attributsLien = Titre === 'a' ? { href, ...(externe && { target: '_blank',
     display: flex;
     color: var(--bleu-principal);
     pointer-events: none;
+  }
+
+  /* Survol et focus : la flèche avance d'un cran dans son rond (→ vers la
+     droite, ↗ en diagonale), comme dans les listes de liens ; le rond ne
+     change pas de couleur. Survol réservé aux pointeurs fins : au toucher,
+     il resterait après le tapotement. */
+  @media (hover: hover) and (pointer: fine) {
+    .element:hover .coin :global(.fleche) {
+      transform: translateX(3px);
+    }
+
+    .element:hover .coin :global(.pastille.externe .fleche) {
+      transform: translate(2px, -2px);
+    }
+  }
+
+  .element:has(a.titre:focus-visible) .coin :global(.fleche) {
+    transform: translateX(3px);
+  }
+
+  .element:has(a.titre:focus-visible) .coin :global(.pastille.externe .fleche) {
+    transform: translate(2px, -2px);
   }
 
   /* ---- Squelette ---- */

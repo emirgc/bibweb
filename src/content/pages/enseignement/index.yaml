@@ -96,9 +96,11 @@ sections:
       - texte: Voir le guide sur les REL
         lien: https://boite-outils.bib.umontreal.ca/trouver-evaluer/rel
         secondaire: true
+        contour: true
       - texte: Plateforme d'édition Pressbooks
         lien: https://rel.bib.umontreal.ca/
         secondaire: true
+        contour: true
 
   - type: carrousel-images
     fond: vertFonce
