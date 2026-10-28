@@ -1,5 +1,6 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import { ArrowClockwiseIcon } from '@phosphor-icons/react/dist/ssr/ArrowClockwise'
+import { ArrowUpIcon } from '@phosphor-icons/react/dist/ssr/ArrowUp'
 import { ClockIcon } from '@phosphor-icons/react/dist/ssr/Clock'
 import { CrosshairIcon } from '@phosphor-icons/react/dist/ssr/Crosshair'
 import { InfoIcon } from '@phosphor-icons/react/dist/ssr/Info'
@@ -242,28 +243,52 @@ export default function CarteHoraires({ lieux, images }: Props) {
     voirSurCarte,
   }
 
+  // Recherche et filtres : au-dessus de la carte sur mobile, où l'on cherche
+  // souvent un lieu précis sans la regarder ; sous la carte sur grand écran
+  // (carte, filtres, recherche). Les deux versions sont rendues et basculées
+  // en CSS (pas de saut à l'hydratation) ; la version masquée, en
+  // display: none, sort de l'arbre d'accessibilité.
+  const outils = (variante: string) => (
+    <div role="search" className="ch-outils surface-claire">
+      <button type="button" className="ch-bouton-plein" onClick={localiser} disabled={localisation.occupe}>
+        <CrosshairIcon size={24} aria-hidden="true" />
+        {position ? 'Mettre à jour ma position' : 'Me localiser'}
+      </button>
+      {/* Info-bulle native (popover) : ouverte au clic ou au clavier, fermée
+          par Échap ou un clic ailleurs ; elle reste affichée tant qu'on ne
+          la ferme pas (WCAG 1.4.13) */}
+      <button type="button" className="ch-info" popoverTarget={`ch-confidentialite-${variante}`} aria-label="Confidentialité de votre position">
+        <InfoIcon size={22} aria-hidden="true" />
+      </button>
+      <p id={`ch-confidentialite-${variante}`} popover="auto" className="ch-confidentialite">
+        Votre position sert uniquement à calculer les distances dans votre navigateur. Elle n’est ni enregistrée ni transmise.
+      </p>
+      <RechercheLieu lieux={lieux} requete={requete} changerRequete={setRequete} choisir={choisirLieu} />
+      <p role="status" className="ch-message">
+        {localisation.message}
+      </p>
+    </div>
+  )
+
+  const filtresLieux = (
+    <div role="group" aria-label="Filtrer les lieux" className="ch-filtres">
+      {/* Se combine avec les filtres de type de lieu. */}
+      <button type="button" className="ch-puce ch-puce-ouvert" disabled={!statutsPrets} aria-pressed={ouvertsSeulement} onClick={() => setOuvertsSeulement(!ouvertsSeulement)}>
+        <ClockIcon size={18} aria-hidden="true" />
+        Ouvert maintenant
+      </button>
+      <span className="ch-separateur" aria-hidden="true" />
+      {FILTRES.map(([cle, libelle, couleur]) => (
+        <button type="button" key={cle} className="ch-puce" aria-pressed={cle === filtre} onClick={() => setFiltre(cle)}>
+          {couleur && <Pastille couleur={couleur} />}
+          {cle === 'all' ? `${libelle} (${physiques.length})` : libelle}
+        </button>
+      ))}
+    </div>
+  )
+
   return (
     <div className="ch conteneur">
-      <div role="search" className="ch-outils surface-claire">
-        <button type="button" className="ch-bouton-plein" onClick={localiser} disabled={localisation.occupe}>
-          <CrosshairIcon size={24} aria-hidden="true" />
-          {position ? 'Mettre à jour ma position' : 'Me localiser'}
-        </button>
-        {/* Info-bulle native (popover) : ouverte au clic ou au clavier, fermée
-            par Échap ou un clic ailleurs ; elle reste affichée tant qu'on ne
-            la ferme pas (WCAG 1.4.13) */}
-        <button type="button" className="ch-info" popoverTarget="ch-confidentialite" aria-label="Confidentialité de votre position">
-          <InfoIcon size={22} aria-hidden="true" />
-        </button>
-        <p id="ch-confidentialite" popover="auto" className="ch-confidentialite">
-          Votre position sert uniquement à calculer les distances dans votre navigateur. Elle n’est ni enregistrée ni transmise.
-        </p>
-        <RechercheLieu lieux={lieux} requete={requete} changerRequete={setRequete} choisir={choisirLieu} />
-        <p role="status" className="ch-message">
-          {localisation.message}
-        </p>
-      </div>
-
       <p role="status" className="visuellement-masque">
         {annonce}
       </p>
@@ -282,66 +307,14 @@ export default function CarteHoraires({ lieux, images }: Props) {
         )}
       </div>
 
-      {plusProches.length > 0 && (
-        <section aria-labelledby="plus-proches-titre" className="ch-section">
-          <h2 id="plus-proches-titre" className="ch-titre-section">
-            Les plus proches de vous
-          </h2>
-          {plusProcheOuvert && (
-            <p className="ch-plus-proche-ouvert">
-              Aucun de ces lieux n’est ouvert en ce moment. Le lieu ouvert le plus proche est{' '}
-              <a
-                className="ch-lien ch-gras"
-                href={`#${plusProcheOuvert.id}`}
-                onClick={(e) => {
-                  e.preventDefault()
-                  allerAFiche(plusProcheOuvert.id)
-                }}
-              >
-                {plusProcheOuvert.name}
-              </a>
-              , à {formaterDistance(distances[plusProcheOuvert.id])}.
-            </p>
-          )}
-          {/* Version compacte : id préfixé et titres un niveau plus bas. */}
-          <div className="ch-grille ch-grille-3">
-            {plusProches.map((lieu) => (
-              <FicheLieu
-                key={lieu.id}
-                lieu={lieu}
-                image={lieu.codeBib ? images[lieu.codeBib] : undefined}
-                prefixeId="proche-"
-                niveauTitre={3}
-                compact
-                statut={statutDu(lieu)}
-                taux={occupation[lieu.id]}
-                distance={distances[lieu.id]}
-                plateforme={plateforme}
-                voirFiche={allerAFiche}
-              />
-            ))}
-          </div>
-        </section>
-      )}
-
       {/* Pas de titre de section : celui de la bannière suffit. */}
       <section aria-label="Liste des lieux">
-        <div role="group" aria-label="Filtrer les lieux" className="ch-filtres">
-          {/* Se combine avec les filtres de type de lieu. */}
-          <button type="button" className="ch-puce ch-puce-ouvert" disabled={!statutsPrets} aria-pressed={ouvertsSeulement} onClick={() => setOuvertsSeulement(!ouvertsSeulement)}>
-            <ClockIcon size={18} aria-hidden="true" />
-            Ouvert maintenant
-          </button>
-          <span className="ch-separateur" aria-hidden="true" />
-          {FILTRES.map(([cle, libelle, couleur]) => (
-            <button type="button" key={cle} className="ch-puce" aria-pressed={cle === filtre} onClick={() => setFiltre(cle)}>
-              {couleur && <Pastille couleur={couleur} />}
-              {cle === 'all' ? `${libelle} (${physiques.length})` : libelle}
-            </button>
-          ))}
+        <div className="ch-avant-carte">
+          {outils('etroit')}
+          {filtresLieux}
         </div>
 
-        <div ref={sectionCarteRef} className="ch-zone-carte">
+        <div ref={sectionCarteRef} id="carte" className="ch-zone-carte">
           <CarteLeaflet lieux={surCarte} idsVisibles={idsVisibles} filtre={filtre} position={position} cible={cibleCarte} choisir={allerAFiche} />
           {position && (
             <p className="ch-legende-position">
@@ -350,6 +323,55 @@ export default function CarteHoraires({ lieux, images }: Props) {
             </p>
           )}
         </div>
+
+        <div className="ch-apres-carte">
+          {filtresLieux}
+          {outils('large')}
+        </div>
+
+        {/* Les plus proches : juste avant la liste, sous « Me localiser » sur
+            grand écran. */}
+        {plusProches.length > 0 && (
+          <section aria-labelledby="plus-proches-titre" className="ch-section">
+            <h2 id="plus-proches-titre" className="ch-titre-section">
+              Les plus proches de vous
+            </h2>
+            {plusProcheOuvert && (
+              <p className="ch-plus-proche-ouvert">
+                Aucun de ces lieux n’est ouvert en ce moment. Le lieu ouvert le plus proche est{' '}
+                <a
+                  className="ch-lien ch-gras"
+                  href={`#${plusProcheOuvert.id}`}
+                  onClick={(e) => {
+                    e.preventDefault()
+                    allerAFiche(plusProcheOuvert.id)
+                  }}
+                >
+                  {plusProcheOuvert.name}
+                </a>
+                , à {formaterDistance(distances[plusProcheOuvert.id])}.
+              </p>
+            )}
+            {/* Version compacte : id préfixé et titres un niveau plus bas. */}
+            <div className="ch-grille ch-grille-3">
+              {plusProches.map((lieu) => (
+                <FicheLieu
+                  key={lieu.id}
+                  lieu={lieu}
+                  image={lieu.codeBib ? images[lieu.codeBib] : undefined}
+                  prefixeId="proche-"
+                  niveauTitre={3}
+                  compact
+                  statut={statutDu(lieu)}
+                  taux={occupation[lieu.id]}
+                  distance={distances[lieu.id]}
+                  plateforme={plateforme}
+                  voirFiche={allerAFiche}
+                />
+              ))}
+            </div>
+          </section>
+        )}
 
         <p role="status" className="ch-compte">
           {liste.length === 0
@@ -373,6 +395,14 @@ export default function CarteHoraires({ lieux, images }: Props) {
             />
           ))}
         </div>
+        {/* Au fond de la liste, rien ne ramenait à la carte. Simple ancre :
+            elle fonctionne aussi sans JavaScript. */}
+        <p className="ch-retour-carte">
+          <a className="ch-lien ch-lien-icone" href="#carte">
+            <ArrowUpIcon size={18} aria-hidden="true" />
+            Retour à la carte
+          </a>
+        </p>
       </section>
 
       {autresServices.length > 0 && (

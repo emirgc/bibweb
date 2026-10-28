@@ -29,12 +29,15 @@ export const urlOccupation = (id: string) => `${RELAIS_OCCUPATION}?url=${encodeU
 export type Niveau = 1 | 2 | 3
 
 /**
- * Niveau d'achalandage d'un taux d'occupation (en %). Mêmes seuils que la
- * page d'occupation du Studio (80 et 99 %), pour que les deux sites disent
- * la même chose au même moment.
+ * Niveau d'achalandage d'un taux d'occupation (en %). Une salle d'étude paraît
+ * pleine bien avant 100 % : on évite la place voisine d'un inconnu, et le
+ * compteur compte les personnes, pas les places prises (personnel, passage).
+ * D'où des seuils bas (50 et 85 %), et pas de « Complète », que le compteur
+ * ne peut pas garantir. La page d'occupation du Studio garde ses propres
+ * seuils (80 et 99 %) : les deux pages peuvent différer.
  */
 export function niveauAchalandage(taux: number): { niveau: Niveau; texte: string } {
-  if (taux < 80) return { niveau: 1, texte: 'Peu achalandée' }
-  if (taux < 99) return { niveau: 2, texte: 'Très achalandée, quelques places' }
-  return { niveau: 3, texte: 'Complète' }
+  if (taux < 50) return { niveau: 1, texte: 'Peu achalandée' }
+  if (taux < 85) return { niveau: 2, texte: 'Achalandée' }
+  return { niveau: 3, texte: 'Très achalandée, peu de places' }
 }

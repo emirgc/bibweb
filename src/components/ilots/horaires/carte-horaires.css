@@ -391,6 +391,30 @@
   scroll-margin-top: var(--hauteur-entete);
 }
 
+/* Recherche et filtres : au-dessus de la carte sur mobile, sous la carte
+   (filtres puis recherche) dès 900 px. Voir CarteHoraires.tsx. */
+.ch-apres-carte {
+  display: none;
+}
+
+@media (min-width: 900px) {
+  .ch-avant-carte {
+    display: none;
+  }
+
+  .ch-apres-carte {
+    display: block;
+  }
+
+  .ch-zone-carte {
+    margin-bottom: 1.5rem;
+  }
+}
+
+.ch-retour-carte {
+  margin: 1.5rem 0 0;
+}
+
 .ch-carte {
   /* La carte reste sous l'en-tête collant et le menu du site */
   position: relative;
@@ -748,7 +772,10 @@
 
 /* Photo collée au coin haut-droit : on annule la marge intérieure de la
    fiche et sa bordure, pour que l'arrondi de la photo épouse le sien. */
+/* Sous 600 px, pas de vignette : petite et collée au coin, elle allongeait
+   la fiche sans rien apprendre (la distance passe alors à côté du nom) */
 .ch-vignette {
+  display: none;
   position: relative;
   flex: 0 0 auto;
   width: 88px;
@@ -769,6 +796,7 @@
 
 @media (min-width: 600px) {
   .ch-vignette {
+    display: block;
     align-self: stretch;
     width: 148px;
     height: auto;
@@ -817,6 +845,12 @@
   flex: 0 0 auto;
   background-color: var(--bleu-100);
   box-shadow: none;
+}
+
+@media (min-width: 600px) {
+  .ch-puce-sans-vignette {
+    display: none;
+  }
 }
 
 @media (min-width: 600px) {
@@ -1142,6 +1176,24 @@
 
 .ch-achalandage-etiquette {
   color: var(--couleur-texte-secondaire);
+}
+
+/* Sous 600 px, une seule ligne : jauge et niveau. « En ce moment » reste
+   lu par les lecteurs d'écran. */
+@media (width < 600px) {
+  .ch-achalandage {
+    gap: 0.5rem;
+    padding: 0.25rem 0.625rem;
+  }
+
+  .ch-achalandage-etiquette {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    overflow: hidden;
+    clip: rect(0 0 0 0);
+    white-space: nowrap;
+  }
 }
 
 /* Jauge : trois barres de hauteur croissante, pleines jusqu'au niveau */

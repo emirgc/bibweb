@@ -78,10 +78,16 @@ export default function CarteLeaflet({ lieux, idsVisibles, filtre, position, cib
 
   // On n'observe la carte qu'une fois la page chargée : avant l'arrivée des
   // images et des polices, la page est plus courte et la carte passerait un
-  // instant dans la zone visible.
+  // instant dans la zone visible. Une seconde au plus, toutefois : les
+  // scripts de mesure (Clarity, Analytics, Corvée) retardent l'événement
+  // load de plusieurs secondes, et la carte restait vide s'ils traînaient.
   useEffect(() => {
     let observateur: IntersectionObserver | undefined
+    let delai: ReturnType<typeof setTimeout> | undefined
     const observer = () => {
+      if (observateur) return
+      clearTimeout(delai)
+      window.removeEventListener('load', observer)
       observateur = new IntersectionObserver(
         (entrees) => {
           if (entrees.some((e) => e.isIntersecting)) {
@@ -94,8 +100,12 @@ export default function CarteLeaflet({ lieux, idsVisibles, filtre, position, cib
       if (conteneurRef.current) observateur.observe(conteneurRef.current)
     }
     if (document.readyState === 'complete') observer()
-    else window.addEventListener('load', observer, { once: true })
+    else {
+      window.addEventListener('load', observer, { once: true })
+      delai = setTimeout(observer, 1000)
+    }
     return () => {
+      clearTimeout(delai)
       window.removeEventListener('load', observer)
       observateur?.disconnect()
     }

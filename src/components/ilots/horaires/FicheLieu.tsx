@@ -145,13 +145,13 @@ function Reservations({ lieu }: { lieu: Lieu }) {
   )
 }
 
-// Photo du lieu, collée au coin haut-droit de la fiche. Décorative (le nom est
-// juste à côté) : alt vide. La distance s'affiche par-dessus une fois la
-// personne localisée.
+// Photo du lieu, collée au coin haut-droit de la fiche dès 600 px (masquée en
+// dessous, voir carte-horaires.css). Décorative (le nom est juste à côté) :
+// alt vide. La distance s'affiche par-dessus une fois la personne localisée.
 function Vignette({ image, distance }: { image: ImageLieu; distance?: number }) {
   return (
     <div className="ch-vignette">
-      <img src={image.src} srcSet={image.srcset} sizes="(min-width: 600px) 168px, 88px" alt="" loading="lazy" decoding="async" />
+      <img src={image.src} srcSet={image.srcset} sizes="168px" alt="" loading="lazy" decoding="async" />
       {distance != null && <span className="ch-puce-distance">{formaterDistance(distance)}</span>}
     </div>
   )
@@ -203,7 +203,7 @@ export default function FicheLieu(props: PropsFiche) {
             <Titre id={`${uid}-nom`} className="ch-fiche-nom">
               {lieu.name}
             </Titre>
-            {distance != null && !image && <span className="ch-puce-distance ch-puce-statique">{formaterDistance(distance)}</span>}
+            {distance != null && <span className={`ch-puce-distance ch-puce-statique${image ? ' ch-puce-sans-vignette' : ''}`}>{formaterDistance(distance)}</span>}
           </div>
 
           {sousTitre && (
