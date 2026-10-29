@@ -135,6 +135,15 @@ const attributsCoquille = langPage === LANGUE_SITE ? {} : { lang: LANGUE_SITE, s
         if (principal) focaliserTemporairement(principal, { preventScroll: true })
       })
     </script>
+    {/* Lien d'ancre des titres : le clic copie aussi l'adresse de la section
+        (c'est presque toujours pour la partager). La navigation vers l'ancre
+        a lieu comme avant, et sans JavaScript ou sans presse-papier le lien
+        reste un simple lien. */}
+    <script>
+      import { copierLienAncre } from '@/lib/ancres-copie'
+
+      copierLienAncre()
+    </script>
   </body>
 </html>
 
