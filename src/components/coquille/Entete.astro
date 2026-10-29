@@ -30,7 +30,7 @@ import PanneauMenu from './entete/PanneauMenu.astro'
 import BurgerIcon from '@/components/icones/BurgerIcon.astro'
 import { PAGES_PRINCIPALES, estCourante } from '@/data/navigation'
 import logoUdem from '@/components/icones/logo-udem.svg'
-import logoUdemNoir from '@/components/icones/logo-udem-noir.svg'
+import logoUdemOfficiel from '@/components/icones/logo-udem-officiel.svg'
 
 const chemin = sansBase(Astro.url.pathname)
 ---
@@ -86,7 +86,7 @@ const chemin = sansBase(Astro.url.pathname)
   <div class="barre-compacte">
     <div class="rangee">
       <a class="marque-compacte" href="/">
-        <img src={logoUdemNoir.src} alt="Université de Montréal" width="140" height="61" />
+        <img src={logoUdemOfficiel.src} alt="Université de Montréal" width="140" height="61" />
         <span>Les bibliothèques<span class="visuellement-masque"> – Accueil</span></span>
       </a>
       <div class="outils">
@@ -416,25 +416,38 @@ const chemin = sansBase(Astro.url.pathname)
 
   .marque-compacte {
     display: flex;
-    flex-direction: column;
+    align-items: center;
+    gap: 8px;
+    min-width: 0;
+    margin-inline-end: 8px;
     color: var(--couleur-texte);
-    font-size: 16px;
-    font-weight: var(--graisse-forte);
-    line-height: 1.5;
+    /* Le nom tient sur une ligne dès 375 px ; plus étroit, il passe sur deux
+       lignes, toujours à droite du trait */
+    font-size: clamp(0.8125rem, 3.8vw, 1.0625rem);
+    font-weight: var(--graisse-normale);
+    line-height: 1.2;
     text-decoration: none;
   }
 
   .marque-compacte:hover {
+  /* Comme sur ordinateur : logo, trait, puis le nom sur la même ligne */
     color: var(--couleur-texte);
     text-decoration: underline;
   }
 
   .marque-compacte img {
-    width: 120px;
+    flex-shrink: 0;
+    width: clamp(72px, 24vw, 120px);
     height: auto;
   }
 
   /* Le bouton unique garde l'emprise des deux boutons imbriqués de la source
+  .marque-compacte > span {
+    padding-block: 4px;
+    padding-inline-start: 8px;
+    border-inline-start: 1px solid currentColor;
+  }
+
      (66 px) : l'icône reste à sa place et la cible est plus grande. */
   .barre-compacte .bouton-menu {
     width: 66px;
