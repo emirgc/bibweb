@@ -122,11 +122,8 @@ sections:
     image: blrcs/images/vitrine-reliures.webp
     positionImage: gauche
     boutons:
-      - texte: Bibliothèque des livres rares
+      - texte: Explorer la Bibliothèque des livres rares et collections spéciales
         lien: /espaces/blrcs/
-      - texte: Explorer la plateforme Collections spéciales
-        lien: https://collections-speciales.bib.umontreal.ca/
-        contour: true
 
   - type: image-texte
     titre: |
