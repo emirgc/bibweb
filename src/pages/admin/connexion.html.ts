@@ -25,7 +25,7 @@ const page = (relais: string) => `<!doctype html>
 <meta charset="utf-8">
 <meta name="robots" content="noindex, nofollow">
 <meta name="referrer" content="no-referrer">
-<title>Connexion | Les bibliothèques / UdeM</title>
+<title>Connexion | Les bibliothèques UdeM</title>
 </head>
 <body>
 <p id="etat">Connexion en cours…</p>
