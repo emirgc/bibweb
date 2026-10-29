@@ -91,7 +91,7 @@ function memeFond(i: number) {
 
 /** Réglages de la bande propres à un bloc (voir plus haut) */
 function bande(bloc: Bloc) {
-  if (bloc.type === 'image-fond') return { image: bloc.image, style: bloc.cadrage && { '--cadrage': bloc.cadrage } }
+  if (bloc.type === 'image-fond') return { image: bloc.image, voile: 'droite' as const, style: bloc.cadrage && { '--cadrage': bloc.cadrage } }
   if (bloc.type === 'fiches-bibliotheques') return { id: 'liste-bibliotheques' }
   return {}
 }
