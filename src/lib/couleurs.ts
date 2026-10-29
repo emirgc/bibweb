@@ -33,7 +33,7 @@ export function couleurPalette(nom: string | undefined): string | undefined {
   if (!nom) return undefined
   const cle = nom.replace(/\.main$/, '')
   if (cle === 'primary') return 'var(--bleu-principal)'
-  if (cle === 'white' || cle === 'common.white') return 'var(--couleur-surface)'
+  if (cle === 'white' || cle === 'common.white') return 'var(--couleur-sur-fonce)'
   const jeton = cle
     .replace(/([A-Z])/g, '-$1')
     .replace(/(\d+)/, '-$1')
@@ -57,8 +57,8 @@ const COULEURS: Record<string, string> = {
   bleu600: 'var(--bleu-600)',
   rougeOrange: 'var(--rouge-orange-texte)',
   vertFonce: 'var(--vert-fonce)',
-  white: 'var(--couleur-surface)',
-  blanc: 'var(--couleur-surface)',
+  white: 'var(--couleur-sur-fonce)',
+  blanc: 'var(--couleur-sur-fonce)',
 }
 
 export function couleurTheme(nom: string | undefined): string | undefined {

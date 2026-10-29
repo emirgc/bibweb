@@ -37,7 +37,8 @@ import Licence from './pied/Licence.astro'
 const annee = new Date().getFullYear()
 ---
 
-<footer class="pied">
+{/* theme-clair : déjà foncé, le pied garde ses couleurs dans les deux thèmes */}
+<footer class="pied theme-clair">
   <div class="local">
     <div class="interieur">
       <div class="signature">
@@ -202,7 +203,7 @@ const annee = new Date().getFullYear()
   .local {
     padding: 40px 24px 32px;
     background-color: var(--bleu-fonce);
-    color: var(--couleur-surface);
+    color: var(--couleur-sur-fonce);
   }
 
   .titre {
@@ -499,7 +500,7 @@ const annee = new Date().getFullYear()
   /* ---- Barre du bas ---- */
   .queue {
     background-color: var(--bleu-principal);
-    color: var(--couleur-surface);
+    color: var(--couleur-sur-fonce);
   }
 
   /* Pas de traits entre les éléments : quand la barre passe à la ligne, un

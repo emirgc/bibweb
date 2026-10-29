@@ -170,7 +170,7 @@ const SOURCES = [
 
   h1 {
     margin: 0 0 var(--espace-titre);
-    color: var(--bleu-fonce);
+    color: var(--couleur-texte);
     overflow-wrap: anywhere;
   }
 
@@ -234,13 +234,13 @@ const SOURCES = [
   }
 
   .source:hover {
-    background: var(--bleu-100);
+    background: var(--couleur-teinte);
   }
 
   .source:has(input:checked) {
     border-color: var(--bleu-fonce);
     background: var(--bleu-fonce);
-    color: var(--couleur-surface);
+    color: var(--couleur-sur-fonce);
   }
 
   .source:has(input:focus-visible) {
@@ -264,7 +264,7 @@ const SOURCES = [
     align-items: center;
     gap: 0.375rem;
     min-height: var(--taille-cible);
-    color: var(--bleu-principal);
+    color: var(--couleur-accent);
     font-weight: var(--graisse-forte);
     overflow-wrap: anywhere;
   }
@@ -293,7 +293,7 @@ const SOURCES = [
   .liste :global(.resultat) {
     display: block;
     padding-block: var(--espace-2);
-    color: var(--bleu-principal);
+    color: var(--couleur-accent);
     text-decoration: none;
   }
 
@@ -339,10 +339,10 @@ const SOURCES = [
     min-height: var(--taille-cible);
     margin-block-start: var(--espace-2);
     padding: 0.5rem 1.25rem;
-    border: 1px solid var(--bleu-principal);
+    border: 1px solid var(--couleur-accent);
     border-radius: var(--rayon-plein);
     background: var(--couleur-surface);
-    color: var(--bleu-principal);
+    color: var(--couleur-accent);
     font: inherit;
     font-weight: var(--graisse-forte);
     cursor: pointer;
@@ -353,7 +353,7 @@ const SOURCES = [
   }
 
   .plus:hover {
-    background: var(--bleu-100);
+    background: var(--couleur-teinte);
   }
 
   @media (forced-colors: active) {

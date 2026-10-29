@@ -92,8 +92,8 @@ const listeClasses = ['bouton', `variante-${variante}`, `couleur-${couleur}`, `t
   .bouton {
     /* Couleurs propres à chaque variante, redéfinies plus bas */
     --bouton-fond: transparent;
-    --bouton-texte: var(--bleu-principal);
-    --bouton-fond-survol: color-mix(in srgb, var(--bleu-principal) 6%, transparent);
+    --bouton-texte: var(--couleur-accent);
+    --bouton-fond-survol: color-mix(in srgb, var(--couleur-accent) 6%, transparent);
     --bouton-texte-survol: var(--bouton-texte);
     --bouton-bordure: transparent;
 
@@ -174,9 +174,9 @@ const listeClasses = ['bouton', `variante-${variante}`, `couleur-${couleur}`, `t
      bleu foncé survol de la source (presque noir) se distinguait à peine.
      Blanc sur bleu principal : 7,10:1. */
   .variante-contained {
-    --bouton-fond: var(--bleu-fonce);
-    --bouton-texte: var(--couleur-surface);
-    --bouton-fond-survol: var(--bleu-principal);
+    --bouton-fond: var(--couleur-fond-fort);
+    --bouton-texte: var(--couleur-sur-fonce);
+    --bouton-fond-survol: var(--couleur-fond-fort-survol);
   }
 
   .variante-contained.couleur-bleuPrincipal,
@@ -189,8 +189,8 @@ const listeClasses = ['bouton', `variante-${variante}`, `couleur-${couleur}`, `t
   /* ---- Texte et contour ---- */
   .variante-text.couleur-bleuFonce,
   .variante-outlined.couleur-bleuFonce {
-    --bouton-texte: var(--bleu-fonce);
-    --bouton-fond-survol: color-mix(in srgb, var(--bleu-fonce) 6%, transparent);
+    --bouton-texte: var(--couleur-texte);
+    --bouton-fond-survol: color-mix(in srgb, var(--couleur-texte) 6%, transparent);
   }
 
   .variante-outlined {
@@ -199,31 +199,31 @@ const listeClasses = ['bouton', `variante-${variante}`, `couleur-${couleur}`, `t
 
   /* ---- Fond foncé (light) ---- */
   .clair.variante-contained {
-    --bouton-fond: var(--couleur-surface);
+    --bouton-fond: var(--couleur-sur-fonce);
     --bouton-texte: var(--bleu-fonce);
     --bouton-fond-survol: var(--bleu-100);
   }
 
   .clair.variante-text,
   .clair.variante-outlined {
-    --bouton-texte: var(--couleur-surface);
-    --bouton-fond-survol: color-mix(in srgb, var(--couleur-surface) 12%, transparent);
+    --bouton-texte: var(--couleur-sur-fonce);
+    --bouton-fond-survol: color-mix(in srgb, var(--couleur-sur-fonce) 12%, transparent);
   }
 
   /* ---- Classes utilitaires du thème de la source ---- */
   .blueOutlineNoIcon {
     --bouton-fond: transparent;
-    --bouton-texte: var(--bleu-principal);
-    --bouton-bordure: var(--bleu-principal);
+    --bouton-texte: var(--couleur-accent);
+    --bouton-bordure: var(--couleur-accent);
     --bouton-fond-survol: var(--bleu-principal);
-    --bouton-texte-survol: var(--couleur-surface);
+    --bouton-texte-survol: var(--couleur-sur-fonce);
   }
 
   .whiteOutlineNoIcon {
     --bouton-fond: transparent;
-    --bouton-texte: var(--couleur-surface);
-    --bouton-bordure: var(--couleur-surface);
-    --bouton-fond-survol: var(--couleur-surface);
+    --bouton-texte: var(--couleur-sur-fonce);
+    --bouton-bordure: var(--couleur-sur-fonce);
+    --bouton-fond-survol: var(--couleur-sur-fonce);
     --bouton-texte-survol: var(--bleu-fonce);
   }
 

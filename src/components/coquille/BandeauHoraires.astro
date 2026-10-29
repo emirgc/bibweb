@@ -43,7 +43,7 @@ const bibliotheques = lieux
   .sort((a, b) => a.nom.localeCompare(b.nom, 'fr'))
 ---
 
-<section class="bandeau" aria-labelledby="bandeau-horaires-titre" data-bandeau-horaires data-defaut={PAR_DEFAUT}>
+<section class="bandeau theme-clair" aria-labelledby="bandeau-horaires-titre" data-bandeau-horaires data-defaut={PAR_DEFAUT}>
   <div class="rangee">
     <div class="choix">
       <ClockIcon size={20} aria-hidden="true" className="icone" />
@@ -156,8 +156,8 @@ const bibliotheques = lieux
     position: relative;
     z-index: 2;
     background-color: var(--bleu-fonce);
-    color: var(--couleur-surface);
-    --couleur-focus: var(--couleur-surface);
+    color: var(--couleur-sur-fonce);
+    --couleur-focus: var(--couleur-sur-fonce);
   }
 
   /* Tout à fait effacé au défilement (voir le script : l'opacité suit le
@@ -219,7 +219,7 @@ const bibliotheques = lieux
     border: 1px solid color-mix(in srgb, var(--couleur-surface) 55%, transparent);
     border-radius: var(--rayon-plein);
     background-color: color-mix(in srgb, var(--couleur-surface) 8%, transparent);
-    color: var(--couleur-surface);
+    color: var(--couleur-sur-fonce);
     font: inherit;
     font-weight: var(--graisse-forte);
     text-overflow: ellipsis;

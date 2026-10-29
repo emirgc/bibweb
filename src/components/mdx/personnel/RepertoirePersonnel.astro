@@ -524,7 +524,7 @@ const ids = { q: `repertoire-q-${n}`, bib: `repertoire-bib-${n}`, disc: `reperto
     padding: 0.25rem 0.625rem 0.25rem 0.875rem;
     border: 1px solid transparent;
     border-radius: var(--rayon-plein);
-    background: var(--bleu-100);
+    background: var(--couleur-teinte);
     color: var(--couleur-texte);
     font: inherit;
     font-size: 0.875rem;
@@ -534,11 +534,11 @@ const ids = { q: `repertoire-q-${n}`, bib: `repertoire-bib-${n}`, disc: `reperto
 
   .actifs :global(.puce svg) {
     flex: none;
-    color: var(--bleu-principal);
+    color: var(--couleur-accent);
   }
 
   .actifs :global(.puce:hover) {
-    background: var(--bleu-200);
+    background: var(--couleur-teinte-forte);
   }
 
   /* ---- Résultats ---- */
@@ -568,9 +568,9 @@ const ids = { q: `repertoire-q-${n}`, bib: `repertoire-bib-${n}`, disc: `reperto
     background: var(--couleur-fond);
     /* Ombre « elevation 1 » de MUI, teintée par le jeton de texte */
     box-shadow:
-      0 2px 1px -1px color-mix(in srgb, var(--couleur-neutre-700) 20%, transparent),
-      0 1px 1px 0 color-mix(in srgb, var(--couleur-neutre-700) 14%, transparent),
-      0 1px 3px 0 color-mix(in srgb, var(--couleur-neutre-700) 12%, transparent);
+      0 2px 1px -1px color-mix(in srgb, var(--gris-700) 20%, transparent),
+      0 1px 1px 0 color-mix(in srgb, var(--gris-700) 14%, transparent),
+      0 1px 3px 0 color-mix(in srgb, var(--gris-700) 12%, transparent);
   }
 
   .entete {
@@ -676,7 +676,7 @@ const ids = { q: `repertoire-q-${n}`, bib: `repertoire-bib-${n}`, disc: `reperto
 
   .contacts :global(svg) {
     flex: none;
-    color: var(--bleu-principal);
+    color: var(--couleur-accent);
   }
 
   /* Une adresse sans espace ne doit pas faire déborder la carte à 320 px */
@@ -731,12 +731,12 @@ const ids = { q: `repertoire-q-${n}`, bib: `repertoire-bib-${n}`, disc: `reperto
   }
 
   .pagination :global(button:hover:not(:disabled, [aria-current])) {
-    background: var(--bleu-100);
+    background: var(--couleur-teinte);
   }
 
   .pagination :global(button[aria-current]) {
     background: var(--bleu-principal);
-    color: var(--couleur-surface);
+    color: var(--couleur-sur-fonce);
     cursor: default;
   }
 

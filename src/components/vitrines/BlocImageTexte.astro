@@ -115,16 +115,16 @@ const legende = bloc.legende ? await markdownEnLigne(bloc.legende) : undefined
 
   .encart {
     /* Liens, focus et accent du ton foncé de Section */
-    --couleur-lien: var(--couleur-surface);
-    --couleur-lien-survol: var(--couleur-surface);
-    --couleur-focus: var(--couleur-surface);
+    --couleur-lien: var(--couleur-sur-fonce);
+    --couleur-lien-survol: var(--couleur-sur-fonce);
+    --couleur-focus: var(--couleur-sur-fonce);
     --rouge-orange-texte: var(--jaune);
     display: grid;
     grid-template-rows: auto auto;
     overflow: hidden;
     border-radius: var(--rayon-grand);
     background-color: var(--bleu-fonce);
-    color: var(--couleur-surface);
+    color: var(--couleur-sur-fonce);
   }
 
   .encart-texte {

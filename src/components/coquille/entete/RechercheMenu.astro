@@ -327,7 +327,7 @@ const { id } = Astro.props
     min-width: 0;
     padding: 3px;
     border-radius: var(--rayon-plein);
-    background: var(--bleu-100);
+    background: var(--couleur-teinte);
   }
 
   .indicateur {
@@ -354,7 +354,7 @@ const { id } = Astro.props
     min-height: 2.5rem;
     padding: 0.25rem 0.75rem;
     border-radius: var(--rayon-plein);
-    color: var(--bleu-principal);
+    color: var(--couleur-accent);
     font-size: 0.875rem;
     font-weight: var(--graisse-forte);
     line-height: 1.2;
@@ -369,13 +369,13 @@ const { id } = Astro.props
   }
 
   .segment:has(:checked) {
-    color: var(--couleur-surface);
+    color: var(--couleur-sur-fonce);
     cursor: default;
   }
 
   @media (hover: hover) and (pointer: fine) {
     .segment:not(:has(:checked)):hover {
-      color: var(--bleu-fonce);
+      color: var(--couleur-texte);
     }
   }
 
@@ -465,8 +465,8 @@ const { id } = Astro.props
     border-radius: var(--rayon-petit);
     background: var(--couleur-surface);
     box-shadow:
-      0 8px 10px -6px color-mix(in srgb, var(--couleur-neutre-700) 20%, transparent),
-      0 16px 24px 2px color-mix(in srgb, var(--couleur-neutre-700) 12%, transparent);
+      0 8px 10px -6px color-mix(in srgb, var(--gris-700) 20%, transparent),
+      0 16px 24px 2px color-mix(in srgb, var(--gris-700) 12%, transparent);
   }
 
   /* Entrée brève, une fois à l'ouverture (pas à chaque frappe : la liste
@@ -535,17 +535,17 @@ const { id } = Astro.props
   .suggestions :global(.option-externe) {
     flex-shrink: 0;
     align-self: center;
-    color: var(--bleu-principal);
+    color: var(--couleur-accent);
   }
 
   .suggestions :global(.option-tout) {
-    color: var(--bleu-principal);
+    color: var(--couleur-accent);
     font-weight: var(--graisse-forte);
   }
 
   .suggestions :global(.option:hover),
   .suggestions :global(.option[aria-selected='true']) {
-    background: var(--bleu-100);
+    background: var(--couleur-teinte);
   }
 
   /* L'option choisie au clavier ne tient pas qu'au fond : un liseré */

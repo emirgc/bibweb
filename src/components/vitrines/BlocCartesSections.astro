@@ -27,7 +27,7 @@ const { bloc } = Astro.props
       const fond = carte.fond ? FONDS[carte.fond] : undefined
       const ton = fond?.ton ?? 'clair'
       return (
-        <li class:list={['carte', `ton-${ton}`]} style={fond ? `--carte-fond: ${fond.couleur}` : undefined}>
+        <li class:list={['carte', `ton-${ton}`, ton === 'moyen' && 'theme-clair']} style={fond ? `--carte-fond: ${fond.couleur}` : undefined}>
           <div class="cadre">
             <Picture src={carte.image} alt="" widths={[400, 600, 800]} sizes="(min-width: 900px) 33vw, 100vw" formats={['avif', 'webp']} fallbackFormat="webp" class="photo" loading="lazy" decoding="async" />
           </div>
@@ -75,11 +75,11 @@ const { bloc } = Astro.props
 
   /* Tons (voir src/lib/fonds.ts et Section.astro) */
   .ton-fonce {
-    --couleur-lien: var(--couleur-surface);
-    --couleur-lien-survol: var(--couleur-surface);
-    --couleur-focus: var(--couleur-surface);
+    --couleur-lien: var(--couleur-sur-fonce);
+    --couleur-lien-survol: var(--couleur-sur-fonce);
+    --couleur-focus: var(--couleur-sur-fonce);
     --rouge-orange-texte: var(--jaune);
-    color: var(--couleur-surface);
+    color: var(--couleur-sur-fonce);
   }
 
   .ton-moyen {
