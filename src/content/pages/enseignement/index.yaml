@@ -45,7 +45,7 @@ sections:
       - titre: Collections spéciales
         description: Nous conservons près de 175 000 documents anciens, rares ou précieux, qui sont entièrement à la disposition de la communauté UdeM pour la consultation et la recherche.
         lien: /espaces/blrcs/
-        appel: En savoir plus
+        appel: Livres rares et collections spéciales
 
   - type: image-texte
     fond: bleu600
@@ -71,7 +71,7 @@ sections:
       - titre: Donner accès aux lectures suggérées
         description: Partager des documents tout en respectant le droit d'auteur? Vous pouvez le faire grâce à la licence Copibec, aux abonnements des bibliothèques ou selon les exceptions prévues par le droit d'auteur.
         lien: https://boite-outils.bib.umontreal.ca/c.php?g=740213&p=5341400
-        appel: Voir les informations
+        appel: Partager en respectant le droit d’auteur
       - titre: Faire une déclaration de reproduction
         description: Si vous devez utiliser du matériel protégé dans votre cours, vous devez déclarer vos reproductions en vertu de la licence Copibec, via l’outil Savia.
         lien: https://boite-outils.bib.umontreal.ca/recherche/declaration-reproduction

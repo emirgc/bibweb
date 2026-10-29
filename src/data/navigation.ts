@@ -87,7 +87,7 @@ export const CARTES: Carte[] = [
       { libelle: 'Technologies créatives', href: 'https://studio.bib.umontreal.ca/creatives/' },
       { libelle: 'Productions médias', href: 'https://studio.bib.umontreal.ca/medias/' },
     ],
-    appel: { libelle: 'Aller plus loin', href: 'https://studio.bib.umontreal.ca/' },
+    appel: { libelle: 'Site de Studio·bib', href: 'https://studio.bib.umontreal.ca/' },
     couleur: 'var(--jaune)',
   },
   {
@@ -102,7 +102,7 @@ export const CARTES: Carte[] = [
       { libelle: 'Comment citer', href: 'https://boite-outils.bib.umontreal.ca/citer' },
       { libelle: "Droit d'auteur", href: 'https://boite-outils.bib.umontreal.ca/recherche/droit-auteur' },
     ],
-    appel: { libelle: 'Découvrir tous les outils', href: 'https://boite-outils.bib.umontreal.ca/' },
+    appel: { libelle: 'Toute la Boîte à outils', href: 'https://boite-outils.bib.umontreal.ca/' },
     couleur: 'var(--rouge-orange)',
   },
   {

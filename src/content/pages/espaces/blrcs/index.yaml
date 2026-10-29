@@ -42,7 +42,7 @@ sections:
         lien: https://collections-speciales.bib.umontreal.ca/
       - titre: Nos fonds et collections
         icone: books
-        appel: Consulter la liste
+        appel: Liste des fonds et collections
         lien: /espaces/blrcs/fonds-collections/
       - titre: Nouvelles acquisitions
         icone: sparkle
