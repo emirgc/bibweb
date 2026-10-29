@@ -1065,7 +1065,9 @@ const courante = (url: string) => (url === '/' ? chemin === '/' : estCourante(ch
     display: flex;
     grid-column: 1 / -1;
     justify-content: center;
-    margin-top: calc(-1 * var(--espace-2));
+    /* Descendu vers le bord du bas, sans changer la hauteur de la feuille */
+    margin-top: calc(20px - var(--espace-2));
+    margin-bottom: -20px;
   }
 
   .deplier-bouton {
