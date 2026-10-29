@@ -16,7 +16,8 @@
     "indexer:externes": "node scripts/indexer-externes.mjs",
     "astro": "astro",
     "dev:propre": "astro dev stop; rm -f .astro/data-store.json && astro dev --background",
-    "cms:local": "npx --yes decap-server@3.11.3"
+    "cms:local": "npx --yes decap-server@3.11.3",
+    "test": "node --test 'src/**/*.test.ts'"
   },
   "dependencies": {
     "@astrojs/markdown-remark": "^7.3.3",

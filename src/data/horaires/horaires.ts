@@ -188,7 +188,9 @@ export function statutDe(lieu: Lieu, horaires: Horaires | null, maintenant: Main
   for (const [debut, fin] of aujourdhui) {
     if (maintenant.minutes >= debut && maintenant.minutes < fin) {
       const f = fermetureReelle(parDate, maintenant.date, fin)
-      if (f.inconnue) return { etat: 'open', texte: 'Ouvert 24 h sur 24' }
+      // Fermeture au-delà des jours chargés (deux pour le bandeau) : on ne
+      // sait pas quand, « 24 h sur 24 » promettrait trop
+      if (f.inconnue) return { etat: 'open', texte: 'Ouvert sans interruption' }
       if (f.jours * JOUR + f.minutes - maintenant.minutes <= FERME_BIENTOT_MIN) {
         return { etat: 'closing-soon', texte: `Ferme bientôt, à ${formaterHeure(f.minutes)}` }
       }
