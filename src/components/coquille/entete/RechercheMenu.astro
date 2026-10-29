@@ -22,7 +22,7 @@
  * Sofia : l'étiquette le dit.
  */
 import { ArrowUpRightIcon } from '@phosphor-icons/react/dist/ssr/ArrowUpRight'
-import { ACTION_SOFIA, PARAMETRES_SOFIA } from '@/lib/sofia'
+import { ACTION_SOFIA, PARAMETRES_SOFIA, PLACEHOLDER_SOFIA } from '@/lib/sofia'
 import ChampRecherche from './ChampRecherche.astro'
 
 interface Props {
@@ -39,7 +39,7 @@ const { id } = Astro.props
   action={ACTION_SOFIA}
   parametre="queryString"
   caches={Object.entries(PARAMETRES_SOFIA)}
-  placeholder="Articles, livres, films…"
+  placeholder={PLACEHOLDER_SOFIA}
   data-recherche-sofia
   data-recherche-menu
 >
@@ -75,13 +75,14 @@ const { id } = Astro.props
   import type MiniSearch from 'minisearch'
   import { chargerIndex, suggerer } from '@/components/coquille/recherche/moteur'
   import { avecBase } from '@/lib/chemin'
+  import { PLACEHOLDER_SOFIA } from '@/lib/sofia'
 
   // Source affichée devant la page ; les sections de l'index du site (Pages,
   // Nouvelles, Bibliothèques, Personnel) sont toutes « Site des bibliothèques »
   const SOURCES: Record<string, string> = { outils: 'Boîte à outils', studio: 'Studio·bib' }
   const SOURCE_SITE = 'Site des bibliothèques'
   const NOMBRE = 8
-  const PLACEHOLDERS = { sofia: 'Articles, livres, films…', sites: 'Services, guides, soutien informatique…' }
+  const PLACEHOLDERS = { sofia: PLACEHOLDER_SOFIA, sites: 'Services, guides, soutien informatique…' }
   const DELAI_FRAPPE = 120
 
   for (const formulaire of document.querySelectorAll<HTMLFormElement>('[data-recherche-menu]')) {
