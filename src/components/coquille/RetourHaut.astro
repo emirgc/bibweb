@@ -17,8 +17,13 @@
  *   centrée en hauteur, le bouton est en bas : pas de recouvrement.
  *   < 900 px : au-dessus de la barre des liens rapides, et il descend avec
  *   elle quand elle se retire au défilement vers le bas.
+ * - Bleu principal, comme le tiroir des liens rapides (bleu foncé au
+ *   survol). Contraste du pictogramme blanc : 7,1:1 au repos.
+ * - Infobulle « Retour en haut » à gauche, au survol et au focus clavier,
+ *   comme la poignée du tiroir : Échap la ferme, le pointeur peut passer
+ *   dessus (WCAG 1.4.13).
  * - Focus : anneau marine avec un liseré blanc, lisible sur fond clair comme
- *   sur les bandes foncées. Contraste du pictogramme blanc sur marine : 18,17:1.
+ *   sur les bandes foncées.
  * - Mode contraste forcé : bordure système. Impression : masqué.
  */
 import { ArrowUpIcon } from '@phosphor-icons/react/dist/ssr/ArrowUp'
@@ -46,6 +51,14 @@ import { ArrowUpIcon } from '@phosphor-icons/react/dist/ssr/ArrowUp'
       { passive: true },
     )
     window.addEventListener('resize', mettreAJour, { passive: true })
+
+    // Échap ferme l'infobulle ; elle revient au prochain survol ou focus
+    document.addEventListener('keydown', (e) => {
+      if (e.key === 'Escape' && bouton.matches(':hover, :focus-visible')) bouton.setAttribute('data-infobulle-fermee', '')
+    })
+    for (const evenement of ['pointerleave', 'blur']) {
+      bouton.addEventListener(evenement, () => bouton.removeAttribute('data-infobulle-fermee'))
+    }
     mettreAJour()
 
     bouton.addEventListener('click', () => {
@@ -81,7 +94,7 @@ import { ArrowUpIcon } from '@phosphor-icons/react/dist/ssr/ArrowUp'
     padding: 0;
     border: 0;
     border-radius: 50%;
-    background-color: var(--bleu-fonce);
+    background-color: var(--bleu-principal);
     box-shadow: var(--ombre-2);
     color: var(--couleur-sur-fonce);
     cursor: pointer;
@@ -114,8 +127,56 @@ import { ArrowUpIcon } from '@phosphor-icons/react/dist/ssr/ArrowUp'
 
   @media (hover: hover) and (pointer: fine) {
     .retour-haut:hover {
-      background-color: var(--bleu-principal);
+      background-color: var(--bleu-fonce);
     }
+  }
+
+  /* Infobulle (voir la poignée du tiroir dans LiensRapides) : nom déjà porté
+     par aria-label, d'où le texte de remplacement vide ; ::before relie la
+     bulle au bouton pour le pointeur */
+  .retour-haut::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    right: 100%;
+    bottom: 0;
+    width: 8px;
+  }
+
+  .retour-haut::after {
+    content: 'Retour en haut' / '';
+    position: absolute;
+    top: 50%;
+    right: calc(100% + 8px);
+    padding: 0.25rem 0.625rem;
+    border-radius: var(--rayon-tres-petit);
+    background: var(--bleu-fonce);
+    /* Liseré clair : la bulle reste détachée sur les bandes bleu foncé */
+    box-shadow: 0 0 0 1px color-mix(in srgb, var(--couleur-surface) 35%, transparent);
+    color: var(--couleur-sur-fonce);
+    font-size: 0.875rem;
+    font-weight: var(--graisse-moyenne);
+    line-height: 1.4;
+    white-space: nowrap;
+    translate: 0 -50%;
+    visibility: hidden;
+    opacity: 0;
+    transition:
+      opacity var(--duree-courte-4) var(--courbe-standard),
+      visibility 0s linear var(--duree-courte-4);
+  }
+
+  .retour-haut[data-visible]:hover:not([data-infobulle-fermee])::after,
+  .retour-haut[data-visible]:focus-visible:not([data-infobulle-fermee])::after {
+    visibility: visible;
+    opacity: 1;
+    transition:
+      opacity var(--duree-courte-4) var(--courbe-standard) 80ms,
+      visibility 0s linear 80ms;
+  }
+
+  .retour-haut[data-visible]:focus-visible:not([data-infobulle-fermee])::after {
+    transition: none;
   }
 
   .retour-haut:focus-visible {
