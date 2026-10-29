@@ -64,6 +64,11 @@ export type Carte = {
   cle: string
   image: ImageMetadata
   titre: string
+  /**
+   * Ce que fait le service, sous son nom dans le menu : « Studio·bib » ou
+   * « Boîte à outils » ne disent rien à qui ne les connaît pas
+   */
+  fonction: string
   /** Une phrase sur le service, dans l'aperçu du menu de bureau */
   description: string
   /** Où cherche le champ de recherche du service, dans le menu (portées de la boîte de recherche) */
@@ -79,6 +84,7 @@ export const CARTES: Carte[] = [
     cle: 'studio',
     image: studioBib,
     titre: 'Studio·bib',
+    fonction: 'Informatique et création numérique',
     portee: 'studio',
     description: 'Le soutien informatique au quotidien et les technologies de création numérique : impression 3D, réalité virtuelle, production médias.',
     liens: [
@@ -94,6 +100,7 @@ export const CARTES: Carte[] = [
     cle: 'outils',
     image: boiteOutils,
     titre: 'Boîte à outils',
+    fonction: 'Guides pour vos recherches',
     portee: 'outils',
     description: "Des guides et des ressources pour trouver, évaluer et citer l'information, dans chaque discipline.",
     liens: [
@@ -109,13 +116,14 @@ export const CARTES: Carte[] = [
     cle: 'ressources',
     image: autresRessources,
     titre: 'Ressources',
+    fonction: 'Catalogue, dépôt, collections',
     portee: 'site',
     description: "Sofia, le dépôt Papyrus, les données géospatiales et les collections spéciales des bibliothèques.",
     liens: [
       { libelle: 'Outil de recherche Sofia', href: 'https://umontreal.on.worldcat.org/discovery?lang=fr' },
       { libelle: 'Papyrus – dépôt institutionnel', href: 'https://umontreal.scholaris.ca/' },
       { libelle: 'GéoIndex – Données géospatiales', href: 'https://geoapp.bibl.ulaval.ca/' },
-      { libelle: 'Collections spéciales', href: 'https://collections-speciales.bib.umontreal.ca/' },
+      { libelle: 'Collections spéciales – objets numériques', href: 'https://collections-speciales.bib.umontreal.ca/' },
       { libelle: 'Service Accessibilité', href: '/service-accessibilite/' },
     ],
     couleur: 'var(--vert-pale)',
