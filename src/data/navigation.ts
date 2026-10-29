@@ -137,7 +137,7 @@ export const CARTES: Carte[] = [
  * couleur du service (jeton de tokens.css), comme dans le pied de studio·bib ;
  * un lien a l'un ou l'autre, jamais les deux.
  */
-type LienPied = { libelle: string; href: string; rel?: string; Icone?: typeof InfoIcon; point?: string }
+type LienPied = { libelle: string; href: string; rel?: string; Icone?: typeof InfoIcon; point?: string; fonction?: string }
 
 /**
  * Trois colonnes de liens, chacune avec son titre. Correction par rapport à
@@ -149,7 +149,7 @@ export const COLONNES_PIED: { titre: string; liens: LienPied[] }[] = [
     titre: "Besoin d'aide?",
     liens: [
       { libelle: 'Nous joindre', href: '/nous-joindre/', Icone: PaperPlaneTiltIcon },
-      { libelle: 'Votre dossier', href: 'https://umontreal.account.worldcat.org/account', rel: 'noopener noreferrer', Icone: UserIcon },
+      { libelle: 'Mon dossier', href: 'https://umontreal.account.worldcat.org/account', rel: 'noopener noreferrer', Icone: UserIcon },
       { libelle: 'À propos', href: '/a-propos/', Icone: InfoIcon },
     ],
   },
@@ -159,17 +159,17 @@ export const COLONNES_PIED: { titre: string; liens: LienPied[] }[] = [
       { libelle: 'Site des bibliothèques', href: '/', Icone: HouseIcon },
       { libelle: 'Catalogue Sofia', href: 'https://umontreal.on.worldcat.org/discovery?lang=fr', rel: 'noopener noreferrer', Icone: MagnifyingGlassIcon },
       // Trait d'union insécable : « A-Z » ne se coupe pas en fin de ligne
-      { libelle: 'Base de données A‑Z', href: 'https://boite-outils.bib.umontreal.ca/az.php', Icone: ListMagnifyingGlassIcon },
+      { libelle: 'Bases de données A‑Z', href: 'https://boite-outils.bib.umontreal.ca/az.php', Icone: ListMagnifyingGlassIcon },
     ],
   },
   {
     titre: 'Sites connexes',
     liens: [
-      { libelle: 'Boîte à outils', href: 'https://boite-outils.bib.umontreal.ca/', point: 'var(--rouge-orange)' },
-      { libelle: 'Studio·bib', href: 'https://studio.bib.umontreal.ca/', point: 'var(--jaune)' },
-      { libelle: 'Papyrus', href: 'https://umontreal.scholaris.ca/', point: 'var(--vert-fonce)' },
-      { libelle: 'GéoIndex', href: 'https://geoapp.bibl.ulaval.ca/', rel: 'noopener noreferrer', point: 'var(--bleu-200)' },
-      { libelle: 'Collections spéciales', href: 'https://collections-speciales.bib.umontreal.ca/', point: 'var(--rose-300)' },
+      { libelle: 'Boîte à outils', fonction: 'Guides pour vos recherches', href: 'https://boite-outils.bib.umontreal.ca/', point: 'var(--rouge-orange)' },
+      { libelle: 'Studio·bib', fonction: 'Informatique et création numérique', href: 'https://studio.bib.umontreal.ca/', point: 'var(--jaune)' },
+      { libelle: 'Papyrus', fonction: 'Dépôt institutionnel', href: 'https://umontreal.scholaris.ca/', point: 'var(--vert-fonce)' },
+      { libelle: 'GéoIndex', fonction: 'Données géospatiales', href: 'https://geoapp.bibl.ulaval.ca/', rel: 'noopener noreferrer', point: 'var(--bleu-200)' },
+      { libelle: 'Collections spéciales', fonction: 'Objets numériques', href: 'https://collections-speciales.bib.umontreal.ca/', point: 'var(--rose-300)' },
     ],
   },
 ]
