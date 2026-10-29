@@ -25,7 +25,7 @@ Pour voir les modalités d'inscription et de prêt qui s’appliquent à vous, s
 - [Personnes inscrites par droit accordé](/obtenir/pret-renouvellement-retour/droit-accorde/)
 - [Entente du partenariat des bibliothèques universitaires du Québec (PBUQ)](/obtenir/pret-renouvellement-retour/pbuq/)
 - [Entente avec BAnQ et les universités canadiennes](/obtenir/pret-renouvellement-retour/banq-universites-canadiennes/)
-- [Ententes avec les cégeps](/obtenir/pret-renouvellement-retour/cegeps/)
+- [Emprunter à l'UdeM depuis un cégep](/obtenir/pret-renouvellement-retour/cegeps/)
 - [Grand public](/obtenir/pret-renouvellement-retour/grand-public/)
 
 ### Emprunter sur place
@@ -35,7 +35,7 @@ Les membres de la [communauté UdeM](/obtenir/pret-renouvellement-retour/communa
 Des bornes de prêt en libre-service sont disponibles en tout temps dans plusieurs bibliothèques. 
   
 Les membres de la communauté UdeM peuvent également emprunter des documents dans d'autres établissements universitaires canadiens en se présentant sur place avec la [carte PBUQ](/obtenir/pret-renouvellement-retour/communaute-udem/carte-pbuq/). 
-Certains cégeps ont également des ententes de prêt avec l’UdeM, et permettent l’emprunt de leur documentation par la communauté UdeM (Voir l'[entente avec les cégeps](/obtenir/pret-renouvellement-retour/communaute-udem/ententes-cegeps/)).
+Certains cégeps ont également des ententes de prêt avec l’UdeM, et permettent l’emprunt de leur documentation par la communauté UdeM (voir [Emprunter dans un cégep](/obtenir/pret-renouvellement-retour/communaute-udem/ententes-cegeps/)).
 
 ### Récupérer un document à la bibliothèque UdeM de votre choix
 
