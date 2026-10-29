@@ -16,9 +16,9 @@
  *   de la source (40 %) laissait le texte à 2,85:1 devant les zones claires
  *   d'une photo (fenêtres de « S'engager pour une science ouverte ») : il
  *   passe à 60 %, ce qui garde 4,5:1 même sur du blanc pur (il en faut au
- *   moins 55 %). `voile="droite"` : dès 900 px, dégradé léger à gauche et
- *   à 65 % sous la moitié droite, quand le texte n'occupe que celle-ci
- *   (bloc image-fond des vitrines) ; la photo reste visible à gauche.
+ *   moins 55 %). `voile="droite"` : dès 900 px, rien à gauche, 60 à 65 %
+ *   sous la moitié droite, quand le texte n'occupe que celle-ci (bloc
+ *   image-fond des vitrines) ; la photo reste intacte à gauche.
  *   Rendue avec <Picture> plutôt qu'en background CSS, pour profiter des
  *   formats et des tailles d'astro:assets.
  * - `marginTop` : 3rem dès 900 px (rattrape le chevauchement de SuperHero2).
@@ -213,14 +213,21 @@ const margeHaut = marginTop !== undefined && marginTop !== false && marginTop !=
     background-color: color-mix(in srgb, var(--couleur-voile) 60%, transparent);
   }
 
-  /* Texte dans la moitié droite : le voile atteint 65 % avant le début du
-     texte (50 % de la largeur) */
+  /* Texte dans la moitié droite : seule cette moitié est assombrie ; le
+     voile part de rien à gauche et atteint 60 % avant le début du texte
+     (50 % de la largeur), en courbe douce (paliers rapprochés) */
   @media (min-width: 900px) {
     .voile-droite::before {
       background: linear-gradient(
         90deg,
-        color-mix(in srgb, var(--couleur-voile) 25%, transparent),
-        color-mix(in srgb, var(--couleur-voile) 65%, transparent) 45%
+        transparent 5%,
+        color-mix(in srgb, var(--couleur-voile) 3%, transparent) 12%,
+        color-mix(in srgb, var(--couleur-voile) 12%, transparent) 19%,
+        color-mix(in srgb, var(--couleur-voile) 27%, transparent) 26%,
+        color-mix(in srgb, var(--couleur-voile) 42%, transparent) 33%,
+        color-mix(in srgb, var(--couleur-voile) 54%, transparent) 40%,
+        color-mix(in srgb, var(--couleur-voile) 60%, transparent) 46%,
+        color-mix(in srgb, var(--couleur-voile) 65%, transparent)
       );
     }
   }

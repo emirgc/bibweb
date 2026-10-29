@@ -122,7 +122,44 @@ const aEnfants = Astro.slots.has('default')
     position: absolute;
     z-index: -1;
     inset: 0;
-    background-color: color-mix(in srgb, var(--couleur-voile) 40%, transparent);
+    /* Voile seulement sous le texte, pas sur toute la photo : sur mobile,
+       le texte occupe le bas de l'image, le voile monte du bas (en pixels :
+       le texte est à hauteur fixe au-dessus de la recherche) ; dès
+       900 px, le texte est dans la colonne de gauche, le voile part de la
+       gauche et s'efface à droite du texte. L'effacement suit une courbe
+       douce (paliers rapprochés) plutôt qu'une ligne droite, qui laissait
+       voir où le voile s'arrête. */
+    background: linear-gradient(
+      to top,
+      color-mix(in srgb, var(--couleur-voile) 60%, transparent),
+      color-mix(in srgb, var(--couleur-voile) 48%, transparent) 550px,
+      color-mix(in srgb, var(--couleur-voile) 44%, transparent) 640px,
+      color-mix(in srgb, var(--couleur-voile) 34%, transparent) 730px,
+      color-mix(in srgb, var(--couleur-voile) 22%, transparent) 820px,
+      color-mix(in srgb, var(--couleur-voile) 11%, transparent) 910px,
+      color-mix(in srgb, var(--couleur-voile) 3%, transparent) 1000px,
+      transparent 1100px
+    );
+  }
+
+  /* Le voile garde 45 à 50 % jusqu'au bout du titre (560 px après le
+     début du texte, centré dans --largeur-max sur les grands écrans), puis
+     s'efface en douceur sur 540 px */
+  @media (min-width: 900px) {
+    .super-hero::before {
+      --_bord-texte: max(0px, (100% - var(--largeur-max)) / 2);
+      background: linear-gradient(
+        90deg,
+        color-mix(in srgb, var(--couleur-voile) 50%, transparent),
+        color-mix(in srgb, var(--couleur-voile) 45%, transparent) calc(var(--_bord-texte) + 560px),
+        color-mix(in srgb, var(--couleur-voile) 41%, transparent) calc(var(--_bord-texte) + 650px),
+        color-mix(in srgb, var(--couleur-voile) 32%, transparent) calc(var(--_bord-texte) + 740px),
+        color-mix(in srgb, var(--couleur-voile) 21%, transparent) calc(var(--_bord-texte) + 830px),
+        color-mix(in srgb, var(--couleur-voile) 11%, transparent) calc(var(--_bord-texte) + 920px),
+        color-mix(in srgb, var(--couleur-voile) 4%, transparent) calc(var(--_bord-texte) + 1010px),
+        transparent calc(var(--_bord-texte) + 1100px)
+      );
+    }
   }
 
   .super-hero :global(.super-hero-image) {
