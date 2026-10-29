@@ -83,6 +83,27 @@ const attributsCoquille = langPage === LANGUE_SITE ? {} : { lang: LANGUE_SITE, s
     <link rel="alternate" type="application/rss+xml" title="Nouvelles des Bibliothèques de l’UdeM" href="/nouvelles/rss.xml" />
     <link rel="apple-touch-icon" sizes="180x180" href="/icons/icon-192x192.png" />
     <meta name="theme-color" content="#0b113a" />
+    {/* Sens du glissement entre deux pages (voir @view-transition dans
+        global.css) : « retour » pour le bouton Précédent ou une page plus
+        haute dans l'arborescence, sinon « avance ». Dans le <head> : il doit
+        être prêt avant le premier affichage de la page. */}
+    <script is:inline>
+      window.addEventListener('pagereveal', (e) => {
+        if (!e.viewTransition) return
+        const profondeur = (url) => new URL(url).pathname.split('/').filter(Boolean).length
+        const a = window.navigation?.activation
+        let retour = false
+        if (a?.navigationType === 'traverse' && a.from) retour = a.entry.index < a.from.index
+        else if (a?.from?.url) retour = profondeur(location.href) < profondeur(a.from.url)
+        e.viewTransition.types.add(retour ? 'retour' : 'avance')
+        // Précédent / Suivant : la position de défilement est rétablie sans
+        // défilement doux (data-vt-historique, voir global.css)
+        if (a?.navigationType === 'traverse') {
+          document.documentElement.dataset.vtHistorique = ''
+          e.viewTransition.finished.finally(() => delete document.documentElement.dataset.vtHistorique)
+        }
+      })
+    </script>
     <slot name="head" />
   </head>
   <body>

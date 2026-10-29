@@ -18,6 +18,13 @@
  * - Sous 900 px, l'onglet tient lieu de titre visible ; le h3 de la colonne
  *   reste pour la navigation par titres des lecteurs d'écran.
  * - Chaque onglet est relié à la colonne dont le titre a son `id`.
+ * - Sous 900 px, avec le script, les panneaux défilent à l'horizontale,
+ *   comme les écrans d'une application : on passe de l'un à l'autre d'un
+ *   glissement du doigt (défilement natif, aimanté sur chaque panneau) ou en
+ *   touchant un onglet. La pastille de l'onglet actif suit le doigt ; la
+ *   hauteur du bloc s'ajuste à celle du panneau affiché. Les panneaux hors
+ *   de vue sont inertes (hors de l'ordre de tabulation et de l'arbre
+ *   d'accessibilité). Mouvement réduit : saut direct au panneau.
  */
 import { classes, fusionnerStyles, type Style } from '@/lib/styles'
 
@@ -34,6 +41,7 @@ if (!Array.isArray(onglets) || !onglets.length) throw new Error('QuoiDeNeuf : la
 
 <div class:list={['quoi-de-neuf', classes(classe)]} style={fusionnerStyles(style)} data-quoi-de-neuf>
   <div class="onglets" data-onglets>
+    <span class="indicateur" aria-hidden="true" data-indicateur></span>
     {
       onglets.map(({ id, label }, i) => (
         <button type="button" class="onglet" id={`quoi-de-neuf-onglet-${id}`} data-cible={id} data-actif={i === 0 ? 'true' : 'false'}>
@@ -57,7 +65,44 @@ if (!Array.isArray(onglets) || !onglets.length) throw new Error('QuoiDeNeuf : la
       if (p) p.id ||= `quoi-de-neuf-panneau-${onglets[i].dataset.cible}`
     })
 
-    function activer(index: number, focus = false) {
+    const grille = racine.querySelector<HTMLElement>('.grille')!
+    const reduit = window.matchMedia('(prefers-reduced-motion: reduce)')
+    const enOnglets = () => !mq.matches
+    const carrousel = () => grille.classList.contains('carrousel')
+    // Position de défilement de chaque panneau (ils sont côte à côte)
+    const position = (i: number) => (panneaux[i]?.offsetLeft ?? 0) - (panneaux[0]?.offsetLeft ?? 0)
+
+    // La pastille prend la place et la taille de l'onglet actif (les
+    // onglets peuvent passer sur deux lignes avec le texte agrandi). Avec
+    // une position fractionnaire (glissement en cours), elle est entre deux
+    // onglets.
+    const indicateur = barre.querySelector<HTMLElement>('[data-indicateur]')!
+    function placerIndicateur(progression = actif) {
+      const a = onglets[Math.floor(progression)]
+      const b = onglets[Math.min(Math.ceil(progression), onglets.length - 1)]
+      if (!a.offsetWidth) return
+      const t = progression - Math.floor(progression)
+      const entre = (x: number, y: number) => x + (y - x) * t
+      indicateur.style.width = `${entre(a.offsetWidth, b.offsetWidth)}px`
+      indicateur.style.height = `${entre(a.offsetHeight, b.offsetHeight)}px`
+      indicateur.style.translate = `${entre(a.offsetLeft, b.offsetLeft)}px ${entre(a.offsetTop, b.offsetTop)}px`
+    }
+    new ResizeObserver(() => {
+      placerIndicateur()
+      // Pas de glissement à la première mise en place
+      requestAnimationFrame(() => barre.classList.add('pret'))
+    }).observe(barre)
+
+    // Hauteur du bloc : celle du panneau affiché (les listes se remplissent
+    // après coup, d'où l'observation de chaque panneau)
+    function ajusterHauteur() {
+      const p = panneaux[actif]
+      grille.style.height = carrousel() && p ? `${p.offsetHeight}px` : ''
+    }
+    const observateur = new ResizeObserver(ajusterHauteur)
+    for (const p of panneaux) if (p) observateur.observe(p)
+
+    function activer(index: number, focus = false, defiler = true) {
       actif = index
       onglets.forEach((o, i) => {
         o.dataset.actif = String(i === actif)
@@ -66,11 +111,53 @@ if (!Array.isArray(onglets) || !onglets.length) throw new Error('QuoiDeNeuf : la
           o.tabIndex = i === actif ? 0 : -1
         }
         panneaux[i]?.setAttribute('data-actif', String(i === actif))
+        if (panneaux[i]) panneaux[i]!.inert = carrousel() && i !== actif
       })
+      ajusterHauteur()
+      if (defiler && carrousel()) grille.scrollTo({ left: position(actif), behavior: reduit.matches ? 'auto' : 'smooth' })
+      else placerIndicateur()
       if (focus) onglets[actif].focus()
     }
 
-    const enOnglets = () => !mq.matches
+    // Glissement du doigt (ou défilement lancé par un onglet) : la pastille
+    // suit ; à l'arrêt, le panneau le plus proche devient l'onglet actif
+    let enAttente = false
+    let minuterieFin: ReturnType<typeof setTimeout> | undefined
+    function finDefilement() {
+      barre.classList.remove('suivi')
+      const pas = position(1) || grille.clientWidth
+      const index = Math.round(grille.scrollLeft / pas)
+      if (index !== actif) activer(index, false, false)
+      else placerIndicateur()
+    }
+    grille.addEventListener(
+      'scroll',
+      () => {
+        if (!carrousel()) return
+        clearTimeout(minuterieFin)
+        minuterieFin = setTimeout(finDefilement, 120)
+        if (enAttente) return
+        enAttente = true
+        requestAnimationFrame(() => {
+          enAttente = false
+          barre.classList.add('suivi')
+          const pas = position(1) || grille.clientWidth
+          const progression = Math.max(0, Math.min(onglets.length - 1, grille.scrollLeft / pas))
+          placerIndicateur(progression)
+          // Texte en blanc sur l'onglet le plus proche de la pastille (visuel
+          // seulement : aria-selected change à l'arrêt)
+          onglets.forEach((o, i) => (o.dataset.actif = String(i === Math.round(progression))))
+        })
+      },
+      { passive: true },
+    )
+
+    function mettreEnPage() {
+      grille.classList.toggle('carrousel', enOnglets())
+      activer(actif, false, false)
+      if (carrousel()) grille.scrollLeft = position(actif)
+    }
+
 
     function poserRoles() {
       const oui = enOnglets()
@@ -108,9 +195,12 @@ if (!Array.isArray(onglets) || !onglets.length) throw new Error('QuoiDeNeuf : la
       e.preventDefault()
       activer(cible, true)
     })
-    mq.addEventListener('change', poserRoles)
+    mq.addEventListener('change', () => {
+      poserRoles()
+      mettreEnPage()
+    })
     poserRoles()
-    activer(0)
+    mettreEnPage()
   }
 </script>
 
@@ -129,12 +219,31 @@ if (!Array.isArray(onglets) || !onglets.length) throw new Error('QuoiDeNeuf : la
     flex-wrap: wrap;
     gap: 0.25rem;
     margin-bottom: var(--espace-3);
+    position: relative;
     padding: 0.25rem;
     border: 1px solid var(--bleu-200);
     border-radius: 1.5rem;
   }
 
+  /* Pastille de l'onglet actif, placée par le script ; elle glisse une fois
+     la barre prête (classe .pret) */
+  .indicateur {
+    position: absolute;
+    top: 0;
+    left: 0;
+    border-radius: var(--rayon-plein);
+    background-color: var(--bleu-fonce);
+  }
+
+  .pret:not(.suivi) .indicateur {
+    transition:
+      translate var(--duree-moyenne-2) var(--courbe-emphase-deceleree),
+      width var(--duree-moyenne-2) var(--courbe-emphase-deceleree),
+      height var(--duree-moyenne-2) var(--courbe-emphase-deceleree);
+  }
+
   .onglet {
+    position: relative;
     flex: 1 1 auto;
     min-height: 2.75rem;
     padding-inline: 0.5rem;
@@ -158,6 +267,11 @@ if (!Array.isArray(onglets) || !onglets.length) throw new Error('QuoiDeNeuf : la
   .onglet[data-actif='true'] {
     background-color: var(--bleu-fonce);
     color: var(--couleur-sur-fonce);
+  }
+
+  /* Une fois la pastille en place, c'est elle qui fait le fond */
+  .pret .onglet[data-actif='true'] {
+    background-color: transparent;
   }
 
   .onglet:focus-visible {
@@ -190,10 +304,43 @@ if (!Array.isArray(onglets) || !onglets.length) throw new Error('QuoiDeNeuf : la
       display: flex;
     }
 
-    /* Avant le script, le premier panneau ; ensuite, celui de data-actif */
-    .grille > :global(:not(:nth-child(1 of section)):not([data-actif="true"])),
-    .grille > :global([data-actif='false']) {
+    /* Avant le script, le premier panneau seul (pas de saut à l'arrivée du
+       script) */
+    .grille:not(.carrousel) > :global(:not(:nth-child(1 of section))) {
       display: none;
+    }
+
+    /* Panneaux côte à côte, défilement horizontal aimanté. Les 4 px de
+       rembourrage gardent visibles les anneaux de focus au bord ; l'écart
+       entre panneaux (16 px) cache le voisin. */
+    .grille.carrousel {
+      display: flex;
+      gap: 16px;
+      align-items: flex-start;
+      margin: -4px;
+      padding: 4px;
+      overflow: auto hidden;
+      overscroll-behavior-x: contain;
+      scroll-padding-inline: 4px;
+      scroll-snap-type: x mandatory;
+      scrollbar-width: none;
+      box-sizing: content-box;
+      transition: height var(--duree-moyenne-2) var(--courbe-standard);
+    }
+
+    .grille.carrousel::-webkit-scrollbar {
+      display: none;
+    }
+
+    /* Hauteur propre à chaque panneau (les colonnes s'étirent à 100 % sur
+       grand écran) ; position relative : le titre masqué (position
+       absolue) reste dans le cadre de défilement au lieu d'élargir la page */
+    .grille.carrousel > :global(section) {
+      position: relative;
+      flex: 0 0 100%;
+      height: auto;
+      scroll-snap-align: start;
+      scroll-snap-stop: always;
     }
 
     .grille > :global(*) > :global(h3) {

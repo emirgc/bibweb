@@ -140,7 +140,12 @@ const LIBCHAT_HASH = '71ff3bc4ca990e9e993a02e35e2f804aa581c52535e870359e707314a8
       poignee.setAttribute('aria-expanded', String(ouvert))
       panneau.toggleAttribute('data-replie', !ouvert)
     }
-    poignee.addEventListener('click', () => ouvrir(panneau.hasAttribute('data-replie')))
+    poignee.addEventListener('click', () => {
+      // Pas d'infobulle juste après un clic : en refermant, la poignée
+      // repasse sous le curseur et la bulle apparaissait un instant
+      poignee.setAttribute('data-infobulle-fermee', '')
+      ouvrir(panneau.hasAttribute('data-replie'))
+    })
     document.addEventListener('keydown', (e) => {
       if (e.key !== 'Escape') return
       // Replié, Échap ferme l'infobulle de la poignée, même affichée au

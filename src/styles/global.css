@@ -499,3 +499,77 @@ main a:not(.sans-icone-pdf, .no-pdf-icon)[href*='.pdf?']::after {
     }
   }
 }
+
+/* Passage d'une page à l'autre sur mobile, comme les écrans d'une
+   application (transitions de vue entre documents, sans routeur JS : chaque
+   page reste une vraie page). La nouvelle page glisse depuis la droite et
+   recouvre l'ancienne ; au retour (bouton Précédent, page plus haute dans
+   l'arborescence : type « retour », posé dans Base.astro), le mouvement
+   s'inverse. L'en-tête et la barre des liens rapides restent en place.
+   Seulement sous 900 px et sans demande de mouvement réduit ; les
+   navigateurs qui ne connaissent pas @view-transition naviguent comme
+   avant. */
+@media (width < 900px) and (prefers-reduced-motion: no-preference) {
+  @view-transition {
+    navigation: auto;
+  }
+
+  .entete {
+    view-transition-name: entete;
+  }
+
+  [data-liens-rapides-mobile] {
+    view-transition-name: liens-rapides;
+  }
+
+  /* Précédent / Suivant : la position de défilement est rétablie pendant
+     la transition ; en défilement doux, la page glissait aussi vers le bas
+     (voir Base.astro) */
+  :root[data-vt-historique] {
+    scroll-behavior: auto;
+  }
+
+  ::view-transition-old(root) {
+    animation: page-sortie-gauche var(--duree-moyenne-4) var(--courbe-emphase-deceleree) both;
+  }
+
+  ::view-transition-new(root) {
+    animation: page-entree-droite var(--duree-moyenne-4) var(--courbe-emphase-deceleree) both;
+  }
+
+  /* Retour : l'ancienne page part vers la droite, par-dessus la nouvelle */
+  :root:active-view-transition-type(retour)::view-transition-old(root) {
+    z-index: 1;
+    animation-name: page-sortie-droite;
+  }
+
+  :root:active-view-transition-type(retour)::view-transition-new(root) {
+    animation-name: page-entree-gauche;
+  }
+}
+
+@keyframes page-entree-droite {
+  from {
+    translate: 100% 0;
+  }
+}
+
+@keyframes page-sortie-gauche {
+  to {
+    translate: -30% 0;
+    filter: brightness(0.9);
+  }
+}
+
+@keyframes page-entree-gauche {
+  from {
+    translate: -30% 0;
+    filter: brightness(0.9);
+  }
+}
+
+@keyframes page-sortie-droite {
+  to {
+    translate: 100% 0;
+  }
+}
