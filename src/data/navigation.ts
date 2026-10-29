@@ -19,7 +19,7 @@ import { CalendarBlankIcon } from '@phosphor-icons/react/dist/ssr/CalendarBlank'
 import { InstagramLogoIcon } from '@phosphor-icons/react/dist/ssr/InstagramLogo'
 import { PaperPlaneTiltIcon } from '@phosphor-icons/react/dist/ssr/PaperPlaneTilt'
 import { UserIcon } from '@phosphor-icons/react/dist/ssr/User'
-import { WrenchIcon } from '@phosphor-icons/react/dist/ssr/Wrench'
+import { LaptopIcon } from '@phosphor-icons/react/dist/ssr/Laptop'
 import { YoutubeLogoIcon } from '@phosphor-icons/react/dist/ssr/YoutubeLogo'
 import studioBib from './images/navigation/studio-bib.webp'
 import boiteOutils from './images/navigation/boite-outils.svg'
@@ -214,7 +214,7 @@ export const LIENS_RAPIDES = [
   { libelle: 'Sofia', court: 'Sofia', href: 'https://umontreal.on.worldcat.org/discovery?lang=fr', Icone: null, nouvelOngletBureau: true },
   { libelle: 'Horaires et lieux', court: 'Horaires', href: '/horaires/', Icone: ClockCountdownIcon },
   { libelle: 'Réserver une salle', court: 'Réserver', href: 'https://calendrier.bib.umontreal.ca/r', Icone: CalendarBlankIcon },
-  { libelle: 'Ressources informatiques', court: 'Informatique', href: 'https://studio.bib.umontreal.ca/informatique/', Icone: WrenchIcon },
+  { libelle: 'Ressources informatiques', court: 'Informatique', href: 'https://studio.bib.umontreal.ca/informatique/', Icone: LaptopIcon },
 ]
 
 /* ---------- Outils ---------- */
