@@ -22,7 +22,7 @@ import { UserIcon } from '@phosphor-icons/react/dist/ssr/User'
 import { WrenchIcon } from '@phosphor-icons/react/dist/ssr/Wrench'
 import { YoutubeLogoIcon } from '@phosphor-icons/react/dist/ssr/YoutubeLogo'
 import studioBib from './images/navigation/studio-bib.webp'
-import boiteOutils from './images/navigation/boite-outils.webp'
+import boiteOutils from './images/navigation/boite-outils.svg'
 import autresRessources from './images/navigation/autres-ressources.webp'
 
 /* ---------- En-tête et menu ---------- */
