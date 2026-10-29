@@ -1,16 +1,16 @@
 ---
-title: Ententes avec les cégeps
-crumbLabel: Ententes avec les cégeps
+title: Emprunter dans un cégep
+crumbLabel: Emprunter dans un cégep
 superHero:
   imageName: obtenir
   title: Obtenir un document
 ---
 
-## Ententes avec les cégeps
+## Emprunter dans un cégep
 
 Ce privilège est réservé à la communauté étudiante (sauf étudiants et étudiantes libres), à la communauté enseignante et aux membres du personnel de la communauté UdeM. 
 
-L'information pour les usagers et usagères des cégeps participants souhaitant emprunter aux bibliothèques UdeM, se trouve dans la page [Ententes avec les cégeps](/obtenir/pret-renouvellement-retour/cegeps/).
+L'information pour les usagers et usagères des cégeps participants souhaitant emprunter aux bibliothèques UdeM, se trouve dans la page [Emprunter à l'UdeM depuis un cégep](/obtenir/pret-renouvellement-retour/cegeps/).
 
 ### Inscription
 

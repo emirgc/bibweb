@@ -244,7 +244,7 @@ const annonce = (n: number) => `${n} ${n > 1 ? 'éléments affichés' : 'éléme
     border: 1px solid var(--bleu-200);
     border-radius: var(--rayon-plein);
     background-color: transparent;
-    color: var(--bleu-fonce);
+    color: var(--couleur-texte);
     font: inherit;
     font-size: 1rem;
     font-weight: var(--graisse-moyenne);
@@ -263,7 +263,7 @@ const annonce = (n: number) => `${n} ${n > 1 ? 'éléments affichés' : 'éléme
   .filtre[aria-pressed='true'] {
     border-color: var(--bleu-fonce);
     background-color: var(--bleu-fonce);
-    color: var(--couleur-surface);
+    color: var(--couleur-sur-fonce);
   }
 
   /* En couleurs forcées, le fond disparaît : un contour épais marque le
@@ -316,16 +316,16 @@ const annonce = (n: number) => `${n} ${n > 1 ? 'éléments affichés' : 'éléme
 
   .filtre-sujet :global(svg) {
     flex-shrink: 0;
-    color: var(--bleu-principal);
+    color: var(--couleur-accent);
   }
 
   .filtre-sujet:hover {
-    border-color: var(--bleu-principal);
+    border-color: var(--couleur-accent);
   }
 
   .filtre-sujet[aria-pressed='true'] {
-    border-color: var(--bleu-principal);
-    background-color: var(--bleu-100);
+    border-color: var(--couleur-accent);
+    background-color: var(--couleur-teinte);
     font-weight: var(--graisse-forte);
   }
 

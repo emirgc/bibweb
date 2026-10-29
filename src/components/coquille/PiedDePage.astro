@@ -33,11 +33,10 @@ import { CaretDownIcon } from '@phosphor-icons/react/dist/ssr/CaretDown'
 import { SirenIcon } from '@phosphor-icons/react/dist/ssr/Siren'
 import { COLONNES_PIED, LIENS_QUEUE_PIED, RESEAUX_PIED, URGENCE } from '@/data/navigation'
 import Licence from './pied/Licence.astro'
-
-const annee = new Date().getFullYear()
 ---
 
-<footer class="pied">
+{/* theme-clair : déjà foncé, le pied garde ses couleurs dans les deux thèmes */}
+<footer class="pied theme-clair">
   <div class="local">
     <div class="interieur">
       <div class="signature">
@@ -53,12 +52,19 @@ const annee = new Date().getFullYear()
             <div class="colonne" data-pliable-pied={i > 0 ? '' : undefined}>
               <h3 class="sous-titre">{titre}</h3>
               <ul class="liste" id={`pied-liste-${i}`}>
-                {liens.map(({ libelle, href, rel, Icone, point }) => (
+                {liens.map(({ libelle, href, rel, Icone, point, fonction }) => (
                   <li>
                     <a href={href} rel={rel}>
                       {Icone && <Icone size={18} aria-hidden="true" />}
                       {point && <span class="point" style={`--point: ${point}`} aria-hidden="true" />}
-                      {libelle}
+                      {fonction ? (
+                        <span>
+                          {libelle}
+                          <span class="fonction">{fonction}</span>
+                        </span>
+                      ) : (
+                        libelle
+                      )}
                     </a>
                   </li>
                 ))}
@@ -106,7 +112,6 @@ const annee = new Date().getFullYear()
   <div class="queue">
     <div class="interieur rangee-queue">
       <div class="groupe-queue">
-        <span>© {annee} Bibliothèques de l'Université de Montréal</span>
         <Licence />
       </div>
       <div class="groupe-queue liens-queue">
@@ -200,13 +205,13 @@ const annee = new Date().getFullYear()
 
   /* ---- Partie locale ---- */
   .local {
-    padding: 40px 24px 32px;
+    padding: 32px 24px 24px;
     background-color: var(--bleu-fonce);
-    color: var(--couleur-surface);
+    color: var(--couleur-sur-fonce);
   }
 
   .titre {
-    margin: 0 0 32px;
+    margin: 0 0 24px;
     font-family: var(--police-sans);
     font-size: 1.25rem;
     font-weight: var(--graisse-forte);
@@ -230,7 +235,7 @@ const annee = new Date().getFullYear()
   }
 
   .sous-titre {
-    margin: 0 0 16px;
+    margin: 0 0 12px;
     font-family: var(--police-sans);
     font-size: 1rem;
     font-weight: var(--graisse-forte);
@@ -240,14 +245,14 @@ const annee = new Date().getFullYear()
   .liste {
     display: flex;
     flex-direction: column;
-    gap: 4px;
   }
 
+  /* Liens resserrés : 36 px de haut, au-dessus des 24 px de WCAG 2.5.8 */
   .colonne a {
     display: inline-flex;
     align-items: center;
     gap: 10px;
-    min-height: 2.25rem;
+    min-height: 36px;
     font-size: 0.875rem;
     font-weight: var(--graisse-normale);
     line-height: 1.4;
@@ -255,6 +260,19 @@ const annee = new Date().getFullYear()
 
   .colonne :global(svg) {
     flex-shrink: 0;
+  }
+
+  /* Ce que fait le site, sous son nom (Sites connexes) ; un peu d'air entre
+     ces liens sur deux lignes */
+  .colonne a:has(.fonction) {
+    padding-block: 6px;
+  }
+
+  .fonction {
+    display: block;
+    color: color-mix(in srgb, currentColor 78%, transparent);
+    font-size: 0.8125rem;
+    line-height: 1.3;
   }
 
   /* Pastille de la couleur du service ; un liseré clair la garde visible sur
@@ -269,7 +287,7 @@ const annee = new Date().getFullYear()
   }
 
   .urgence {
-    margin: 20px 0 0;
+    margin: 12px 0 0;
   }
 
   .sirene {
@@ -281,7 +299,7 @@ const annee = new Date().getFullYear()
   .reseaux {
     display: flex;
     gap: 8px;
-    margin-top: 16px;
+    margin-top: 8px;
   }
 
   /* Cibles de 40 px autour des icônes sociales (WCAG 2.5.8 demande 24 px) */
@@ -499,7 +517,7 @@ const annee = new Date().getFullYear()
   /* ---- Barre du bas ---- */
   .queue {
     background-color: var(--bleu-principal);
-    color: var(--couleur-surface);
+    color: var(--couleur-sur-fonce);
   }
 
   /* Pas de traits entre les éléments : quand la barre passe à la ligne, un
@@ -516,7 +534,7 @@ const annee = new Date().getFullYear()
   .rangee-queue {
     /* Marge de chaque côté : le bouton « Retour en haut », fixé en bas à
        droite (4,5 rem du bord sur mobile, 7 rem dès 900 px, à gauche de la
-       languette des liens rapides), ne recouvre jamais le texte de la barre */
+       poignée des liens rapides), ne recouvre jamais le texte de la barre */
     padding: 12px 4.5rem;
     font-size: 13px;
     line-height: 1.2;
@@ -530,10 +548,6 @@ const annee = new Date().getFullYear()
     display: inline-flex;
     align-items: center;
     min-height: 24px;
-  }
-
-  .groupe-queue > span {
-    padding-block: 4px;
   }
 
   /* Sur petit écran, « Paramètres des témoins » est une commande : cible de
@@ -577,9 +591,16 @@ const annee = new Date().getFullYear()
   }
 
   @media (min-width: 900px) {
+    /* Même marge que le bloc du dessus (64 px sur .local) : la licence
+       commence à l'aplomb de « Besoin d'aide? ». À droite, 7,5 rem du bord
+       au total, pour le bouton « Retour en haut » */
+    .queue {
+      padding-inline: 64px;
+    }
+
     .rangee-queue {
       justify-content: space-between;
-      padding-inline: 7.5rem;
+      padding-inline: 0 calc(7.5rem - 64px);
     }
 
     .rangee-queue button::after {

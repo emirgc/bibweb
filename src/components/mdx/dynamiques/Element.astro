@@ -181,7 +181,7 @@ const attributsLien = Titre === 'a' ? { href, ...(externe && { target: '_blank',
   .titre {
     /* Laisse la place à la pastille, ancrée en bas à droite */
     padding-right: 2.75rem;
-    color: var(--bleu-fonce);
+    color: var(--couleur-texte);
     font-size: 1rem;
     font-weight: var(--graisse-moyenne);
     line-height: 1.5;
@@ -211,7 +211,7 @@ const attributsLien = Titre === 'a' ? { href, ...(externe && { target: '_blank',
 
   .element:hover a.titre,
   a.titre:focus-visible {
-    color: var(--bleu-principal);
+    color: var(--couleur-accent);
   }
 
   /* Le contour de focus suit l'élément entier, que le lien couvre */
@@ -230,7 +230,7 @@ const attributsLien = Titre === 'a' ? { href, ...(externe && { target: '_blank',
     right: 0;
     bottom: 1rem;
     display: flex;
-    color: var(--bleu-principal);
+    color: var(--couleur-accent);
     pointer-events: none;
   }
 

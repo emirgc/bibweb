@@ -12,4 +12,4 @@ Changements à prévoir suite à cette mise à jour :
 - iOS (iPhone/iPad) : le service ne sera malheureusement plus supporté sur ces appareils.
 - macOS : Safari ne sera plus supporté. Un fureteur tiers (Chrome, Firefox, etc.) devra être utilisé pour accéder au Proxy.
 
-Pour plus de détails, [consultez notre documentation](https://studio.bib.umontreal.ca/informatique/proxy/).
+Pour plus de détails, consultez la [documentation sur le proxy](https://studio.bib.umontreal.ca/informatique/proxy/).

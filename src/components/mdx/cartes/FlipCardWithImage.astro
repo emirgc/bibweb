@@ -89,9 +89,9 @@ const tailles = `(min-width: 600px) ${largeurGrande}rem, ${largeurPetite}rem`
     --_marge: 1.5rem;
     --_hauteur: 20rem;
     /* Toujours foncée : liens, focus et accent comme le ton foncé de Section */
-    --couleur-lien: var(--couleur-surface);
-    --couleur-lien-survol: var(--couleur-surface);
-    --couleur-focus: var(--couleur-surface);
+    --couleur-lien: var(--couleur-sur-fonce);
+    --couleur-lien-survol: var(--couleur-sur-fonce);
+    --couleur-focus: var(--couleur-sur-fonce);
     --rouge-orange-texte: var(--jaune);
     position: relative;
     isolation: isolate;
@@ -105,7 +105,7 @@ const tailles = `(min-width: 600px) ${largeurGrande}rem, ${largeurPetite}rem`
     overflow: hidden;
     border-radius: var(--rayon-carte);
     background-color: var(--bleu-fonce);
-    color: var(--couleur-surface);
+    color: var(--couleur-sur-fonce);
   }
 
   @media (min-width: 600px) {
@@ -155,7 +155,7 @@ const tailles = `(min-width: 600px) ${largeurGrande}rem, ${largeurPetite}rem`
     left: var(--_marge);
     z-index: 3;
     margin: 0;
-    color: var(--couleur-surface);
+    color: var(--couleur-sur-fonce);
     transform: translateY(10px);
     transform-origin: left top;
     transition: transform var(--duree-moyenne-3) var(--courbe-emphase);
@@ -174,7 +174,7 @@ const tailles = `(min-width: 600px) ${largeurGrande}rem, ${largeurPetite}rem`
     opacity: 0;
     transition: opacity var(--duree-longue-2) var(--courbe-standard);
     scrollbar-width: thin;
-    scrollbar-color: color-mix(in srgb, var(--couleur-surface) 40%, transparent) transparent;
+    scrollbar-color: color-mix(in srgb, var(--couleur-sur-fonce) 40%, transparent) transparent;
   }
 
   .sous-titre {
@@ -223,7 +223,7 @@ const tailles = `(min-width: 600px) ${largeurGrande}rem, ${largeurPetite}rem`
   }
 
   .carte:has(.contenu:focus-visible)::after {
-    outline: 3px solid var(--couleur-surface);
+    outline: 3px solid var(--couleur-sur-fonce);
   }
 
   /* Révélation : le titre monte en haut de la carte (100 % = sa hauteur) */

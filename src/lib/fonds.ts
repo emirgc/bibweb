@@ -24,11 +24,11 @@ export const FONDS = {
   vertPale: { couleur: 'var(--vert-pale)', ton: 'moyen' },
   jaune: { couleur: 'var(--jaune)', ton: 'moyen' },
   rose500: { couleur: 'var(--rose-500)', ton: 'moyen' },
-  bleu100: { couleur: 'var(--bleu-100)', ton: 'clair' },
-  bleu200: { couleur: 'var(--bleu-200)', ton: 'clair' },
-  jaunePale: { couleur: 'var(--jaune-pale)', ton: 'clair' },
-  rose100: { couleur: 'var(--rose-100)', ton: 'clair' },
-  rose300: { couleur: 'var(--rose-300)', ton: 'clair' },
+  bleu100: { couleur: 'var(--couleur-teinte)', ton: 'clair' },
+  bleu200: { couleur: 'var(--couleur-teinte-forte)', ton: 'clair' },
+  jaunePale: { couleur: 'var(--couleur-teinte-jaune)', ton: 'clair' },
+  rose100: { couleur: 'var(--couleur-teinte-rose)', ton: 'clair' },
+  rose300: { couleur: 'var(--couleur-teinte-rose-forte)', ton: 'clair' },
 } as const satisfies Record<string, { couleur: string; ton: 'fonce' | 'moyen' | 'clair' }>
 
 export type Fond = keyof typeof FONDS

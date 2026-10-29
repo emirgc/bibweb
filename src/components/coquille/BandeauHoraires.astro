@@ -43,7 +43,7 @@ const bibliotheques = lieux
   .sort((a, b) => a.nom.localeCompare(b.nom, 'fr'))
 ---
 
-<section class="bandeau" aria-labelledby="bandeau-horaires-titre" data-bandeau-horaires data-defaut={PAR_DEFAUT}>
+<section class="bandeau theme-clair" aria-labelledby="bandeau-horaires-titre" data-bandeau-horaires data-defaut={PAR_DEFAUT}>
   <div class="rangee">
     <div class="choix">
       <ClockIcon size={20} aria-hidden="true" className="icone" />
@@ -111,8 +111,8 @@ const bibliotheques = lieux
     const choix = bandeau.querySelector<HTMLSelectElement>('[data-choix]')!
     const texte = bandeau.querySelector<HTMLElement>('[data-texte]')!
     const pastille = bandeau.querySelector<HTMLElement>('[data-pastille]')!
-    const maintenant = maintenantMontreal()
-    const dates = [maintenant.date, ajouterJours(maintenant.date, 1)]
+    // Jour des horaires chargés : la page peut rester ouverte toute la nuit
+    let jourCharge = ''
     let horaires: Horaires | null | undefined
 
     try {
@@ -122,11 +122,17 @@ const bibliotheques = lieux
       // Stockage indisponible (navigation privée) : la valeur par défaut suffit
     }
 
+    // L'heure est relue à chaque affichage : un onglet ouvert à 21 h 50 ne dit
+    // plus « Ferme bientôt » le lendemain matin.
     const afficher = () => {
       if (horaires === undefined) return
-      const code = choix.value
-      const statut = statutDe({ codeBib: code } as Lieu, horaires, maintenant, dates)
-      texte.textContent = statut.texte
+      const maintenant = maintenantMontreal()
+      if (maintenant.date !== jourCharge) return charger(maintenant.date)
+      const dates = [maintenant.date, ajouterJours(maintenant.date, 1)]
+      const statut = statutDe({ codeBib: choix.value } as Lieu, horaires, maintenant, dates)
+      // Même texte : on n'y touche pas, la région d'annonce resterait muette
+      // pour rien ou répéterait le statut chaque minute
+      if (texte.textContent !== statut.texte) texte.textContent = statut.texte
       pastille.dataset.etat = statut.etat
     }
 
@@ -139,15 +145,21 @@ const bibliotheques = lieux
       }
     })
 
-    fetch(urlHoraires(maintenant.date, 2))
-      .then((r) => (r.ok ? r.json() : Promise.reject(new Error(`API horaires : HTTP ${r.status}`))))
-      .then((donnees) => (horaires = analyserHoraires(donnees)))
-      .catch(() => (horaires = null))
-      .finally(() => {
-        afficher()
-        // Région d'annonce seulement après le premier remplissage
-        bandeau.querySelector('[data-statut]')!.setAttribute('role', 'status')
-      })
+    const charger = (date: string) => {
+      jourCharge = date
+      fetch(urlHoraires(date, 2))
+        .then((r) => (r.ok ? r.json() : Promise.reject(new Error(`API horaires : HTTP ${r.status}`))))
+        .then((donnees) => (horaires = analyserHoraires(donnees)))
+        .catch(() => (horaires = null))
+        .finally(() => {
+          afficher()
+          // Région d'annonce seulement après le premier remplissage
+          bandeau.querySelector('[data-statut]')!.setAttribute('role', 'status')
+        })
+    }
+
+    charger(maintenantMontreal().date)
+    setInterval(afficher, 60 * 1000)
   }
 </script>
 
@@ -156,8 +168,8 @@ const bibliotheques = lieux
     position: relative;
     z-index: 2;
     background-color: var(--bleu-fonce);
-    color: var(--couleur-surface);
-    --couleur-focus: var(--couleur-surface);
+    color: var(--couleur-sur-fonce);
+    --couleur-focus: var(--couleur-sur-fonce);
   }
 
   /* Tout à fait effacé au défilement (voir le script : l'opacité suit le
@@ -219,7 +231,7 @@ const bibliotheques = lieux
     border: 1px solid color-mix(in srgb, var(--couleur-surface) 55%, transparent);
     border-radius: var(--rayon-plein);
     background-color: color-mix(in srgb, var(--couleur-surface) 8%, transparent);
-    color: var(--couleur-surface);
+    color: var(--couleur-sur-fonce);
     font: inherit;
     font-weight: var(--graisse-forte);
     text-overflow: ellipsis;

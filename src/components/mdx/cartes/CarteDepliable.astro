@@ -51,15 +51,15 @@ const Titre = `h${niveauTitre}`
   .couleur-bleuPrincipal {
     --_fond: var(--bleu-principal);
     --_survol: var(--bleu-principal-fonce);
-    --_encre: var(--couleur-surface);
-    --_icone: color-mix(in srgb, var(--couleur-surface) 53%, transparent);
+    --_encre: var(--couleur-sur-fonce);
+    --_icone: color-mix(in srgb, var(--couleur-sur-fonce) 53%, transparent);
   }
 
   .couleur-vertFonce {
     --_fond: var(--vert-fonce);
     --_survol: color-mix(in srgb, var(--vert-fonce) 70%, var(--couleur-voile));
-    --_encre: var(--couleur-surface);
-    --_icone: color-mix(in srgb, var(--couleur-surface) 53%, transparent);
+    --_encre: var(--couleur-sur-fonce);
+    --_icone: color-mix(in srgb, var(--couleur-sur-fonce) 53%, transparent);
   }
 
   .couleur-rose300 {
@@ -72,9 +72,9 @@ const Titre = `h${niveauTitre}`
   /* Liens du texte sur fond foncé */
   .couleur-bleuPrincipal,
   .couleur-vertFonce {
-    --couleur-lien: var(--couleur-surface);
-    --couleur-lien-survol: var(--couleur-surface);
-    --couleur-focus: var(--couleur-surface);
+    --couleur-lien: var(--couleur-sur-fonce);
+    --couleur-lien-survol: var(--couleur-sur-fonce);
+    --couleur-focus: var(--couleur-sur-fonce);
   }
 
   .sommaire {

@@ -122,7 +122,7 @@ sections:
     image: blrcs/images/vitrine-reliures.webp
     positionImage: gauche
     boutons:
-      - texte: Découvrir la bibliothèque
+      - texte: Bibliothèque des livres rares
         lien: /espaces/blrcs/
       - texte: Explorer la plateforme Collections spéciales
         lien: https://collections-speciales.bib.umontreal.ca/
@@ -136,7 +136,7 @@ sections:
     texte: La Bibliothèque des lettres et sciences humaines et la Bibliothèque Hubert-Reeves offrent chacune une salle mettant à votre disposition des équipements et des logiciels spécialisés afin d’adapter l’expérience en bibliothèque à vos besoins et de vous accompagner dans votre réussite.
     image: images/ouvertes-au-monde.webp
     boutons:
-      - texte: En savoir plus
+      - texte: Service Accessibilité
         lien: /service-accessibilite/
       - texte: Consultez nos engagements en matière d’équité, de diversité, d’inclusion et d’accessibilité
         lien: /engagements/#lequite-la-diversite-linclusion-et-laccessibilite-au-cœur-de-nos-actions

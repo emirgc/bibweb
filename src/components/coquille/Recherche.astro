@@ -146,9 +146,9 @@ const [site] = PORTEES
     background: var(--couleur-fond);
     color: var(--couleur-texte);
     box-shadow:
-      0 11px 15px -7px color-mix(in srgb, var(--couleur-neutre-700) 20%, transparent),
-      0 24px 38px 3px color-mix(in srgb, var(--couleur-neutre-700) 14%, transparent),
-      0 9px 46px 8px color-mix(in srgb, var(--couleur-neutre-700) 12%, transparent);
+      0 11px 15px -7px color-mix(in srgb, var(--gris-700) 20%, transparent),
+      0 24px 38px 3px color-mix(in srgb, var(--gris-700) 14%, transparent),
+      0 9px 46px 8px color-mix(in srgb, var(--gris-700) 12%, transparent);
     /* D'ordinaire, seule la zone de résultats défile (elle prend la place
        laissée par le haut de la boîte). Quand le haut ne laisse plus assez de
        place (texte agrandi à 200 %, écran bas, zoom), c'est la boîte entière
@@ -190,7 +190,7 @@ const [site] = PORTEES
   }
 
   .recherche::backdrop {
-    background: color-mix(in srgb, var(--couleur-neutre-700) 80%, transparent);
+    background: color-mix(in srgb, var(--gris-700) 80%, transparent);
     backdrop-filter: blur(6px);
     opacity: 0;
     transition:
@@ -334,7 +334,7 @@ const [site] = PORTEES
 
   .portee:has(input:checked) {
     background: var(--bleu-fonce);
-    color: var(--couleur-surface);
+    color: var(--couleur-sur-fonce);
   }
 
   .portee:has(input:focus-visible) {
@@ -397,7 +397,7 @@ const [site] = PORTEES
     padding: 0 var(--rayon-minuscule);
     border: 0;
     background: none;
-    color: var(--bleu-principal);
+    color: var(--couleur-accent);
     font: inherit;
     font-size: 0.75rem;
     font-weight: var(--graisse-forte);
@@ -436,13 +436,13 @@ const [site] = PORTEES
     border-radius: var(--rayon-plein);
     background: var(--couleur-fond);
     box-shadow:
-      0 2px 1px -1px color-mix(in srgb, var(--couleur-neutre-700) 20%, transparent),
-      0 1px 1px 0 color-mix(in srgb, var(--couleur-neutre-700) 14%, transparent),
-      0 1px 3px 0 color-mix(in srgb, var(--couleur-neutre-700) 12%, transparent);
+      0 2px 1px -1px color-mix(in srgb, var(--gris-700) 20%, transparent),
+      0 1px 1px 0 color-mix(in srgb, var(--gris-700) 14%, transparent),
+      0 1px 3px 0 color-mix(in srgb, var(--gris-700) 12%, transparent);
   }
 
   .formulaire:focus-within {
-    border-color: var(--bleu-principal);
+    border-color: var(--couleur-accent);
   }
 
   /* Le contour de focus du champ est porté par la pilule entière */
@@ -538,7 +538,7 @@ const [site] = PORTEES
     flex-shrink: 0;
     width: 20px;
     height: 20px;
-    border: 2.5px solid color-mix(in srgb, var(--bleu-principal) 20%, transparent);
+    border: 2.5px solid color-mix(in srgb, var(--couleur-accent) 20%, transparent);
     border-block-start-color: var(--bleu-principal);
     border-radius: 50%;
     animation: tourner 0.8s linear infinite;
@@ -583,7 +583,7 @@ const [site] = PORTEES
     align-items: center;
     gap: var(--espace-1);
     padding-block: 10px;
-    color: var(--bleu-principal);
+    color: var(--couleur-accent);
     text-decoration: none;
   }
 
@@ -615,7 +615,7 @@ const [site] = PORTEES
     flex-shrink: 0;
     width: 28px;
     height: 28px;
-    color: var(--bleu-principal);
+    color: var(--couleur-accent);
     transition: translate var(--duree-courte-4) var(--courbe-standard);
   }
 

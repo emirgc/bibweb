@@ -382,6 +382,36 @@ main a:not(.sans-icone-pdf, .no-pdf-icon)[href*='.pdf?']::after {
   opacity: 0.7;
 }
 
+/* Adresse copiée (src/lib/ancres-copie.ts) : l'icône reste visible le temps
+   de la bulle. Texte de remplacement vide (« / "" ») : la bulle est
+   décorative, l'annonce passe par une région role="status". */
+.ancre-titre {
+  position: relative;
+}
+
+.ancre-titre[data-copie] {
+  opacity: 1;
+}
+
+.ancre-titre[data-copie]::after {
+  content: "Lien copié" / "";
+  position: absolute;
+  /* Alignée à droite de l'icône : centrée, elle débordait de l'écran quand
+     le titre finit au bord (défilement horizontal sur mobile) */
+  bottom: calc(100% + 0.5rem);
+  right: 0;
+  padding: 0.25rem 0.625rem;
+  border-radius: var(--rayon-minuscule);
+  background-color: var(--bleu-fonce);
+  color: var(--couleur-sur-fonce);
+  font-family: var(--police-sans);
+  font-size: 0.875rem;
+  font-weight: 400;
+  line-height: 1.4;
+  white-space: nowrap;
+  pointer-events: none;
+}
+
 /* ---- Focus : toujours visible au clavier (WCAG 2.4.7 et 2.4.11) ---- */
 :focus-visible {
   outline: 3px solid var(--couleur-focus);
@@ -430,13 +460,10 @@ main a:not(.sans-icone-pdf, .no-pdf-icon)[href*='.pdf?']::after {
 }
 
 /* Surface claire (carte, papier) posée dans une Section foncée : Section y
-   redéfinit les couleurs de lien, de focus et d'orange pour le fond foncé ;
-   on les rétablit ici, sinon les liens seraient blancs sur blanc. */
+   redéfinit les couleurs de lien, de focus et d’orange pour le fond foncé ;
+   la carte reprend celles du thème en cours (tokens.css, rôles des
+   couleurs), sinon les liens seraient blancs sur blanc. */
 .surface-claire {
-  --couleur-lien: var(--bleu-principal);
-  --couleur-lien-survol: var(--bleu-principal-fonce);
-  --couleur-focus: var(--bleu-principal);
-  --rouge-orange-texte: var(--rouge-orange-texte-sur-clair);
   color: var(--couleur-texte);
 }
 

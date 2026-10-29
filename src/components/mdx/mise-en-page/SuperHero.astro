@@ -90,10 +90,10 @@ const aEnfants = Astro.slots.has('default')
     min-height: calc(var(--hauteur) - 5rem);
     margin-bottom: calc(5rem - var(--retrait));
     overflow: hidden;
-    color: var(--couleur-surface);
-    --couleur-lien: var(--couleur-surface);
-    --couleur-lien-survol: var(--couleur-surface);
-    --couleur-focus: var(--couleur-surface);
+    color: var(--couleur-sur-fonce);
+    --couleur-lien: var(--couleur-sur-fonce);
+    --couleur-lien-survol: var(--couleur-sur-fonce);
+    --couleur-focus: var(--couleur-sur-fonce);
   }
 
   /* Plus de chevauchement de 3rem (8rem de retrait, comme la source) : sur
@@ -144,8 +144,10 @@ const aEnfants = Astro.slots.has('default')
     padding: 0 16px 1.5rem;
   }
 
+  /* Avec la recherche (accueil) : le titre reste en bas, mais pas collé à
+     elle (centré en hauteur, il s'en détachait trop) */
   .avec-enfants .texte {
-    padding-bottom: 1rem;
+    padding-bottom: 2rem;
   }
 
   .super-hero :global(.titre) {
@@ -186,7 +188,7 @@ const aEnfants = Astro.slots.has('default')
 
   @media (min-width: 600px) {
     .avec-enfants .texte {
-      padding-bottom: 1rem;
+      padding-bottom: 3rem;
     }
   }
 </style>

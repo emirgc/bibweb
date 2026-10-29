@@ -35,6 +35,9 @@ jobs:
       - name: Installer les dépendances
         run: npm ci
 
+      - name: Tests unitaires
+        run: npm test
+
       # Images optimisées du dernier déploiement (deployer-pages.yml), en
       # lecture seule : une PR ne remplace pas le cache de main
       - name: Récupérer les images optimisées

@@ -278,6 +278,7 @@ Les règles détaillées sont dans **`docs/CONVENTIONS.md`**, à lire avant tout
 | `npm run dev:arreter` | Arrête le serveur en arrière-plan (`astro dev stop`). Nécessaire après un déplacement de fichiers ou la modification d'un plugin. |
 | `npm run dev:propre` | Arrête le serveur, supprime le cache de contenu (`.astro/data-store.json`) et relance en arrière-plan |
 | `npm run verifier` | Contrôle toutes les pages sur le serveur de dev (voir [Vérifier son travail](#vérifier-son-travail)) |
+| `npm test` | Tests unitaires (`src/**/*.test.ts`, avec `node --test`) : logique des horaires |
 | `npm run cms:local` | Serveur local de Decap CMS (port 8081), pour essayer `/admin/` sans GitHub (voir [Interface de rédaction](#interface-de-rédaction-decap-cms)) |
 | `npm run build` | Build statique dans `dist/` |
 | `npm run preview` | Sert `dist/` |

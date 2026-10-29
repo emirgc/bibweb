@@ -8,10 +8,14 @@
  *   ArrowUpRight (externe), 24 px, qui avance d'un cran au survol et au
  *   focus. Un PDF s'ouvre dans un nouvel onglet, sans l'icône PDF du CSS
  *   global, comme dans la source ; les deux sont annoncés en texte masqué.
+ * - `retour` : lien de retour (page 404 vers l'accueil) ; flèche vers la
+ *   gauche avant le texte, qui recule d'un cran au survol et au focus, au
+ *   lieu de la flèche de fin.
  * - `light` (inopérant dans la source) : variante pour fond foncé.
  * - Corrigé : `rel` fourni n'est plus écrasé, et une adresse absolue d'un
  *   sous-domaine des Bibliothèques reste un lien ordinaire.
  */
+import { ArrowLeftIcon } from '@phosphor-icons/react/dist/ssr/ArrowLeft'
 import { ArrowRightIcon } from '@phosphor-icons/react/dist/ssr/ArrowRight'
 import { ArrowUpRightIcon } from '@phosphor-icons/react/dist/ssr/ArrowUpRight'
 import { analyserLien, annonceLien } from '@/lib/liens'
@@ -27,6 +31,7 @@ interface Props {
   size?: 'small' | 'medium' | 'large'
   light?: boolean
   disableEndIcon?: boolean
+  retour?: boolean
   target?: string
   rel?: string
   type?: 'button' | 'submit' | 'reset'
@@ -45,6 +50,7 @@ const {
   size = 'medium',
   light = false,
   disableEndIcon = false,
+  retour = false,
   target,
   rel,
   type = 'button',
@@ -67,7 +73,7 @@ const cible = pdf ? '_blank' : target
 const nouvelOnglet = cible === '_blank'
 const relFinal = estLien && (!interne || nouvelOnglet) ? [...new Set([...(rel ?? '').split(/\s+/).filter(Boolean), 'noopener'])].join(' ') : rel
 const annonce = estLien ? annonceLien({ pdf, nouvelOnglet }) : ''
-const IconeFin = estLien && !disableEndIcon ? (interne ? ArrowRightIcon : ArrowUpRightIcon) : null
+const IconeFin = estLien && !disableEndIcon && !retour ? (interne ? ArrowRightIcon : ArrowUpRightIcon) : null
 
 // La source utilisait « no-pdf-icon » ; le CSS global d'ici attend « sans-icone-pdf »
 const classeAuteur = classes(classe, className)?.replace(/\bno-pdf-icon\b/g, 'sans-icone-pdf')
@@ -77,6 +83,7 @@ const listeClasses = ['bouton', `variante-${variante}`, `couleur-${couleur}`, `t
 {
   estLien ? (
     <a href={href} target={cible} rel={relFinal} class:list={listeClasses} style={fusionnerStyles(style)} {...reste}>
+      {estLien && retour && <ArrowLeftIcon size={24} aria-hidden="true" focusable="false" className="icone-debut" />}
       <span class="libelle"><slot /></span>
       {annonce && <span class="visuellement-masque">{annonce}</span>}
       {IconeFin && <IconeFin size={24} aria-hidden="true" focusable="false" className={interne ? 'icone-fin' : 'icone-fin icone-externe'} />}
@@ -92,8 +99,8 @@ const listeClasses = ['bouton', `variante-${variante}`, `couleur-${couleur}`, `t
   .bouton {
     /* Couleurs propres à chaque variante, redéfinies plus bas */
     --bouton-fond: transparent;
-    --bouton-texte: var(--bleu-principal);
-    --bouton-fond-survol: color-mix(in srgb, var(--bleu-principal) 6%, transparent);
+    --bouton-texte: var(--couleur-accent);
+    --bouton-fond-survol: color-mix(in srgb, var(--couleur-accent) 6%, transparent);
     --bouton-texte-survol: var(--bouton-texte);
     --bouton-bordure: transparent;
 
@@ -165,6 +172,23 @@ const listeClasses = ['bouton', `variante-${variante}`, `couleur-${couleur}`, `t
     transform: translateX(3px);
   }
 
+  .bouton > :global(.icone-debut) {
+    flex-shrink: 0;
+    margin-inline-start: -4px;
+    fill: currentColor;
+    transition: transform var(--duree-courte-4) var(--courbe-standard-deceleree);
+  }
+
+  @media (hover: hover) and (pointer: fine) {
+    .bouton:hover > :global(.icone-debut) {
+      transform: translateX(-3px);
+    }
+  }
+
+  .bouton:focus-visible > :global(.icone-debut) {
+    transform: translateX(-3px);
+  }
+
   .bouton:focus-visible > :global(.icone-externe) {
     transform: translate(2px, -2px);
   }
@@ -174,9 +198,9 @@ const listeClasses = ['bouton', `variante-${variante}`, `couleur-${couleur}`, `t
      bleu foncé survol de la source (presque noir) se distinguait à peine.
      Blanc sur bleu principal : 7,10:1. */
   .variante-contained {
-    --bouton-fond: var(--bleu-fonce);
-    --bouton-texte: var(--couleur-surface);
-    --bouton-fond-survol: var(--bleu-principal);
+    --bouton-fond: var(--couleur-fond-fort);
+    --bouton-texte: var(--couleur-sur-fonce);
+    --bouton-fond-survol: var(--couleur-fond-fort-survol);
   }
 
   .variante-contained.couleur-bleuPrincipal,
@@ -189,8 +213,8 @@ const listeClasses = ['bouton', `variante-${variante}`, `couleur-${couleur}`, `t
   /* ---- Texte et contour ---- */
   .variante-text.couleur-bleuFonce,
   .variante-outlined.couleur-bleuFonce {
-    --bouton-texte: var(--bleu-fonce);
-    --bouton-fond-survol: color-mix(in srgb, var(--bleu-fonce) 6%, transparent);
+    --bouton-texte: var(--couleur-texte);
+    --bouton-fond-survol: color-mix(in srgb, var(--couleur-texte) 6%, transparent);
   }
 
   .variante-outlined {
@@ -199,31 +223,31 @@ const listeClasses = ['bouton', `variante-${variante}`, `couleur-${couleur}`, `t
 
   /* ---- Fond foncé (light) ---- */
   .clair.variante-contained {
-    --bouton-fond: var(--couleur-surface);
+    --bouton-fond: var(--couleur-sur-fonce);
     --bouton-texte: var(--bleu-fonce);
     --bouton-fond-survol: var(--bleu-100);
   }
 
   .clair.variante-text,
   .clair.variante-outlined {
-    --bouton-texte: var(--couleur-surface);
-    --bouton-fond-survol: color-mix(in srgb, var(--couleur-surface) 12%, transparent);
+    --bouton-texte: var(--couleur-sur-fonce);
+    --bouton-fond-survol: color-mix(in srgb, var(--couleur-sur-fonce) 12%, transparent);
   }
 
   /* ---- Classes utilitaires du thème de la source ---- */
   .blueOutlineNoIcon {
     --bouton-fond: transparent;
-    --bouton-texte: var(--bleu-principal);
-    --bouton-bordure: var(--bleu-principal);
+    --bouton-texte: var(--couleur-accent);
+    --bouton-bordure: var(--couleur-accent);
     --bouton-fond-survol: var(--bleu-principal);
-    --bouton-texte-survol: var(--couleur-surface);
+    --bouton-texte-survol: var(--couleur-sur-fonce);
   }
 
   .whiteOutlineNoIcon {
     --bouton-fond: transparent;
-    --bouton-texte: var(--couleur-surface);
-    --bouton-bordure: var(--couleur-surface);
-    --bouton-fond-survol: var(--couleur-surface);
+    --bouton-texte: var(--couleur-sur-fonce);
+    --bouton-bordure: var(--couleur-sur-fonce);
+    --bouton-fond-survol: var(--couleur-sur-fonce);
     --bouton-texte-survol: var(--bleu-fonce);
   }
 

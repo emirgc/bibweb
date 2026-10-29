@@ -24,7 +24,7 @@ type Props = { bloc: BlocDe<'icone-texte'> }
 
 const { bloc } = Astro.props
 const Icone = await composantIcone(bloc.icone)
-const couleur = bloc.couleurIcone === 'blanc' ? 'var(--couleur-surface)' : bloc.couleurIcone
+const couleur = bloc.couleurIcone === 'blanc' ? 'var(--couleur-sur-fonce)' : bloc.couleurIcone
 ---
 
 <HeroWithText>
@@ -68,6 +68,6 @@ const couleur = bloc.couleurIcone === 'blanc' ? 'var(--couleur-surface)' : bloc.
      fond de la bande */
   .boutons :global(.variante-outlined:not(.clair)) {
     --bouton-fond: var(--couleur-surface);
-    --bouton-fond-survol: var(--bleu-100);
+    --bouton-fond-survol: var(--couleur-teinte);
   }
 </style>

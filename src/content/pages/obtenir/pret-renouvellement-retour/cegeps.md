@@ -1,6 +1,6 @@
 ---
-title: Ententes avec les cégeps
-crumbLabel: Ententes avec les cégeps
+title: Emprunter à l'UdeM depuis un cégep
+crumbLabel: Emprunter à l'UdeM depuis un cégep
 secondaryNav:
   order: 6
 superHero:
@@ -8,7 +8,7 @@ superHero:
   title: Obtenir un document
 ---
 
-## Ententes avec les cégeps
+## Emprunter à l'UdeM depuis un cégep
 
 Cette catégorie inclut les membres des établissements:
 

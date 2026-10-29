@@ -13,7 +13,7 @@ superHero:
 
 Notre équipe comprend plus de 250 employées et employés qui travaillent en bibliothèque et dans différents espaces administratifs à travers les campus UdeM.  
 
-À la tête de cette équipe, la directrice générale, [Stéphanie Gagnon](/a-propos/notre-organisation/stephanie-gagnon/), collabore avec une équipe de direction qui coordonne le développement de l’offre de services et des différents secteurs des bibliothèques ([voir l’organigramme](/a-propos/organigramme-bibliotheques-udem.pdf)). 
+À la tête de cette équipe, la directrice générale, [Stéphanie Gagnon](/a-propos/notre-organisation/stephanie-gagnon/), collabore avec une équipe de direction qui coordonne le développement de l’offre de services et des différents secteurs des bibliothèques ([organigramme des Bibliothèques (PDF)](/a-propos/organigramme-bibliotheques-udem.pdf)). 
 
 ### Les bibliothèques
 

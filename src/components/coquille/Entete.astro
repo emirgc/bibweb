@@ -476,8 +476,10 @@ const chemin = sansBase(Astro.url.pathname)
        d'opacité, tombait à 1,98:1). */
     .barre-bureau {
       display: block;
-      background-color: color-mix(in srgb, color-mix(in srgb, var(--couleur-neutre-700) 90%, var(--bleu-200)) 85%, transparent);
-      color: var(--couleur-fond);
+      /* Couleurs de la palette, pas des rôles : posée sur la photo de la
+         bannière, la barre est la même dans les deux thèmes */
+      background-color: color-mix(in srgb, color-mix(in srgb, var(--gris-700) 90%, var(--bleu-200)) 85%, transparent);
+      color: var(--blanc-casse);
       transition:
         background-color var(--duree-moyenne-4) var(--courbe-emphase-deceleree),
         box-shadow var(--duree-moyenne-4) var(--courbe-emphase-deceleree),
@@ -530,6 +532,12 @@ const chemin = sansBase(Astro.url.pathname)
 
   .entete[data-defile] .logo-udem img {
     filter: none;
+  }
+
+  /* Thème sombre : le logo noir passe en blanc sur la barre foncée */
+  :global(:root[data-theme='sombre']) .marque-compacte img,
+  :global(:root[data-theme='sombre']) .entete[data-defile] .logo-udem img {
+    filter: brightness(0) invert(1);
   }
 
   .logo-udem:hover img {
@@ -654,7 +662,7 @@ const chemin = sansBase(Astro.url.pathname)
     padding: 0 21px;
     border: 1px solid currentColor;
     border-radius: var(--rayon-plein);
-    color: var(--couleur-surface);
+    color: var(--couleur-sur-fonce);
     font-size: 0.875rem;
     font-weight: var(--graisse-moyenne);
     line-height: 1.2;
@@ -675,7 +683,7 @@ const chemin = sansBase(Astro.url.pathname)
   }
 
   .entete[data-defile] .je-donne {
-    color: var(--bleu-fonce);
+    color: var(--couleur-texte);
   }
 
   .entete[data-defile] .icone-je-donne {
@@ -686,11 +694,11 @@ const chemin = sansBase(Astro.url.pathname)
   .entete[data-defile] .je-donne:hover {
     border-color: var(--bleu-fonce);
     background-color: var(--bleu-fonce);
-    color: var(--couleur-surface);
+    color: var(--couleur-sur-fonce);
   }
 
   .entete[data-defile] .je-donne:hover .icone-je-donne {
-    color: var(--couleur-surface);
+    color: var(--couleur-sur-fonce);
   }
 
   .barre-bureau .outils {

@@ -9,6 +9,9 @@
 
 export const ACTION_SOFIA = 'https://umontreal.on.worldcat.org/search'
 
+/** Exemple du champ Sofia, le même à l'accueil et dans le menu */
+export const PLACEHOLDER_SOFIA = 'Livres, articles, films…'
+
 /** Champs cachés du formulaire ; la saisie s'appelle `queryString` */
 export const PARAMETRES_SOFIA = {
   clusterResults: 'true',

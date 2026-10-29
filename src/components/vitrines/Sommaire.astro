@@ -28,7 +28,7 @@ interface Props {
 const { liens } = Astro.props
 ---
 
-<nav class="sommaire" aria-label="Sur cette page" data-sommaire>
+<nav class="sommaire theme-clair" aria-label="Sur cette page" data-sommaire>
     <details>
       <summary>
         Aller à une section
@@ -95,7 +95,7 @@ const { liens } = Astro.props
     /* Blanc d'office : plus visible sur la photo de la bannière que le
        contour seul. Survol et sommaire ouvert : bleu pâle, changement léger */
     background-color: var(--couleur-surface);
-    color: var(--bleu-fonce);
+    color: var(--couleur-texte);
     font-size: 0.9375rem;
     font-weight: var(--graisse-moyenne);
     line-height: 1.2;
@@ -117,7 +117,7 @@ const { liens } = Astro.props
 
   details[open] summary {
     border-color: var(--bleu-100);
-    background-color: var(--bleu-100);
+    background-color: var(--couleur-teinte);
   }
 
   details[open] summary :global(svg) {
@@ -127,7 +127,7 @@ const { liens } = Astro.props
   @media (hover: hover) and (pointer: fine) {
     summary:hover {
       border-color: var(--bleu-100);
-      background-color: var(--bleu-100);
+      background-color: var(--couleur-teinte);
     }
   }
 
@@ -197,7 +197,7 @@ const { liens } = Astro.props
     min-height: 2.75rem;
     padding: 0.5rem 0.75rem;
     border-radius: var(--rayon-tres-petit);
-    color: var(--bleu-fonce);
+    color: var(--couleur-texte);
     text-align: center;
     text-decoration: none;
     transition: background-color var(--duree-courte-4) var(--courbe-standard);
@@ -205,7 +205,7 @@ const { liens } = Astro.props
 
   /* Survol : le fond seul, sans soulignement */
   .panneau a:hover {
-    background-color: var(--bleu-100);
+    background-color: var(--couleur-teinte);
   }
 
   .panneau a:focus-visible {

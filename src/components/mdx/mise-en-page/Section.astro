@@ -12,7 +12,13 @@
  *   corrige ce que la source laissait passer : liens bleus, focus bleu et
  *   texte orange illisibles sur les fonds foncés ou moyens (1,6:1 pour un
  *   lien sur vert foncé, 2:1 sur violet).
- * - `image` : photo en fond (cover) sous un voile noir de 40 %, texte blanc.
+ * - `image` : photo en fond (cover) sous un voile noir, texte blanc. Le voile
+ *   de la source (40 %) laissait le texte à 2,85:1 devant les zones claires
+ *   d'une photo (fenêtres de « S'engager pour une science ouverte ») : il
+ *   passe à 60 %, ce qui garde 4,5:1 même sur du blanc pur (il en faut au
+ *   moins 55 %). `voile="droite"` : dès 900 px, dégradé léger à gauche et
+ *   à 65 % sous la moitié droite, quand le texte n'occupe que celle-ci
+ *   (bloc image-fond des vitrines) ; la photo reste visible à gauche.
  *   Rendue avec <Picture> plutôt qu'en background CSS, pour profiter des
  *   formats et des tailles d'astro:assets.
  * - `marginTop` : 3rem dès 900 px (rattrape le chevauchement de SuperHero2).
@@ -37,6 +43,8 @@ interface Props {
   image?: ImageMetadata | string
   /** Texte de remplacement de l'image ; décorative par défaut */
   imageAlt?: string
+  /** Voile sous le texte : uniforme (par défaut) ou foncé à droite seulement dès 900 px */
+  voile?: 'uniforme' | 'droite'
   marginTop?: boolean | string
   suite?: boolean
   revelation?: boolean
@@ -50,7 +58,7 @@ interface Props {
   [attribut: string]: unknown
 }
 
-const { bg, image, imageAlt = '', marginTop, suite = false, revelation = false, fixedWidth = false, minHeight, textAlign, id, class: classe, className, style, sx: _sx, ...reste } = Astro.props
+const { bg, image, imageAlt = '', voile = 'uniforme', marginTop, suite = false, revelation = false, fixedWidth = false, minHeight, textAlign, id, class: classe, className, style, sx: _sx, ...reste } = Astro.props
 
 if (bg && image) throw new Error('Section : les propriétés `image` et `bg` sont mutuellement exclusives.')
 const fond = bg ? FONDS[bg as keyof typeof FONDS] : undefined
@@ -62,7 +70,7 @@ const margeHaut = marginTop !== undefined && marginTop !== false && marginTop !=
 
 <section
   id={id}
-  class:list={['section', ton && `ton-${ton}`, { 'avec-image': image, 'marge-haut': margeHaut, suite, 'largeur-fixe': fixedWidth }, classes(classe, className)]}
+  class:list={['section', ton && `ton-${ton}`, ton === 'moyen' && 'theme-clair', { 'avec-image': image, 'voile-droite': image && voile === 'droite', 'marge-haut': margeHaut, suite, 'largeur-fixe': fixedWidth }, classes(classe, className)]}
   style={fusionnerStyles({ '--section-fond': fond?.couleur, minHeight: minHeight !== 'auto' ? minHeight : undefined, textAlign }, style)}
   {...reste}
 >
@@ -171,12 +179,12 @@ const margeHaut = marginTop !== undefined && marginTop !== false && marginTop !=
 
   /* ---- Tons (voir src/lib/fonds.ts) ---- */
   .ton-fonce {
-    --couleur-lien: var(--couleur-surface);
-    --couleur-lien-survol: var(--couleur-surface);
-    --couleur-focus: var(--couleur-surface);
+    --couleur-lien: var(--couleur-sur-fonce);
+    --couleur-lien-survol: var(--couleur-sur-fonce);
+    --couleur-focus: var(--couleur-sur-fonce);
     /* Le jaune garde l'accent : 4,66:1 sur bleu principal, 7,4:1 sur vert foncé */
     --rouge-orange-texte: var(--jaune);
-    color: var(--couleur-surface);
+    color: var(--couleur-sur-fonce);
   }
 
   .ton-moyen {
@@ -202,7 +210,19 @@ const margeHaut = marginTop !== undefined && marginTop !== false && marginTop !=
     position: absolute;
     z-index: -1;
     inset: 0;
-    background-color: color-mix(in srgb, var(--couleur-voile) 40%, transparent);
+    background-color: color-mix(in srgb, var(--couleur-voile) 60%, transparent);
+  }
+
+  /* Texte dans la moitié droite : le voile atteint 65 % avant le début du
+     texte (50 % de la largeur) */
+  @media (min-width: 900px) {
+    .voile-droite::before {
+      background: linear-gradient(
+        90deg,
+        color-mix(in srgb, var(--couleur-voile) 25%, transparent),
+        color-mix(in srgb, var(--couleur-voile) 65%, transparent) 45%
+      );
+    }
   }
 
   .section :global(.section-image) {

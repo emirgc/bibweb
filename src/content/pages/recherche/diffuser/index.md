@@ -39,7 +39,7 @@ En plus du dépôt, nous offrons:
 
 ::bouton[Contacter l’équipe de Papyrus]{lien="mailto:depot@bib.umontreal.ca"}
 
-::bouton[Voir les guides associés]{lien="https://boite-outils.bib.umontreal.ca/recherche" type=secondaire}
+::bouton[Guides sur la diffusion de la recherche]{lien="https://boite-outils.bib.umontreal.ca/recherche" type=secondaire}
 
 ::bouton[Accéder à Papyrus]{lien="https://umontreal.scholaris.ca/home" type=secondaire}
 

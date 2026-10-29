@@ -118,7 +118,7 @@ sections:
     image: images/empreinte.webp
     positionImage: gauche
     bouton:
-      texte: Consulter le rapport
+      texte: Rapport GES 2024 des Bibliothèques (PDF)
       lien: /engagements/rapport-GES-bibliotheques-UdeM-2024.pdf
 
   - type: icone-texte

@@ -43,7 +43,7 @@
   border: 1px solid currentColor;
   border-radius: var(--rayon-plein);
   background: transparent;
-  color: var(--bleu-principal);
+  color: var(--couleur-accent);
   font-family: var(--police-sans);
   font-size: 0.875rem;
   font-weight: var(--graisse-moyenne);

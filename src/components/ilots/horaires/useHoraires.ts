@@ -26,23 +26,41 @@ export default function useHoraires(aujourdhui: string | null) {
   const [erreur, setErreur] = useState<Error | null>(null)
   const enCours = useRef(new Set<number>())
 
+  // Page restée ouverte jusqu'au lundi : les tranches sont numérotées depuis
+  // l'ancien lundi, on repart de zéro (sinon la semaine suivante paraît
+  // chargée et s'affiche « Fermé »).
+  const [lundiCharge, setLundiCharge] = useState(lundi)
+  if (lundi !== lundiCharge) {
+    setLundiCharge(lundi)
+    setTranches([])
+    setVoulues(1)
+  }
+  // Lundi des requêtes en cours ; mis à jour dans l'effet, pas au rendu
+  const lundiEnCours = useRef(lundi)
+
   useEffect(() => {
     // Après un échec, rien ne repart avant « Réessayer » (reessayer remet
     // l'erreur à null, ce qui relance l'effet pour les tranches manquantes).
     if (!lundi || erreur) return
+    if (lundiEnCours.current !== lundi) {
+      lundiEnCours.current = lundi
+      enCours.current.clear()
+    }
     for (let i = 0; i < voulues; i++) {
       if (tranches[i] || enCours.current.has(i)) continue
       enCours.current.add(i)
       charger(urlHoraires(ajouterJours(lundi, i * JOURS_PAR_TRANCHE), JOURS_PAR_TRANCHE))
         .then((donnees) => {
+          // Réponse partie avant le changement de lundi : elle n'a plus sa place
+          if (lundiEnCours.current !== lundi) return
           setTranches((avant) => {
             const apres = [...avant]
             apres[i] = donnees
             return apres
           })
         })
-        .catch((e) => setErreur(e))
-        .finally(() => enCours.current.delete(i))
+        .catch((e) => lundiEnCours.current === lundi && setErreur(e))
+        .finally(() => lundiEnCours.current === lundi && enCours.current.delete(i))
     }
   }, [lundi, voulues, tranches, erreur])
 
