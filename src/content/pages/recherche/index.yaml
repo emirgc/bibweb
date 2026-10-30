@@ -81,8 +81,6 @@ sections:
         texte: Gestion de bibliographies
       - icone: toolbox
         texte: Guides pratiques
-      - icone: panorama
-        texte: Cours PLU6058 - Rechercher et exploiter la documentation
 
   - type: liste-liens
     fond: vertFonce
@@ -229,7 +227,4 @@ sections:
         lien: /nous-joindre/notre-equipe/
       - titre: Espaces dédiés aux cycles supérieurs
         description: "Salles individuelles réservables, salles communes équipées de casiers pour votre documentation : l’offre varie d’une bibliothèque à l’autre, consultez le répertoire!"
-        lien: /espaces/
-      - titre: Cours PLU6058
-        description: Cours offrant un panorama de l’écosystème de l’information en contexte de recherche universitaire. Inscription gratuite, cours donné sur 5 après-midis.
-        lien: https://admission.umontreal.ca/cours-et-horaires/cours/plu-6058/
+        lien: /espaces/#on-sadapte-a-vos-besoins
