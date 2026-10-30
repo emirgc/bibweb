@@ -28,3 +28,7 @@ migration/
 
 # Documentation interne (conventions, inventaire, guide des rédacteurs) : gardée en local, hors du dépôt
 docs/
+
+# Pages de démonstration des composants : consultables en local (npm run dev),
+# jamais publiées
+src/content/pages/dev/
