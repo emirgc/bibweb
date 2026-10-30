@@ -2,13 +2,13 @@
 /*
  * Recherche du haut du menu. Un sélecteur à deux segments, dans la barre,
  * choisit où chercher (une pastille glisse vers le choix actif) :
- * - Sofia (par défaut) : le formulaire part vers Sofia, comme avant ;
- * - les sites des bibliothèques : des suggestions s'ouvrent sous le champ, à
- *   mesure qu'on tape, les plus pertinentes d'abord, toutes sources
+ * - les sites des bibliothèques (par défaut) : des suggestions s'ouvrent
+ *   sous le champ, à mesure qu'on tape, les plus pertinentes d'abord, toutes sources
  *   confondues (le site, la Boîte à outils et Studio·bib, d'après l'index
  *   réuni de recherche/moteur.ts) ; chacune nomme sa source, puis la page.
  *   « Tous les résultats », comme Entrée sans suggestion choisie, mène à la
- *   page de résultats (/resultats/?q=…).
+ *   page de résultats (/resultats/?q=…) ;
+ * - Sofia : le formulaire part vers Sofia, comme avant.
  *
  * Motif « combobox » de l'APG (liste, aria-activedescendant) : le
  * focus reste dans le champ, les flèches parcourent les suggestions, Entrée
@@ -49,8 +49,8 @@ const { id } = Astro.props
       <span class="indicateur" aria-hidden="true" data-indicateur></span>
       {
         [
-          ['sofia', 'Sofia', 'Sofia'],
           ['sites', 'Les sites des bibliothèques', 'Nos sites'],
+          ['sofia', 'Sofia', 'Sofia'],
         ].map(([valeur, long, court], i) => (
           <label class="segment">
             <input type="radio" class="visuellement-masque" name={`${id}-portee`} form={`${id}-portee`} value={valeur} checked={i === 0} data-texte={long} data-portee />

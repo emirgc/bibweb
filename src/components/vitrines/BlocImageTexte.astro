@@ -13,11 +13,11 @@
  * bouton bleu foncé ne s'y voyait pas.
  *
  * Disposition `encart` : un appel à l'action plus ramassé, dans une carte
- * bleu foncé aux coins arrondis (largeur du contenu, pas toute la bande).
+ * vert pâle aux coins arrondis (largeur du contenu, pas toute la bande).
  * Le texte est d'un côté, et l'image remplit l'autre jusqu'au bord de la
- * carte (cover), fondue dans le bleu par un dégradé. Sous 900 px, l'image
- * passe en bandeau au-dessus du texte. Titre réduit, bouton blanc. Texte
- * blanc sur bleu foncé : 18,17:1.
+ * carte (cover), fondue dans le vert par un dégradé. Sous 900 px, l'image
+ * passe en bandeau au-dessus du texte. Titre réduit, bouton bleu foncé.
+ * Texte bleu foncé sur vert pâle : 7,32:1 (le blanc n'y fait que 2,48:1).
  */
 import { Picture } from 'astro:assets'
 import HeroWithImage from '@/components/mdx/mise-en-page/HeroWithImage.astro'
@@ -32,7 +32,7 @@ type Props = { bloc: BlocDe<'image-texte'> }
 
 const { bloc } = Astro.props
 const encart = bloc.disposition === 'encart'
-const clair = encart || (bloc.fond !== undefined && FONDS[bloc.fond].ton === 'fonce')
+const clair = !encart && (bloc.fond !== undefined && FONDS[bloc.fond].ton === 'fonce')
 const boutons = [...(bloc.bouton ? [bloc.bouton] : []), ...(bloc.boutons ?? [])]
 const largeurImage = bloc.image.width
 const legende = bloc.legende ? await markdownEnLigne(bloc.legende) : undefined
@@ -40,14 +40,14 @@ const legende = bloc.legende ? await markdownEnLigne(bloc.legende) : undefined
 
 {
   encart ? (
-    <div class:list={['encart', `image-${bloc.positionImage}`]}>
+    <div class:list={['encart', 'theme-clair', `image-${bloc.positionImage}`]}>
       <div class="encart-texte">
         <Titre texte={bloc.titre} id={bloc.id} />
         <TexteMarkdown texte={bloc.texte} brut />
         {boutons.length > 0 && (
           <div class="encart-pied">
             {boutons.map((bouton) => (
-              <Button href={bouton.lien} primary={!bouton.secondaire} secondary={bouton.secondaire} variant={bouton.contour ? 'outlined' : undefined} light>
+              <Button href={bouton.lien} primary={!bouton.secondaire} secondary={bouton.secondaire} variant={bouton.contour ? 'outlined' : undefined}>
                 {bouton.texte}
               </Button>
             ))}
@@ -114,17 +114,19 @@ const legende = bloc.legende ? await markdownEnLigne(bloc.legende) : undefined
   }
 
   .encart {
-    /* Liens, focus et accent du ton foncé de Section */
-    --couleur-lien: var(--couleur-sur-fonce);
-    --couleur-lien-survol: var(--couleur-sur-fonce);
-    --couleur-focus: var(--couleur-sur-fonce);
-    --rouge-orange-texte: var(--jaune);
+    --_fond: var(--vert-pale);
+    /* Comme le ton « moyen » de Section (theme-clair dans les deux thèmes) :
+       liens, focus et accent en bleu foncé, seul à passer sur le vert */
+    --couleur-lien: var(--bleu-fonce);
+    --couleur-lien-survol: var(--bleu-fonce);
+    --couleur-focus: var(--bleu-fonce);
+    --rouge-orange-texte: var(--bleu-fonce);
     display: grid;
     grid-template-rows: auto auto;
     overflow: hidden;
     border-radius: var(--rayon-grand);
-    background-color: var(--bleu-fonce);
-    color: var(--couleur-sur-fonce);
+    background-color: var(--_fond);
+    color: var(--bleu-fonce);
   }
 
   .encart-texte {
@@ -155,7 +157,7 @@ const legende = bloc.legende ? await markdownEnLigne(bloc.legende) : undefined
     margin: 0;
   }
 
-  /* L'image remplit sa case ; le dégradé la fond dans le bleu du côté du
+  /* L'image remplit sa case ; le dégradé la fond dans le vert du côté du
      texte (en bas sur mobile) */
   .encart-image {
     position: relative;
@@ -176,17 +178,17 @@ const legende = bloc.legende ? await markdownEnLigne(bloc.legende) : undefined
      et une cassure nette */
   .encart-image {
     --_fondu:
-      color-mix(in srgb, var(--bleu-fonce) 100%, transparent) 0%,
-      color-mix(in srgb, var(--bleu-fonce) 95%, transparent) 6%,
-      color-mix(in srgb, var(--bleu-fonce) 86%, transparent) 12%,
-      color-mix(in srgb, var(--bleu-fonce) 74%, transparent) 18%,
-      color-mix(in srgb, var(--bleu-fonce) 60%, transparent) 24%,
-      color-mix(in srgb, var(--bleu-fonce) 45%, transparent) 30%,
-      color-mix(in srgb, var(--bleu-fonce) 31%, transparent) 36%,
-      color-mix(in srgb, var(--bleu-fonce) 19%, transparent) 42%,
-      color-mix(in srgb, var(--bleu-fonce) 9%, transparent) 48%,
-      color-mix(in srgb, var(--bleu-fonce) 3%, transparent) 54%,
-      color-mix(in srgb, var(--bleu-fonce) 0%, transparent) 60%;
+      color-mix(in srgb, var(--_fond) 100%, transparent) 0%,
+      color-mix(in srgb, var(--_fond) 95%, transparent) 6%,
+      color-mix(in srgb, var(--_fond) 86%, transparent) 12%,
+      color-mix(in srgb, var(--_fond) 74%, transparent) 18%,
+      color-mix(in srgb, var(--_fond) 60%, transparent) 24%,
+      color-mix(in srgb, var(--_fond) 45%, transparent) 30%,
+      color-mix(in srgb, var(--_fond) 31%, transparent) 36%,
+      color-mix(in srgb, var(--_fond) 19%, transparent) 42%,
+      color-mix(in srgb, var(--_fond) 9%, transparent) 48%,
+      color-mix(in srgb, var(--_fond) 3%, transparent) 54%,
+      color-mix(in srgb, var(--_fond) 0%, transparent) 60%;
   }
 
   .encart-image::after {
