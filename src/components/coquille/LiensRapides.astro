@@ -133,7 +133,9 @@ const LIBCHAT_HASH = '71ff3bc4ca990e9e993a02e35e2f804aa581c52535e870359e707314a8
 
   // Tiroir du bureau : la poignée déplie et replie la rangée de liens.
   // Échap ou un clic ailleurs la replient ; Échap rend le focus à la poignée.
-  const panneau = document.querySelector<HTMLElement>('.panneau')
+  // Portée au tiroir : d'autres composants ont un .panneau (le sommaire des
+  // longues pages vient avant dans le DOM)
+  const panneau = document.querySelector<HTMLElement>('[data-liens-rapides] .panneau')
   const poignee = panneau?.querySelector<HTMLButtonElement>('[data-poignee]')
   if (panneau && poignee) {
     const ouvrir = (ouvert: boolean) => {
