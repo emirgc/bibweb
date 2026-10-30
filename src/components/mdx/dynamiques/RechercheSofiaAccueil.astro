@@ -88,6 +88,7 @@ const LIENS = [
   /* Le haut du dégradé, transparent, déborde sur la photo (marge
      négative) : aucun bord net */
   .bande {
+    --_hauteur-champ: 56px;
     color: var(--couleur-sur-fonce);
     --couleur-lien: var(--couleur-sur-fonce);
     --couleur-lien-survol: var(--couleur-sur-fonce);
@@ -120,6 +121,9 @@ const LIENS = [
     justify-content: space-between;
     gap: 0.5rem 1.5rem;
     width: 100%;
+    /* Logo et aide alignés sur la fin de l'arrondi du champ (demi-hauteur) */
+    padding-inline: calc(var(--_hauteur-champ) / 2);
+    box-sizing: border-box;
   }
 
   .aide {
@@ -137,11 +141,17 @@ const LIENS = [
   /* Sous 600 px, l'icône seule (cible de 44 px), pour garder l'étiquette
      et l'aide sur une ligne : le texte masqué reste le nom du lien */
   @media (width < 600px) {
+    .entete {
+      column-gap: 0.75rem;
+    }
+
     .aide {
       justify-content: center;
       width: 2.75rem;
       height: 2.75rem;
       margin-block: -0.5rem;
+      /* L'icône (24 px, centrée dans 44 px) s'aligne, pas sa cible */
+      margin-inline-end: -10px;
     }
 
     .aide > :global(.icone-aide) {
@@ -182,7 +192,7 @@ const LIENS = [
     align-items: center;
     gap: 0.5rem;
     width: 100%;
-    min-height: 56px;
+    min-height: var(--_hauteur-champ);
     padding: 0 0.375rem 0 1.25rem;
     border-radius: var(--rayon-plein);
     background-color: var(--couleur-surface);
@@ -328,6 +338,10 @@ const LIENS = [
   }
 
   @media (min-width: 1200px) {
+    .bande {
+      --_hauteur-champ: 72px;
+    }
+
     .interieur {
       padding: 2rem 64px 2.25rem;
     }
@@ -337,7 +351,6 @@ const LIENS = [
     }
 
     .champ {
-      min-height: 72px;
       padding-left: 2rem;
       font-size: 1.125rem;
     }

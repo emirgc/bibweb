@@ -4,8 +4,8 @@
  * dans l'esprit de celui de studio·bib. Les liens viennent de
  * src/data/navigation.ts.
  *
- * - Titre centré en Figtree, puis trois colonnes de liens séparées par un
- *   filet (« Besoin d'aide? », « Liens rapides », « Sites connexes ») et le
+ * - Titre centré en Figtree, puis deux colonnes de liens séparées par un
+ *   filet (« Besoin d'aide? », « Sites connexes ») et le
  *   sceau des bibliothèques à droite. Sous 900 px : tout est centré et
  *   empilé, le sceau en dernier.
  * - « Besoin d'aide? » : liens à pictogramme, puis l'urgence, puis YouTube et
@@ -16,8 +16,8 @@
  *   droits et licence empilés, puis les liens à la suite sur une ou deux
  *   lignes.
  * - Sous 900 px, le pied reste court : « Besoin d'aide? » (urgence et
- *   réseaux compris) reste ouvert ; « Liens rapides » et « Sites connexes »
- *   deviennent des volets repliés (motif Disclosure de l'APG : le h3 porte
+ *   réseaux compris) reste ouvert ; « Sites connexes » devient un volet
+ *   replié (motif Disclosure de l'APG : le h3 porte
  *   un bouton aria-expanded qui montre ou cache sa liste). Le bouton n'est
  *   ajouté que par le script, sous 900 px : sans JS ou sur grand écran, les
  *   listes sont visibles et les titres restent de simples titres.
@@ -51,7 +51,7 @@ import Licence from './pied/Licence.astro'
           COLONNES_PIED.map(({ titre, liens }, i) => (
             <div class="colonne" data-pliable-pied={i > 0 ? '' : undefined}>
               <h3 class="sous-titre">{titre}</h3>
-              <ul class="liste" id={`pied-liste-${i}`}>
+              <ul class:list={['liste', { 'liste-sites': liens.some((l) => l.fonction) }]} id={`pied-liste-${i}`}>
                 {liens.map(({ libelle, href, rel, Icone, point, fonction }) => (
                   <li>
                     <a href={href} rel={rel}>
@@ -262,16 +262,49 @@ import Licence from './pied/Licence.astro'
     flex-shrink: 0;
   }
 
-  /* Ce que fait le site, sous son nom (Sites connexes) ; un peu d'air entre
-     ces liens sur deux lignes */
-  .colonne a:has(.fonction) {
-    padding-block: 6px;
+  /* Sites connexes : des tuiles côte à côte, chacune avec sa pastille, son
+     nom et ce que fait le site */
+  .liste-sites {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(11.5rem, 1fr));
+    gap: 8px;
+    width: 100%;
+  }
+
+  .liste-sites a {
+    align-items: flex-start;
+    width: 100%;
+    height: 100%;
+    padding: 10px 12px;
+    box-sizing: border-box;
+    border-radius: var(--rayon-petit);
+    background-color: color-mix(in srgb, var(--couleur-surface) 7%, transparent);
+    font-weight: var(--graisse-moyenne);
+    text-decoration: none;
+    transition: background-color var(--duree-courte-4) var(--courbe-standard);
+  }
+
+  /* La tuile qui s'éclaircit suffit à signaler le survol : pas de soulignement */
+  .liste-sites a:hover {
+    text-decoration: none;
+  }
+
+  .liste-sites .point {
+    margin-top: 0.3em;
+  }
+
+  @media (hover: hover) and (pointer: fine) {
+    .liste-sites a:hover {
+      background-color: color-mix(in srgb, var(--couleur-surface) 14%, transparent);
+    }
   }
 
   .fonction {
     display: block;
     color: color-mix(in srgb, currentColor 78%, transparent);
+    margin-top: 2px;
     font-size: 0.8125rem;
+    font-weight: var(--graisse-normale);
     line-height: 1.3;
   }
 
@@ -333,7 +366,7 @@ import Licence from './pied/Licence.astro'
 
   /* Téléphone : le sceau et le titre signent le pied en tête, puis tout
      s'aligne à gauche dessous : « Besoin d'aide? » sur toute la largeur,
-     « Liens rapides » et « Sites connexes » côte à côte. Le sceau des grands
+     « Sites connexes » dessous. Le sceau des grands
      écrans (dans les colonnes) est masqué : un seul est rendu visible, et
      display: none le retire aussi de l'arbre d'accessibilité. */
   .signature-sceau {
@@ -365,8 +398,8 @@ import Licence from './pied/Licence.astro'
       text-align: left;
     }
 
-    /* « Besoin d'aide? » ouvert, puis les deux volets empilés, séparés par
-       un filet */
+    /* « Besoin d'aide? » ouvert, puis le volet « Sites connexes » entre
+       deux filets */
     .colonnes {
       display: grid;
       grid-template-columns: minmax(0, 1fr);
@@ -480,7 +513,7 @@ import Licence from './pied/Licence.astro'
 
     .colonnes {
       display: grid;
-      grid-template-columns: repeat(3, minmax(0, 1fr)) auto;
+      grid-template-columns: minmax(0, 1fr) minmax(0, 2fr) auto;
       align-items: start;
       gap: 0;
     }

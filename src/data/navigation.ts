@@ -11,10 +11,7 @@ import { BooksIcon } from '@phosphor-icons/react/dist/ssr/Books'
 import { CalendarDotsIcon } from '@phosphor-icons/react/dist/ssr/CalendarDots'
 import { ClockCountdownIcon } from '@phosphor-icons/react/dist/ssr/ClockCountdown'
 import { DoorOpenIcon } from '@phosphor-icons/react/dist/ssr/DoorOpen'
-import { HouseIcon } from '@phosphor-icons/react/dist/ssr/House'
 import { InfoIcon } from '@phosphor-icons/react/dist/ssr/Info'
-import { ListMagnifyingGlassIcon } from '@phosphor-icons/react/dist/ssr/ListMagnifyingGlass'
-import { MagnifyingGlassIcon } from '@phosphor-icons/react/dist/ssr/MagnifyingGlass'
 import { CalendarBlankIcon } from '@phosphor-icons/react/dist/ssr/CalendarBlank'
 import { InstagramLogoIcon } from '@phosphor-icons/react/dist/ssr/InstagramLogo'
 import { PaperPlaneTiltIcon } from '@phosphor-icons/react/dist/ssr/PaperPlaneTilt'
@@ -151,15 +148,6 @@ export const COLONNES_PIED: { titre: string; liens: LienPied[] }[] = [
       { libelle: 'Nous joindre', href: '/nous-joindre/', Icone: PaperPlaneTiltIcon },
       { libelle: 'Mon dossier', href: 'https://umontreal.account.worldcat.org/account', rel: 'noopener noreferrer', Icone: UserIcon },
       { libelle: 'À propos', href: '/a-propos/', Icone: InfoIcon },
-    ],
-  },
-  {
-    titre: 'Liens rapides',
-    liens: [
-      { libelle: 'Site des bibliothèques', href: '/', Icone: HouseIcon },
-      { libelle: 'Catalogue Sofia', href: 'https://umontreal.on.worldcat.org/discovery?lang=fr', rel: 'noopener noreferrer', Icone: MagnifyingGlassIcon },
-      // Trait d'union insécable : « A-Z » ne se coupe pas en fin de ligne
-      { libelle: 'Bases de données A‑Z', href: 'https://boite-outils.bib.umontreal.ca/az.php', Icone: ListMagnifyingGlassIcon },
     ],
   },
   {

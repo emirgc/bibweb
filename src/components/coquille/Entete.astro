@@ -30,7 +30,7 @@ import PanneauMenu from './entete/PanneauMenu.astro'
 import BurgerIcon from '@/components/icones/BurgerIcon.astro'
 import { PAGES_PRINCIPALES, estCourante } from '@/data/navigation'
 import logoUdem from '@/components/icones/logo-udem.svg'
-import logoUdemNoir from '@/components/icones/logo-udem-noir.svg'
+import logoUdemOfficiel from '@/components/icones/logo-udem-officiel.svg'
 
 const chemin = sansBase(Astro.url.pathname)
 ---
@@ -41,11 +41,11 @@ const chemin = sansBase(Astro.url.pathname)
   <div class="barre-bureau">
     <div class="rangee">
       <div class="marque">
-        <a class="logo-udem" href="https://www.umontreal.ca">
+        <a class="logo-udem" href="https://www.umontreal.ca" data-infobulle="Aller au site de l’UdeM">
           <img src={logoUdem.src} alt="Université de Montréal" width="135" height="59" />
         </a>
         <span class="separateur" aria-hidden="true"></span>
-        <a class="nom-site" href="/">Les bibliothèques</a>
+        <a class="nom-site" href="/" data-infobulle="Revenir à l’accueil">Les bibliothèques</a>
       </div>
 
       <nav class="navigation-principale" aria-label="Navigation principale">
@@ -86,7 +86,7 @@ const chemin = sansBase(Astro.url.pathname)
   <div class="barre-compacte">
     <div class="rangee">
       <a class="marque-compacte" href="/">
-        <img src={logoUdemNoir.src} alt="Université de Montréal" width="140" height="61" />
+        <img src={logoUdemOfficiel.src} alt="Université de Montréal" width="140" height="61" />
         <span>Les bibliothèques<span class="visuellement-masque"> – Accueil</span></span>
       </a>
       <div class="outils">
@@ -121,6 +121,17 @@ const chemin = sansBase(Astro.url.pathname)
       entete.toggleAttribute('data-defile', sansBanniere || window.scrollY > 50 || entete.hasAttribute('data-menu-ouvert'))
     majDefilement()
     window.addEventListener('scroll', majDefilement, { passive: true })
+
+    // Échap ferme l'infobulle du logo ou du nom ; elle revient au prochain
+    // survol ou focus (WCAG 1.4.13)
+    const avecInfobulle = [...entete.querySelectorAll<HTMLElement>('[data-infobulle]')]
+    document.addEventListener('keydown', (e) => {
+      if (e.key !== 'Escape') return
+      for (const lien of avecInfobulle) if (lien.matches(':hover, :focus-visible')) lien.setAttribute('data-infobulle-fermee', '')
+    })
+    for (const lien of avecInfobulle) {
+      for (const evenement of ['pointerleave', 'blur']) lien.addEventListener(evenement, () => lien.removeAttribute('data-infobulle-fermee'))
+    }
 
     // --hauteur-entete (marge de défilement des ancres et du focus, WCAG
     // 2.4.11) suit la hauteur réelle : avec le texte agrandi ou espacé, la
@@ -414,14 +425,26 @@ const chemin = sansBase(Astro.url.pathname)
     padding: 8px 16px;
   }
 
+  /* Comme sur ordinateur : logo, trait, puis le nom sur la même ligne */
   .marque-compacte {
     display: flex;
-    flex-direction: column;
+    align-items: center;
+    gap: 8px;
+    min-width: 0;
+    margin-inline-end: 8px;
     color: var(--couleur-texte);
-    font-size: 16px;
-    font-weight: var(--graisse-forte);
-    line-height: 1.5;
+    /* Le nom tient sur une ligne dès 375 px ; plus étroit, il passe sur deux
+       lignes, toujours à droite du trait */
+    font-size: clamp(0.8125rem, 3.8vw, 1.0625rem);
+    font-weight: var(--graisse-normale);
+    line-height: 1.2;
     text-decoration: none;
+  }
+
+  .marque-compacte > span {
+    padding-block: 4px;
+    padding-inline-start: 8px;
+    border-inline-start: 1px solid currentColor;
   }
 
   .marque-compacte:hover {
@@ -430,7 +453,8 @@ const chemin = sansBase(Astro.url.pathname)
   }
 
   .marque-compacte img {
-    width: 120px;
+    flex-shrink: 0;
+    width: clamp(72px, 24vw, 120px);
     height: auto;
   }
 
@@ -561,6 +585,59 @@ const chemin = sansBase(Astro.url.pathname)
   .nom-site:hover {
     color: inherit;
     text-decoration: underline;
+  }
+
+  /* Infobulles du logo et du nom (même bulle que Retour en haut) : texte
+     d'appoint, le nom du lien reste celui du logo ou du texte ; ::before
+     relie la bulle au lien pour le pointeur */
+  .marque [data-infobulle] {
+    position: relative;
+  }
+
+  .marque [data-infobulle]::before {
+    content: '';
+    position: absolute;
+    top: 100%;
+    right: 0;
+    left: 0;
+    height: 8px;
+  }
+
+  .marque [data-infobulle]::after {
+    content: attr(data-infobulle) / '';
+    position: absolute;
+    top: calc(100% + 8px);
+    left: 0;
+    z-index: 1;
+    padding: 0.25rem 0.625rem;
+    border-radius: var(--rayon-tres-petit);
+    background: var(--bleu-fonce);
+    box-shadow: 0 0 0 1px color-mix(in srgb, var(--couleur-surface) 35%, transparent);
+    color: var(--couleur-sur-fonce);
+    font-size: 0.875rem;
+    font-weight: var(--graisse-moyenne);
+    letter-spacing: normal;
+    line-height: 1.4;
+    white-space: nowrap;
+    visibility: hidden;
+    opacity: 0;
+    pointer-events: none;
+    transition:
+      opacity var(--duree-courte-4) var(--courbe-standard),
+      visibility 0s linear var(--duree-courte-4);
+  }
+
+  .marque [data-infobulle]:hover:not([data-infobulle-fermee])::after,
+  .marque [data-infobulle]:focus-visible:not([data-infobulle-fermee])::after {
+    visibility: visible;
+    opacity: 1;
+    transition:
+      opacity var(--duree-courte-4) var(--courbe-standard) 80ms,
+      visibility 0s linear 80ms;
+  }
+
+  .marque [data-infobulle]:focus-visible:not([data-infobulle-fermee])::after {
+    transition: none;
   }
 
   /* La navigation prend la place libre et se replie sur elle-même, alignée
