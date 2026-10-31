@@ -411,7 +411,9 @@ Ces chargements passent par `src/components/mdx/dynamiques/chargement.ts` (déla
 
 Recherche **Sofia** (WorldCat Discovery) : `src/lib/sofia.ts`, partagé par l'accueil et le menu. C'est un vrai formulaire GET vers `https://umontreal.on.worldcat.org/search` ; le script ajoute seulement le préfixe `kw:`.
 
-Composants tiers chargés depuis `https://cdn.jsdelivr.net/gh/bibudem/ui@1/dist` : `<udem-urgence>`, `<bib-avis>`, `<bib-consent>`, `<bib-gtm>`, `<bib-clarity>`, `<bib-retroaction-usager>`.
+Composants tiers chargés depuis `https://cdn.jsdelivr.net/gh/bibudem/ui@1/dist` : `<udem-urgence>`, `<bib-avis>`, `<bib-retroaction-usager>`.
+
+Consentement et statistiques : `src/components/coquille/Consentement.astro` et `src/lib/consentement.ts`. Le choix est gardé dans le témoin `bib-consentement` sur `bib.umontreal.ca`, au même format que `studio.bib.umontreal.ca`. Google Tag Manager et Clarity ne se chargent qu'après un consentement valide.
 
 ## Recherche interne
 
@@ -425,7 +427,7 @@ Composants tiers chargés depuis `https://cdn.jsdelivr.net/gh/bibudem/ui@1/dist`
 - Toutes les images de `src/` sont en **WebP** (2400 px au plus) ; les photos du personnel font 200 × 200 px (affichées à 100 px, 2× compris).
 - Les images du contenu sont des chemins relatifs ; dans les vitrines, `image()` du schéma les résout et vérifie qu'elles existent.
 - Les bannières sont résolues par nom (`src/lib/bannieres.ts`, `import.meta.glob` sur `src/content/pages/images/super-heroes/`) ; un nom inconnu fait échouer le build en listant les noms possibles.
-- `public/` est copié tel quel : PDF, `favicon`, `manifest.webmanifest`, fichiers de validation Google, applications autonomes `ddia/` et `radaria/`, `consent/server/`.
+- `public/` est copié tel quel : PDF, `favicon`, `manifest.webmanifest`, fichiers de validation Google, applications autonomes `ddia/` et `radaria/`, `consent/server/` (gardé parce que boite-outils et son `<bib-consent>` l'utilisent encore).
 
 ## Redirections, sitemap et robots.txt
 

@@ -162,7 +162,7 @@ import Licence from './pied/Licence.astro'
 
   document.querySelector('[data-parametres-temoins]')?.addEventListener('click', (e) => {
     e.preventDefault()
-    ;(document.querySelector('bib-consent') as (HTMLElement & { showPreferences?: () => void }) | null)?.showPreferences?.()
+    window.dispatchEvent(new Event('bib:parametres-temoins'))
   })
 </script>
 

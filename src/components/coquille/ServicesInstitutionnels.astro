@@ -9,14 +9,16 @@
  *   place APRÈS la bannière de section (SuperHeroLvl2), aligné sur les
  *   gouttières du contenu : cette position se rend donc après le slot
  *   « avant-contenu » de Base.astro. Elle ne rend rien sous le niveau 2.
- * - position « bas » : consentement et analytique (<bib-consent>, <bib-gtm>,
- *   <bib-clarity>), après le pied de page.
+ * - position « bas » : consentement et analytique (Consentement.astro), après
+ *   le pied de page.
  *
  * Les scripts sont des modules : ils s'exécutent après l'analyse du document
  * où qu'ils soient placés, et une même URL n'est exécutée qu'une fois même si
  * deux positions la déclarent. Les placer à côté de leurs éléments évite de
  * dépendre de <head> et garde chaque pièce autonome.
  */
+import Consentement from './Consentement.astro'
+
 interface Props {
   position: 'haut' | 'avis' | 'bas'
   /** Niveau de page (0 = accueil) : règle la place et le style de <bib-avis> */
@@ -50,14 +52,8 @@ const CDN = 'https://cdn.jsdelivr.net/gh/bibudem/ui@1/dist'
 {
   position === 'bas' && (
     <>
-      <script is:inline type="module" src={`${CDN}/bib-consent.min.js`}></script>
-      <script is:inline type="module" src={`${CDN}/bib-consent-preferences-btn.min.js`}></script>
-      <script is:inline type="module" src={`${CDN}/bib-gtm.min.js`}></script>
-      <script is:inline type="module" src={`${CDN}/bib-clarity.min.js`}></script>
       <script is:inline type="module" src="https://corvee.bib.umontreal.ca/loader.js"></script>
-      <bib-consent></bib-consent>
-      <bib-gtm></bib-gtm>
-      <bib-clarity></bib-clarity>
+      <Consentement />
     </>
   )
 }
