@@ -105,6 +105,7 @@ export const CARTES: Carte[] = [
       { libelle: 'Ressources par discipline', href: 'https://boite-outils.bib.umontreal.ca/disciplines' },
       { libelle: 'Comment citer', href: 'https://boite-outils.bib.umontreal.ca/citer' },
       { libelle: "Droit d'auteur", href: 'https://boite-outils.bib.umontreal.ca/recherche/droit-auteur' },
+      { libelle: 'Rédaction de mémoire ou thèse', href: 'https://boite-outils.bib.umontreal.ca/recherche/deposer-these-memoire' },
     ],
     appel: { libelle: 'Toute la Boîte à outils', href: 'https://boite-outils.bib.umontreal.ca/' },
     couleur: 'var(--rouge-orange)',
