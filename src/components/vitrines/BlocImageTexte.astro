@@ -13,11 +13,11 @@
  * bouton bleu foncé ne s'y voyait pas.
  *
  * Disposition `encart` : un appel à l'action plus ramassé, dans une carte
- * vert pâle aux coins arrondis (largeur du contenu, pas toute la bande).
+ * rose pâle aux coins arrondis (largeur du contenu, pas toute la bande).
  * Le texte est d'un côté, et l'image remplit l'autre jusqu'au bord de la
- * carte (cover), fondue dans le vert par un dégradé. Sous 900 px, l'image
+ * carte (cover), fondue dans le rose par un dégradé. Sous 900 px, l'image
  * passe en bandeau au-dessus du texte. Titre réduit, bouton bleu foncé.
- * Texte bleu foncé sur vert pâle : 7,32:1 (le blanc n'y fait que 2,48:1).
+ * Texte bleu foncé sur rose pâle : 14,75:1.
  */
 import { Picture } from 'astro:assets'
 import HeroWithImage from '@/components/mdx/mise-en-page/HeroWithImage.astro'
@@ -114,9 +114,9 @@ const legende = bloc.legende ? await markdownEnLigne(bloc.legende) : undefined
   }
 
   .encart {
-    --_fond: var(--vert-pale);
+    --_fond: var(--rose-300);
     /* Comme le ton « moyen » de Section (theme-clair dans les deux thèmes) :
-       liens, focus et accent en bleu foncé, seul à passer sur le vert */
+       liens, focus et accent en bleu foncé */
     --couleur-lien: var(--bleu-fonce);
     --couleur-lien-survol: var(--bleu-fonce);
     --couleur-focus: var(--bleu-fonce);
@@ -157,7 +157,7 @@ const legende = bloc.legende ? await markdownEnLigne(bloc.legende) : undefined
     margin: 0;
   }
 
-  /* L'image remplit sa case ; le dégradé la fond dans le vert du côté du
+  /* L'image remplit sa case ; le dégradé la fond dans le rose du côté du
      texte (en bas sur mobile) */
   .encart-image {
     position: relative;
