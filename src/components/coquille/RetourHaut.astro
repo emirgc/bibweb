@@ -119,10 +119,43 @@ import { ArrowUpIcon } from '@phosphor-icons/react/dist/ssr/ArrowUp'
       background-color var(--duree-courte-4) var(--courbe-standard);
   }
 
-  /* Sous 900 px, la barre des liens rapides se retire au défilement vers le
-     bas : le bouton descend à sa place */
-  :global(body:has([data-liens-rapides-mobile][data-masquee]):not(:has([data-liens-rapides-mobile]:focus-within))) .retour-haut {
-    bottom: calc(var(--_ecart) + env(safe-area-inset-bottom, 0px));
+  /* Sous 900 px, la barre des liens rapides sort de l'écran au défilement
+     vers le bas, au rythme du doigt (LiensRapides) : le bouton descend avec
+     elle, jusqu'à l'écart habituel du bas de l'écran. transform s'ajoute au
+     translate de l'apparition sans le remplacer. */
+  @media (width < 900px) {
+    .retour-haut {
+      transform: translateY(min(var(--decalage-liens-rapides, 0px), var(--hauteur-liens-rapides, 86px) - env(safe-area-inset-bottom, 0px)));
+      transition:
+        opacity var(--duree-courte-4) var(--courbe-standard-acceleree),
+        translate var(--duree-courte-4) var(--courbe-standard-acceleree),
+        visibility 0s linear var(--duree-courte-4),
+        background-color var(--duree-courte-4) var(--courbe-standard),
+        transform var(--duree-courte-4) var(--courbe-standard);
+    }
+
+    .retour-haut[data-visible] {
+      transition:
+        opacity var(--duree-moyenne-1) var(--courbe-standard-deceleree),
+        translate var(--duree-moyenne-1) var(--courbe-standard-deceleree),
+        visibility 0s,
+        background-color var(--duree-courte-4) var(--courbe-standard),
+        transform var(--duree-courte-4) var(--courbe-standard);
+    }
+
+    /* Pendant que le doigt déplace la barre, le bouton la suit sans retard */
+    :global(body:has([data-liens-rapides-mobile][data-suit])) .retour-haut {
+      transition-duration: var(--duree-courte-4), var(--duree-courte-4), 0s, var(--duree-courte-4), 0s;
+    }
+
+    :global(body:has([data-liens-rapides-mobile][data-suit])) .retour-haut[data-visible] {
+      transition-duration: var(--duree-moyenne-1), var(--duree-moyenne-1), 0s, var(--duree-courte-4), 0s;
+    }
+
+    /* Le focus ramène la barre entière : le bouton reprend sa place au-dessus */
+    :global(body:has([data-liens-rapides-mobile]:focus-within)) .retour-haut {
+      transform: none;
+    }
   }
 
   @media (hover: hover) and (pointer: fine) {
