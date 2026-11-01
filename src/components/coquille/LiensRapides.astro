@@ -21,11 +21,15 @@
  * - < 900 px : barre fixe au bas de l'écran, icônes seules avec un nom
  *   accessible. Le corps de page réserve sa hauteur (padding-bottom) et
  *   scroll-padding-bottom écarte le focus de dessous la barre (WCAG 2.4.11).
- *   Elle couvrait le bas du texte pendant la lecture : elle glisse hors de
- *   l'écran au défilement vers le bas et revient au défilement vers le haut,
- *   en haut et en bas de la page, et dès qu'un de ses liens reçoit le focus
- *   (:focus-within). Mouvement réduit : apparition et retrait sans transition
- *   (règle globale). Sans JS, elle reste affichée.
+ *   Elle couvrait le bas du texte pendant la lecture : elle sort de l'écran
+ *   au défilement vers le bas et revient au défilement vers le haut, en haut
+ *   et en bas de la page, et dès qu'un de ses liens reçoit le focus
+ *   (:focus-within). Elle suit le doigt, pixel pour pixel, comme la barre
+ *   d'outils de Chrome sur Android : les deux bougent ensemble au lieu de
+ *   partir chacune à son rythme. À l'arrêt du défilement, elle finit de
+ *   sortir ou revient, selon la moitié où elle s'est arrêtée. Mouvement
+ *   réduit : tout ou rien, sans transition (règle globale). Sans JS, elle
+ *   reste affichée.
  *
  * Placé après <main> dans Base.astro : barre et tiroir sont fixes, leur
  * place dans le DOM ne change que l'ordre de tabulation (en-tête, fil
@@ -178,23 +182,52 @@ const LIBCHAT_HASH = '71ff3bc4ca990e9e993a02e35e2f804aa581c52535e870359e707314a8
     )
   }
 
-  // Barre mobile masquée au défilement vers le bas (voir l'en-tête). Le CSS
-  // n'applique data-masquee que sous 900 px : rien à décider ici selon la
-  // largeur. SEUIL évite qu'un petit rebond du défilement la fasse clignoter.
+  // Barre mobile qui suit le défilement (voir l'en-tête).
+  // --decalage-liens-rapides, sur la racine, la descend de 0 (affichée) à
+  // toute sa hauteur et son ombre (sortie) ; « Retour en haut » (RetourHaut)
+  // la suit. Le CSS ne s'en sert que sous 900 px : rien à décider ici selon
+  // la largeur. data-suit : le doigt la déplace.
+  // Mouvement réduit : SEUIL évite qu'un petit rebond la fasse clignoter.
   const SEUIL = 8
+  const OMBRE = 16
   const barre = document.querySelector<HTMLElement>('[data-liens-rapides-mobile]')
   if (barre) {
+    const reduit = window.matchMedia('(prefers-reduced-motion: reduce)')
     let precedent = window.scrollY
+    let decalage = 0
     let enAttente = false
+    let minuterieFin: ReturnType<typeof setTimeout> | undefined
+
+    const placer = (valeur: number, suivre: boolean) => {
+      decalage = valeur
+      // Pas de transition pendant que le doigt la déplace ; une transition
+      // pour les mouvements qu'elle finit seule
+      barre.toggleAttribute('data-suit', suivre)
+      document.documentElement.style.setProperty('--decalage-liens-rapides', `${valeur}px`)
+    }
+
+    // À l'arrêt, la barre ne reste pas à moitié sortie
+    const terminer = () => {
+      if (reduit.matches) return
+      const max = barre.offsetHeight + OMBRE
+      if (decalage > 0 && decalage < max) placer(decalage > max / 2 ? max : 0, false)
+    }
+
     const mettreAJour = () => {
       enAttente = false
       const y = window.scrollY
       const ecart = y - precedent
+      const max = barre.offsetHeight + OMBRE
       const enBas = window.innerHeight + y >= document.documentElement.scrollHeight - 2
-      if (y <= 0 || enBas) barre.removeAttribute('data-masquee')
-      else if (Math.abs(ecart) < SEUIL) return
-      else barre.toggleAttribute('data-masquee', ecart > 0)
+      if (y <= 0 || enBas) placer(0, false)
+      else if (reduit.matches) {
+        if (Math.abs(ecart) < SEUIL) return
+        placer(ecart > 0 ? max : 0, false)
+      } else placer(Math.min(max, Math.max(0, decalage + ecart)), true)
       precedent = y
+      // Repli pour les navigateurs sans l'événement scrollend
+      clearTimeout(minuterieFin)
+      minuterieFin = setTimeout(terminer, 150)
     }
     window.addEventListener(
       'scroll',
@@ -205,6 +238,10 @@ const LIBCHAT_HASH = '71ff3bc4ca990e9e993a02e35e2f804aa581c52535e870359e707314a8
       },
       { passive: true },
     )
+    window.addEventListener('scrollend', () => {
+      clearTimeout(minuterieFin)
+      terminer()
+    })
 
     // La page réserve en bas la hauteur réelle de la barre : avec le texte
     // agrandi, elle passe sur deux lignes et dépasse les 86 px par défaut
@@ -415,12 +452,18 @@ const LIBCHAT_HASH = '71ff3bc4ca990e9e993a02e35e2f804aa581c52535e870359e707314a8
     padding: 8px 12px calc(8px + env(safe-area-inset-bottom, 0px));
     background-color: var(--bleu-principal);
     box-shadow: var(--ombre-2);
-    transition: translate var(--duree-moyenne-1) var(--courbe-emphase-deceleree);
+    translate: 0 var(--decalage-liens-rapides, 0px);
+    transition: translate var(--duree-courte-4) var(--courbe-standard);
   }
 
-  /* Retrait plus bref que l'apparition, même chemin ; l'ombre sort aussi */
-  .liens-rapides-mobile[data-masquee]:not(:focus-within) {
-    translate: 0 calc(100% + 1rem);
+  /* Le doigt la déplace : elle le suit sans retard */
+  .liens-rapides-mobile[data-suit] {
+    transition: none;
+  }
+
+  /* Le focus dans la barre la ramène entière */
+  .liens-rapides-mobile:focus-within {
+    translate: 0;
     transition: translate var(--duree-courte-4) var(--courbe-standard);
   }
 
